@@ -33,7 +33,7 @@ return [
         ],
 
         'shop' => [
-            'sitename' => 'ShopGo',
+            'sitename' => 'Melo',
             'logo' => 'vendor/lyrasoft/melo/images/simular-logo.png'
         ],
     ]
