@@ -21,13 +21,13 @@ Install from composer
 composer require lyrasoft/melo
 ```
 
-ShopGo dependents on [lyrasoft/sequence](https://github.com/lyrasoft/luna-sequence) and
+melo dependents on [lyrasoft/sequence](https://github.com/lyrasoft/luna-sequence) and
 [lyrasoft/favorite](https://github.com/lyrasoft/luna-favorite) packages. Please read their README and configure them first.
 
 Then copy files to project
 
 ```shell
-php windwalker pkg:install lyrasoft/shopgo -t routes -t migrations -t seeders
+php windwalker pkg:install lyrasoft/melo -t routes -t migrations -t seeders
 php windwalker pkg:install lyrasoft/favorite -t routes -t migrations
 ```
 
@@ -103,22 +103,10 @@ And then you can run migtaiotns/seeders, all orders No and faker locale will use
 php windwalker mig:reset -fs
 ```
 
-### Env
-
-You can add `SHOPGO_MPDF_FONT_DIR` to configure Invoice PDF fonts position.
-
-In developing, provide Mac default font dir:
-
-```
-SHOPGO_MPDF_FONT_DIR=/Library/Fonts/
-```
-
-You can change this dir after deployed to server.
-
 
 ### Session
 
-As ShopGo may need to redirect to outside Payment service to process checkout, you must disable `SameSite` cookie poilicy
+As melo may need to redirect to outside Payment service to process checkout, you must disable `SameSite` cookie poilicy
 and set `secure` as `TRUE`.
 
 ```php
@@ -138,7 +126,7 @@ return [
 
 ### Favorites Type
 
-ShopGo will auto install `lyrasoft/favorite` and copy config file. You must add `product` to `allow_types` to allow
+melo will auto install `lyrasoft/favorite` and copy config file. You must add `product` to `allow_types` to allow
 AJAX call.
 
 ```php
@@ -176,7 +164,7 @@ php windwalker pkg:install lyrasoft/favorite -t lang
 
 ### CSS/JS
 
-ShopGo dependents on `lyrasoft/favorite`, you must add these vendors to `fusionfile.mjs`
+melo dependents on `lyrasoft/favorite`, you must add these vendors to `fusionfile.mjs`
 
 ```javascript
 export async function install() {
@@ -198,7 +186,7 @@ export async function install() {
 
 ### Add Cart Button
 
-Currently ShopGo Beta has no cart button widget. You must add it to HTML manually.
+Currently melo Beta has no cart button widget. You must add it to HTML manually.
 
 You must includes these 2 attributes to make JS works:
 
