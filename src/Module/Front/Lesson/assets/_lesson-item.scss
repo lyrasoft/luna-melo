@@ -1,0 +1,194 @@
+.view-lesson-item {
+  background-color: $gray-100;
+
+  .l-lesson-item {
+
+    &__main {
+      margin-bottom: 60px;
+    }
+
+    &__content {
+      border-radius: 20px;
+      margin-bottom: 32px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
+    }
+
+    &__section {
+      background-color: black;
+    }
+
+    &__img {
+      width: 100%;
+      height: 450px;
+      background-size: cover;
+      background-position: center center;
+    }
+
+    .c-segment-list {
+      overflow: scroll;
+      height: 450px;
+
+      &__title {
+        color: white;
+        background: #495057;
+        padding: 20px;
+      }
+
+      &__inner {
+        padding: 7px 22px 0 13px;
+      }
+
+      .c-chapter-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 9px;
+        border-bottom: 1px solid #DEE2E6;
+      }
+
+      .c-section-item {
+        padding: 5px 0;
+        border-bottom: 1px solid #DEE2E6;
+
+        &__inner {
+          display: flex;
+          padding: 11px 16px 11px 8px;
+          justify-content: space-between;
+          gap: 0.5rem;
+        }
+
+        &.active {
+
+          .c-section-item__inner {
+            border: 2px solid $secondary;
+            border-radius: 10px;
+          }
+        }
+      }
+    }
+
+    &__navbar {
+      padding-bottom: 32px;
+
+      .c-lesson-nav {
+
+        &__link {
+          padding: 12px;
+          font-size: 20px;
+          line-height: 120%;
+          border-radius: 99rem;
+
+          &:not(.active) {
+            color: $gray-600;
+          }
+        }
+      }
+    }
+
+    &__detail {
+      padding-bottom: 120px;
+    }
+
+    &__card {
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
+      border: none;
+
+      > .card-body {
+        padding: 0;
+      }
+    }
+
+    .c-lesson-detail-card {
+      overflow: hidden;
+
+      &__title {
+        padding: 20px 30px 16px;
+      }
+
+      &__content {
+        border-top: 1px solid $gray-200;
+        padding: 20px;
+      }
+
+      .c-lesson-detail-chapter {
+        border-top: 1px solid $gray-200;
+        background-color: $gray-100;
+        padding: 16px 32px;
+      }
+
+      .c-lesson-detail-section {
+        border-top: 1px solid $gray-300;
+        padding: 16px 32px 16px 40px;
+      }
+
+      .c-homework-item {
+        border-top: 1px solid $gray-200;
+        padding: 32px 20px;
+        display: flex;
+        gap: 20px;
+
+        &__avatar {
+          min-width: 40px;
+        }
+
+        &__date {
+          color: $gray-500;
+        }
+      }
+
+      .c-file-item {
+        border-top: 1px solid $gray-200;
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 30px;
+        overflow: hidden;
+
+        &:hover {
+          color: white;
+          background-color: $secondary;
+        }
+      }
+    }
+
+    .c-lesson-teacher-card {
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
+      border: none;
+
+      > .card-body {
+        padding: 20px;
+      }
+
+      .c-teacher-avatar {
+        width: 160px;
+        height: 160px;
+        border-radius: 99rem;
+        border: 2px solid $secondary;
+        overflow: hidden;
+      }
+    }
+
+    .c-lesson-progress-card {
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
+      border: none;
+
+      > .card-body {
+        padding: 20px;
+      }
+    }
+  }
+
+  .c-quiz-item {
+    margin-bottom: 1rem;
+  }
+
+  .plyr {
+    --plyr-color-main: var(--bs-primary);
+    height: 450px;
+  }
+}

@@ -1,0 +1,37 @@
+{
+    "name": "lyrasoft/melo",
+    "description": "LYRASOFT melo package",
+    "type": "windwalker-package",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Lyrasoft\\Melo\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "yinminc",
+            "email": "a1598742002@gmail.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "lyrasoft/favorite": "^1.0||^2.0"
+    },
+    "require-dev": {
+        "lyrasoft/sequence": "^1.0"
+    },
+    "extra": {
+        "windwalker": {
+            "packages": [
+                "Lyrasoft\\Melo\\MeloPackage"
+            ],
+            "assets": {
+                "link": "assets/"
+            },
+            "modules": [
+                "src/Module"
+            ]
+        }
+    }
+}
