@@ -1,4 +1,4 @@
-# LYRASOFT ShopGo Package
+# LYRASOFT Melo Package
 
 <!-- TOC -->
 * [Installation](#installation)
