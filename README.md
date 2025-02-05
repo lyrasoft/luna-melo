@@ -145,53 +145,6 @@ return [
 ];
 ```
 
-### User Role
-
-melo will have a teacher role. You must add `teacher` to `roles`, `basic_roles` and `selectable_roles` to allow seeder find teacher role.
-
-```php
-return [
-    'access' => [
-        // ...
-
-        'selectable_roles' => [
-            'member',
-            'admin',
-            'superuser',
-            'teacher'
-        ],
-
-        'basic_roles' => [
-            'member',
-            'teacher'
-        ],
-        
-        'roles' => static fn () => [
-            // ...
-            'public' => create_role(
-                'Public',
-                children: [
-                    'member' => create_role(
-                        'Member',
-                        children: [
-                            'manager' => create_role(
-                                'Manager',
-                                children: [
-                                    // ...
-                                    'teacher' => create_role(
-                                        'teacher',
-                                    ),
-                                ]
-                            ),
-                        ]
-                    ),
-                ]
-            ),
-        ],
-    ]
-];
-```
-
 ### Language Files
 
 Add this line to admin & front middleware if you don't want to override languages:

@@ -53,7 +53,7 @@ $seeder->import(
             ->select('id')
             ->whereExists(
                 fn(Query $query) => $query->from(UserRoleMap::class)
-                    ->where('role_id', 'member')
+                    ->where('role_id', 'admin')
                     ->where('user_id', qn('user.id'))
             )
             ->loadColumn('id')
@@ -63,7 +63,7 @@ $seeder->import(
             ->select('id')
             ->whereExists(
                 fn(Query $query) => $query->from(UserRoleMap::class)
-                    ->where('role_id', 'teacher')
+                    ->where('role_id', 'member')
                     ->where('user_id', qn('user.id'))
             )
             ->loadColumn('id')
