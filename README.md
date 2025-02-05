@@ -40,10 +40,10 @@ return [
     // ...
     
     __DIR__ . '/lesson-seeder.php',
-    __DIR__ . '/option-seeder.php',
     __DIR__ . '/order-seeder.php',
-    __DIR__ . '/question-seeder.php',
     __DIR__ . '/segment-seeder.php',
+    __DIR__ . '/question-seeder.php',
+    __DIR__ . '/option-seeder.php',
 ];
 ```
 
@@ -140,6 +140,53 @@ return [
                 'article',
                 'lesson' // <-- Add this
             ]
+        ],
+    ]
+];
+```
+
+### User Role
+
+melo will have a teacher role. You must add `teacher` to `roles`, `basic_roles` and `selectable_roles` to allow seeder find teacher role.
+
+```php
+return [
+    'access' => [
+        // ...
+
+        'selectable_roles' => [
+            'member',
+            'admin',
+            'superuser',
+            'teacher'
+        ],
+
+        'basic_roles' => [
+            'member',
+            'teacher'
+        ],
+        
+        'roles' => static fn () => [
+            // ...
+            'public' => create_role(
+                'Public',
+                children: [
+                    'member' => create_role(
+                        'Member',
+                        children: [
+                            'manager' => create_role(
+                                'Manager',
+                                children: [
+                                    // ...
+                                    'teacher' => create_role(
+                                        'teacher',
+                                    ),
+                                ]
+                            ),
+                        ]
+                    ),
+                ]
+            ),
         ],
     ]
 ];
