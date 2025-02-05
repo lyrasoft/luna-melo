@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Module\Front\Order;
+namespace Lyrasoft\Melo\Module\Front\Order;
 
 use Windwalker\Core\Attributes\Controller;
 
