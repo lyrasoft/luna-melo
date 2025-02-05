@@ -85,7 +85,7 @@ class CartService
 
         $ids = $cartStorage->getItems();
 
-        $items = $this->repository->getListSelector()
+        $items = $this->repository->getFrontListSelector()
             ->where('lesson.id', $ids ?: [0])
             ->where('lesson.state', 1)
             ->limit(0)

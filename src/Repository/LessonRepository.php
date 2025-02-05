@@ -36,6 +36,15 @@ class LessonRepository implements ManageRepositoryInterface, ListRepositoryInter
         return $selector;
     }
 
+    public function getFrontListSelector(): ListSelector
+    {
+        $selector = $this->createSelector();
+
+        $selector->from(Lesson::class);
+
+        return $selector;
+    }
+
     #[ConfigureAction(SaveAction::class)]
     protected function configureSaveAction(SaveAction $action): void
     {

@@ -304,7 +304,7 @@ await u.domready(() => {
       if (v) {
         location.reload();
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
 
       await swal({

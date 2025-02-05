@@ -10,14 +10,20 @@ const CartApp = {
     user: Object,
   },
   setup(props: any) {
-    const cartStore = reactive({
-      items: {},
+    const cartStore = reactive<{
+      items: CartItem[];
+      totals: {
+        grand_total: object,
+        product_total: object,
+      };
+      count: number;
+    }>({
+      items: [],
       totals: {
         grand_total: {},
         product_total: {},
       },
-      count: ref(0),
-      coupon: ref('')
+      count: 0,
     });
 
     getData();
@@ -110,3 +116,50 @@ u.import('@vendor/lyrasoft/melo/dist/tw-city-selector.min.js').then(() => {
 
   u.form(form).initComponent();
 });
+
+interface CartItem {
+  acquired: string;
+  alias: string;
+  categoryId: number;
+  created: string;
+  createdBy: number;
+  description: number;
+  endDate: string;
+  hasCertificate: boolean;
+  hash: string;
+  id: number;
+  image: string;
+  isFree: boolean;
+  isSpecial: boolean;
+  isStepByStep: boolean;
+  modified: string;
+  modifiedBy: number;
+  ordering: number;
+  params: any;
+  passAverageScore: number;
+  passMinScore: number;
+  price: number;
+  prices: {
+    final: PriceObject;
+    origin: PriceObject;
+  };
+  specialPrice: number;
+  startDate: string;
+  state: {
+    name: string;
+    value: number;
+  };
+  teacherId: number;
+  title: string;
+  totals: {
+    final_total: PriceObject;
+    total: PriceObject;
+  }
+}
+
+interface PriceObject {
+  label: string;
+  name: string;
+  params: any;
+  price: number;
+}
