@@ -174,6 +174,7 @@ export async function install() {
 
             // Add these below
             'sweetalert',
+            'ts-luxon',
         ],
         [
             // Add these 2 lines
@@ -182,6 +183,12 @@ export async function install() {
         ]
     );
 }
+```
+
+Then run this command to install npm vendors:
+
+```
+yarn add sweetalert ts-luxon
 ```
 
 ### Add Cart Button
