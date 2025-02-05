@@ -29,6 +29,7 @@ Then copy files to project
 ```shell
 php windwalker pkg:install lyrasoft/melo -t routes -t migrations -t seeders
 php windwalker pkg:install lyrasoft/favorite -t routes -t migrations
+php windwalker pkg:install lyrasoft/attachment -t migrations
 ```
 
 ### Seeders
@@ -143,6 +144,20 @@ return [
         ],
     ]
 ];
+```
+
+### Attachment 
+
+先到 unicorn.php 中註冊 AttachmentPackage
+
+```
+'unicorn' => [
+    // ...
+
+    'providers' => [
+        \Lyrasoft\Attachment\AttachmentPackage::class,
+    ],
+]
 ```
 
 ### Language Files

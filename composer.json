@@ -16,7 +16,8 @@
     ],
     "minimum-stability": "beta",
     "require": {
-        "lyrasoft/favorite": "^1.0||^2.0"
+        "lyrasoft/favorite": "^1.0||^2.0",
+        "lyrasoft/attachment": "^1.0"
     },
     "require-dev": {
         "lyrasoft/sequence": "^1.0"
