@@ -116,4 +116,9 @@ HELP;
     }
 }
 
-exit((new Release())->execute());
+exit((new Release())
+    ->addScript('rm -rf ' . __DIR__ . '/../assets/dist/*.js.map')
+    ->addScript('rm -rf ' . __DIR__ . '/../assets/dist/admin/segment-edit/*')
+    ->addScript('yarn --cwd ./assets build:prod')
+    ->addScript('git add .')
+    ->execute());
