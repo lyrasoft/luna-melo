@@ -94,7 +94,45 @@ return [
         ],
     ]
 ];
+```
 
+### File Upload
+
+Melo will need video upload profile, so we need to add `video` profile to `file_upload profiles`
+
+```php
+<?php
+return [
+    'unicorn' => [
+        // ...
+
+        'file_upload' => [
+            // ...
+            
+            'profiles' => [
+                // ...
+                'video' => [
+                    'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
+                    'accept' => null,
+                    'dir' => 'lesson-videos/{year}/{month}/{day}',
+                    'force_redraw' => true,
+                    'resize' => [
+                        'enabled' => true,
+                        'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
+                        'width' => 1920,
+                        'height' => 1920,
+                        'crop' => false,
+                        'quality' => 85,
+                        'output_format' => null
+                    ],
+                    'options' => [
+                        'ACL' => S3Service::ACL_PUBLIC_READ
+                    ]
+                ],
+            ]
+        ]
+    ]
+];
 ```
 
 After you configure the base settings, you should not change it after site release.

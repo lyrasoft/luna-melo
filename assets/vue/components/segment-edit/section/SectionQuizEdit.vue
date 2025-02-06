@@ -70,9 +70,9 @@
       bodyBgVariant="light"
       contentClass="bg-white"
       hideFooter="true"
-      lazy="true"
+      :lazy="true"
       dialog-class="mb-6"
-      scrollable="true"
+      :scrollable="true"
       @hidden="saveQuestion(currentQuestion)"
     >
       <template #title>

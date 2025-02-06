@@ -64,10 +64,10 @@
         ok-only
         bodyBgVariant="light"
         contentClass="bg-white"
-        hideFooter="true"
-        lazy="true"
+        :hideFooter="true"
+        :lazy="true"
         dialog-class="mb-6"
-        scrollable="true"
+        :scrollable="true"
         @hidden="sectionSave(currentSection)"
       >
         <template #title>
@@ -76,7 +76,7 @@
           </BButton>
         </template>
 
-        <component :is="editComponent" :item="currentSection" @save="sectionSave"></component>
+        <component :is="editComponent" :item="currentSection" @save="sectionSave" :key="currentSection.id"></component>
       </BModal>
     </div>
   </div>
@@ -181,6 +181,8 @@ async function saveSegment(data: object, isNew: number = 0) {
       isNew: isNew
     }
   );
+
+  currentSection.value = {} as Segment;
 }
 
 async function saveAndCloseModal(

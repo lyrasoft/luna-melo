@@ -35,7 +35,7 @@ class EditForm
             ->disabled(true);
 
         $form->add('state', ListField::class)
-            ->label('訂單編號')
+            ->label('訂單狀態')
             ->registerOptions(OrderState::getTransItems($this->lang));
 
         $form->add('payment', ListField::class)
