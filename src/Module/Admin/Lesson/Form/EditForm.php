@@ -21,7 +21,6 @@ use Windwalker\Form\Field\NumberField;
 use Windwalker\Form\Field\RadioField;
 use Windwalker\Form\Field\TextField;
 use Windwalker\Form\Form;
-use Windwalker\Query\Query;
 
 class EditForm
 {
@@ -52,11 +51,6 @@ class EditForm
             ->label('分類')
             ->categoryType('lesson')
             ->option($this->trans('unicorn.select.placeholder'), '')
-            ->configureQuery(
-                function (Query $query) {
-                    $query->where('level', 2);
-                }
-            )
             ->required(true);
 
         $form->add('sub_category_id', ListField::class)
