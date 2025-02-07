@@ -69,7 +69,7 @@ $lessonService = $app->service(LessonService::class);
             <div>
                 <i class="far fa-sign-out fa-fw me-2"></i>
                 登出
-            </div>\
+            </div>
         </a>
     </div>
 
