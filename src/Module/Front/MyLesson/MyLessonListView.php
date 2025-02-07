@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Front\MyLesson;
 
+use Lyrasoft\Luna\User\Exception\AccessDeniedException;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Repository\LessonRepository;
@@ -47,6 +48,10 @@ class MyLessonListView implements ViewModelInterface
      */
     public function prepare(AppContext $app, View $view): array
     {
+        if (!$this->userService->isLogin()) {
+            throw new AccessDeniedException('請先登入', 403);
+        }
+
         $userId = $this->userService->getUser()->getId();
 
         $page = (int) $app->input('page');

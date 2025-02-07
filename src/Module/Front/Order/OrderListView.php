@@ -49,7 +49,7 @@ class OrderListView implements ViewModelInterface
     public function prepare(AppContext $app, View $view): array
     {
         if (!$this->userService->isLogin()) {
-            throw new AccessDeniedException('請先登入');
+            throw new AccessDeniedException('請先登入', 403);
         }
 
         $page = $app->input('page');

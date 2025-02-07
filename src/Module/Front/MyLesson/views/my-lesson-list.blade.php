@@ -16,6 +16,7 @@ namespace App\View;
  * @var $lang      LangService     The language translation service.
  */
 
+use Unicorn\Html\Breadcrumb;
 use Lyrasoft\Melo\Module\Front\MyLesson\MyLessonListView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -24,12 +25,16 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
+$breadcrumb = $app->service(Breadcrumb::class);
+
+$breadcrumb->push($lang->trans('melo.my.lesson.page.title'));
+
 ?>
 
 @extends('global.body')
 
 @section('content')
-    @include('melo.front.page-title', ['title' => '我的課程'])
+    @include('melo.front.page-title', ['title' => $lang->trans('melo.my.lesson.page.title')])
 
     <div class="l-my-lesson-list">
         <div class="container">

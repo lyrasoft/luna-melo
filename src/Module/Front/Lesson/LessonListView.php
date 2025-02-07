@@ -37,7 +37,6 @@ class LessonListView implements ViewModelInterface
         #[Autowire]
         protected LessonRepository $lessonRepository,
         protected PaginationFactory $paginationFactory,
-        protected Breadcrumb $breadcrumb,
         protected ORM $orm,
     ) {
         //

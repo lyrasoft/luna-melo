@@ -53,7 +53,7 @@ class OrderItemView implements ViewModelInterface
     public function prepare(AppContext $app, View $view): array
     {
         if (!$this->userService->isLogin()) {
-            throw new AccessDeniedException('請先登入');
+            throw new AccessDeniedException('請先登入', 403);
         }
 
         $id = $app->input('id');
@@ -67,7 +67,7 @@ class OrderItemView implements ViewModelInterface
             !$this->accessService->userInRoles($user, ['admin', 'superuser'])
             && $item->getUserId() !== $user->getId()
         ) {
-            return new AccessDeniedException('無權限觀看這份訂單');
+            return new AccessDeniedException('無權限觀看這份訂單', 403);
         }
 
         $view[$item::class] = $item;

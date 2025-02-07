@@ -26,13 +26,13 @@ use Windwalker\Core\Router\SystemUri;
 
 $breadcrumb = $app->service(Breadcrumb::class);
 
-$breadcrumb->push('搜尋課程');
+$breadcrumb->push($lang->trans('melo.lesson.search.page.title'));
 ?>
 
 @extends('global.body')
 
 @section('content')
-    @include('melo.front.page-title', ['title' => '搜尋課程'])
+    @include('melo.front.page-title', ['title' => $lang->trans('melo.lesson.search.page.title')])
 
     <div class="c-filter-bar">
         <div class="container">

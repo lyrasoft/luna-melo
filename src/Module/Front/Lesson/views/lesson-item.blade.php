@@ -48,7 +48,7 @@ $asset->css('vendor/plyr/dist/plyr.css');
 
 $breadcrumb = $app->service(Breadcrumb::class);
 
-$breadcrumb->push('搜尋課程', $nav->to('lesson_list'));
+$breadcrumb->push($lang->trans('melo.lesson.search.page.title'), $nav->to('lesson_list'));
 $breadcrumb->push($item->getTitle());
 
 $videoService = $app->service(VideoService::class);
@@ -366,24 +366,26 @@ $asset->js('vendor/lyrasoft/melo/dist/lesson.js');
                             </div>
                         </div>
 
-                        <div class="card c-lesson-teacher-card">
-                            <div class="card-body c-lesson-teacher-card__body">
-                                <div class="text-center mb-4">
-                                    <img class="img-fluid c-teacher-avatar"
-                                        src="{{ $teacher->getAvatar() }}"
-                                        alt="{{ $teacher->getName() }}"
-                                    >
-                                </div>
+                        @if($teacher)
+                            <div class="card c-lesson-teacher-card">
+                                <div class="card-body c-lesson-teacher-card__body">
+                                    <div class="text-center mb-4">
+                                        <img class="img-fluid c-teacher-avatar"
+                                            src="{{ $teacher?->getAvatar() }}"
+                                            alt="{{ $teacher?->getName() }}"
+                                        >
+                                    </div>
 
-                                <div class="h4 text-center mb-4">
-                                    {{ $teacher->getName() }}
-                                </div>
+                                    <div class="h4 text-center mb-4">
+                                        {{ $teacher?->getName() }}
+                                    </div>
 
-                                <div>
-                                    {!! $teacher->getParams()['teacher_desc'] ?? '' !!}
+                                    <div>
+                                        {!! $teacher?->getParams()['teacher_desc'] ?? '' !!}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

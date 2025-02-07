@@ -16,6 +16,7 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
+use Unicorn\Html\Breadcrumb;
 use Lyrasoft\Melo\Entity\Order;
 use Lyrasoft\Melo\Entity\OrderHistory;
 use Lyrasoft\Melo\Entity\OrderItem;
@@ -36,12 +37,15 @@ use Windwalker\Core\Router\SystemUri;
  * @var $orderItem OrderItem
  */
 
+$breadcrumb = $app->service(Breadcrumb::class);
+
+$breadcrumb->push($lang->trans('melo.order.item.page.title'));
 ?>
 
 @extends('global.body')
 
 @section('content')
-    @include('melo.front.page-title', ['title' => '訂單'])
+    @include('melo.front.page-title', ['title' => $lang->trans('melo.order.item.page.title')])
 
     <div class="l-order">
         <div class="container">
