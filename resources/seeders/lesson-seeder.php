@@ -69,8 +69,15 @@ $seeder->import(
             ->loadColumn('id')
             ->dump(true);
 
-        $categoryIds = $orm->findColumn(Category::class, 'id', ['type' => 'lesson', 'level' => 2])
+        $categoryIds = $orm->findColumn(
+            Category::class,
+            'id',
+            [
+                'type' => 'lesson',
+            ]
+        )
             ->dump(true);
+
         $langCodes = LocaleService::getSeederLangCodes($orm);
 
         foreach (range(1, 50) as $i) {
