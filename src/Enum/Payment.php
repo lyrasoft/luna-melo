@@ -27,6 +27,6 @@ enum Payment: string implements EnumTranslatableInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('app.payment.' . $this->getKey());
+        return $lang->trans('melo.payment.' . $this->getKey());
     }
 }

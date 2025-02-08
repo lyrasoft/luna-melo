@@ -30,6 +30,6 @@ enum OrderHistoryType: string implements EnumTranslatableInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('app.order.history.type.' . $this->getKey());
+        return $lang->trans('melo.order.history.type.' . $this->getKey());
     }
 }

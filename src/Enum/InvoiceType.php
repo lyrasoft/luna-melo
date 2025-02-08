@@ -26,6 +26,6 @@ enum InvoiceType: string implements EnumTranslatableInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('app.invoice.type.' . $this->getKey());
+        return $lang->trans('melo.invoice.type.' . $this->getKey());
     }
 }
