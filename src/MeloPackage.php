@@ -82,7 +82,6 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
             [
                 static::path("src/Module/Front/Lesson/**/*") => "@source/Module/Front/Lesson",
                 static::path("src/Module/Front/MyLesson/**/*") => "@source/Module/Front/MyLesson",
-                static::path("src/Module/Front/MyLecture/**/*") => "@source/Module/Front/MyLecture",
             ],
             ['Lyrasoft\\Melo\\Module\\Front' => 'App\\Module\\Front'],
             ['modules', 'melo_front'],
@@ -135,6 +134,21 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
                 'Lyrasoft\\Melo\\Repository' => 'App\\Repository',
             ],
             ['modules', 'melo_model']
+        );
+
+        $installer->installModules(
+            [
+                static::path("src/Entity/OrderHistory.php") => '@source/Entity',
+                static::path("src/Entity/OrderItem.php") => '@source/Entity',
+                static::path("src/Entity/OrderTotal.php") => '@source/Entity',
+                static::path("src/Entity/Order.php") => '@source/Entity',
+                static::path("src/Repository/OrderRepository.php") => '@source/Repository',
+            ],
+            [
+                'Lyrasoft\\Melo\\Entity' => 'App\\Entity',
+                'Lyrasoft\\Melo\\Repository' => 'App\\Repository',
+            ],
+            ['modules', 'melo_order_model']
         );
     }
 
