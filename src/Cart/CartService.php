@@ -15,7 +15,6 @@ use Lyrasoft\Melo\Cart\Price\PriceObject;
 use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Brick\Math\Exception\MathException;
 use Lyrasoft\Melo\Entity\Lesson;
-use Lyrasoft\Melo\Repository\LessonRepository;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\Navigator;
@@ -37,8 +36,6 @@ class CartService
         protected ORM $orm,
         #[Autowire]
         protected CartStorage $cartStorage,
-        #[Autowire]
-        protected LessonRepository $repository,
     ) {
         //
     }
@@ -85,10 +82,9 @@ class CartService
 
         $ids = $cartStorage->getItems();
 
-        $items = $this->repository->getFrontListSelector()
+        $items = $this->orm->from(Lesson::class)
             ->where('lesson.id', $ids ?: [0])
             ->where('lesson.state', 1)
-            ->limit(0)
             ->all(Lesson::class);
 
         $lessons = [];
