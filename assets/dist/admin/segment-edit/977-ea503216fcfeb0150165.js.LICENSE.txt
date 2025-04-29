@@ -1,6 +1,0 @@
-/**
- * Part of melo project.
- *
- * @copyright  Copyright (C) 2024 __ORGANIZATION__.
- * @license    __LICENSE__
- */
