@@ -197,7 +197,7 @@ class CheckoutService
         )
             ->to($user->getEmail())
             ->renderBody(
-                'mail.order.new-order',
+                'mail.new-order',
                 compact('order', 'cartData', 'isAdmin')
             )
             ->send();
@@ -233,7 +233,7 @@ class CheckoutService
             )
                 ->bcc(...$emails)
                 ->renderBody(
-                    'mail.order.new-order',
+                    'mail.new-order',
                     compact('order', 'cartData', 'isAdmin')
                 )
                 ->send();
