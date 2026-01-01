@@ -21,9 +21,11 @@ use Windwalker\ORM\EntityInterface;
 use Windwalker\ORM\EntityTrait;
 use Windwalker\ORM\Metadata\EntityMetadata;
 
+// phpcs:disable
+// todo: remove this when phpcs supports 8.4
 #[Table('melo_order_histories', 'order_history')]
 #[\AllowDynamicProperties]
-class OrderHistory implements EntityInterface
+class MeloOrderHistory implements EntityInterface
 {
     use EntityTrait;
 
@@ -35,11 +37,15 @@ class OrderHistory implements EntityInterface
 
     #[Column('type')]
     #[Cast(OrderHistoryType::class)]
-    public OrderHistoryType $type;
+    public OrderHistoryType $type {
+        set(OrderHistoryType|string $value) => $this->type = OrderHistoryType::wrap($value);
+    }
 
     #[Column('state')]
     #[Cast(OrderState::class)]
-    public OrderState $state;
+    public OrderState $state {
+        set(OrderState|string $value) => $this->state = OrderState::wrap($value);
+    }
 
     #[Column('notify')]
     #[Cast('bool', 'int')]
@@ -51,7 +57,9 @@ class OrderHistory implements EntityInterface
     #[Column('created')]
     #[CastNullable(ServerTimeCast::class)]
     #[CreatedTime]
-    public ?Chronos $created = null;
+    public ?Chronos $created = null {
+        set(\DateTimeInterface|string|null $value) => $this->created = Chronos::tryWrap($value);
+    }
 
     #[Column('created_by')]
     #[Author]

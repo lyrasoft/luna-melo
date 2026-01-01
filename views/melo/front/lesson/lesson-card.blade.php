@@ -34,7 +34,7 @@ use Windwalker\Core\Router\SystemUri;
 $uniScript = $app->service(UnicornScript::class);
 $uniScript->addRoute('@cart_ajax');
 $uniScript->addRoute('cart');
-$asset->js('vendor/lyrasoft/melo/dist/lesson.js');
+$asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
 
 $lessonService = $app->service(LessonService::class);
 $ownedLesson = $lessonService->checkUserHasLesson($item->id);

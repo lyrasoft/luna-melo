@@ -8,7 +8,7 @@ use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Cart\CartService;
 use Lyrasoft\Melo\Cart\CartStorage;
-use Lyrasoft\Melo\Entity\Order;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Service\CheckoutService;
 use Psr\Container\ContainerExceptionInterface;
 use Windwalker\Core\Application\AppContext;
@@ -102,11 +102,11 @@ class CartController
         }
 
         /**
-         * @var Order $order
+         * @var MeloOrder $order
          */
         [$order, $cartData] = (array) $orm->getDb()->transaction(
             function () use ($input, $cartService, $user, $checkoutService) {
-                $order = new Order();
+                $order = new MeloOrder();
 
                 $invoiceData = [
                     'invoice_title' => $input['invoice_title'],

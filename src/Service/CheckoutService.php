@@ -8,8 +8,8 @@ use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Entity\UserRoleMap;
 use Lyrasoft\Melo\Cart\Price\PriceObject;
 use Lyrasoft\Melo\Cart\Price\PriceSet;
-use Lyrasoft\Melo\Entity\Order;
-use Lyrasoft\Melo\Entity\OrderItem;
+use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
@@ -27,6 +27,7 @@ use Windwalker\Query\Query;
 
 use function Windwalker\collect;
 
+#[Service]
 class CheckoutService
 {
     use TranslatorTrait;
@@ -46,10 +47,10 @@ class CheckoutService
      * @throws RandomException
      */
     public function createOrder(
-        Order $orderData,
+        MeloOrder $orderData,
         array $cartData,
         array $input
-    ): Order {
+    ): MeloOrder {
         $totals = (float) $cartData['totals']->get('lesson_total')->__toString();
         $grandTotal = (float) $cartData['totals']->get('grand_total')->__toString();
 
@@ -61,7 +62,7 @@ class CheckoutService
         $orderData->state = OrderState::PENDING;
         $orderData->expiredOn = $this->melo->config('checkout.default_expiry') ?? '+7days';
 
-        $order = $this->orm->createOne(Order::class, $orderData);
+        $order = $this->orm->createOne(MeloOrder::class, $orderData);
 
         $order = $this->prepareOrderAndPaymentNo($order);
 
@@ -86,14 +87,14 @@ class CheckoutService
         return $order;
     }
 
-    public function createOrderItems(Order $order, array $cartData): \Windwalker\Data\Collection
+    public function createOrderItems(MeloOrder $order, array $cartData): \Windwalker\Data\Collection
     {
         $cartItems = $cartData['items'] ?? [];
 
         $orderItems = collect();
 
         foreach ($cartItems as $item) {
-            $orderItem = new OrderItem();
+            $orderItem = new MeloOrderItem();
 
             $orderItem->orderId = $order->id;
             $orderItem->lessonId = (int) $item['id'];
@@ -112,7 +113,7 @@ class CheckoutService
         return $orderItems;
     }
 
-    public function createOrderTotals(Order $order, PriceSet $totals): \Windwalker\Data\Collection
+    public function createOrderTotals(MeloOrder $order, PriceSet $totals): \Windwalker\Data\Collection
     {
         $i = 1;
 
@@ -147,14 +148,14 @@ class CheckoutService
     /**
      * @throws RandomException
      */
-    protected function prepareOrderAndPaymentNo(Order $order, bool $test = false): Order
+    protected function prepareOrderAndPaymentNo(MeloOrder $order, bool $test = false): MeloOrder
     {
         $no = $this->orderService->createOrderNo($order->id);
         $tradeNo = $this->orderService->getPaymentNo($no, $test);
 
         // Save NO
         $this->orm->updateWhere(
-            Order::class,
+            MeloOrder::class,
             ['no' => $no, 'payment_no' => $tradeNo],
             ['id' => $order->id]
         );
@@ -165,7 +166,7 @@ class CheckoutService
         return $order;
     }
 
-    public function notifyForCheckout(Order $order, array $cartData, User $user): Order
+    public function notifyForCheckout(MeloOrder $order, array $cartData, User $user): MeloOrder
     {
         $userMail = $user->email;
 
@@ -180,7 +181,7 @@ class CheckoutService
     }
 
 
-    protected function notifyBuyer(Order $order, array $cartData, User $user): void
+    protected function notifyBuyer(MeloOrder $order, array $cartData, User $user): void
     {
         $isAdmin = false;
 
@@ -199,7 +200,7 @@ class CheckoutService
             ->send();
     }
 
-    protected function notifyAdmins(Order $order, array $cartData, User $user): void
+    protected function notifyAdmins(MeloOrder $order, array $cartData, User $user): void
     {
         $roles = $this->app->config('checkout.receiver_roles') ?? ['superuser', 'manager', 'admin'];
 

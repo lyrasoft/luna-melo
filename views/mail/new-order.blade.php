@@ -17,7 +17,7 @@ namespace App\view;
  */
 
 use Lyrasoft\Melo\MeloPackage;
-use Lyrasoft\Melo\Entity\Order;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;

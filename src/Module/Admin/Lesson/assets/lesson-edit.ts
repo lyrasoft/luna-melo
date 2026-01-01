@@ -1,24 +1,31 @@
-import '@main';
+import {
+  useBs5Tooltip,
+  useDisableIfStackNotEmpty,
+  useDisableOnSubmit,
+  useFormComponent,
+  useFormValidation,
+  useKeepAlive,
+  useTomSelect,
+} from '@windwalker-io/unicorn-next';
+import { useListDependent } from '../../../../../../../windwalker/unicorn/assets/src/composable';
 
-u.$ui.bootstrap.tooltip();
+const formSelector = '#admin-form';
 
-const form = '#admin-form';
+useBs5Tooltip();
 
-u.formValidation()
-  .then(() => u.$ui.disableOnSubmit(form));
-u.form(form).initComponent();
+useFormComponent(formSelector);
 
-// Disable if uploading
-u.$ui.disableIfStackNotEmpty();
+useFormValidation().then(() => useDisableOnSubmit(formSelector));
 
-// Keep Alive
-u.$ui.keepAlive(location.href);
+useDisableIfStackNotEmpty();
+
+useKeepAlive(location.href);
 
 // Select
-u.$ui.tomSelect('.js-tom-select');
+useTomSelect('.js-tom-select');
 
 // Tags
-u.$ui.tomSelect('#input-item-tags', {
+useTomSelect('#input-item-tags', {
   create: (input: string) => {
     return {
       value: `new#${input}`,
@@ -27,7 +34,7 @@ u.$ui.tomSelect('#input-item-tags', {
   },
 });
 
-u.$ui.tomSelect('#input-item-sub_category_id', {
+useTomSelect('#input-item-sub_category_id', {
   create: (input: string) => {
     return {
       value: `new#${input}`,

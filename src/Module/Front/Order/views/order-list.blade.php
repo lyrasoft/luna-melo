@@ -17,7 +17,7 @@ namespace App\View;
  */
 
 use Unicorn\Html\Breadcrumb;
-use Lyrasoft\Melo\Entity\Order;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Module\Front\Order\OrderListView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -96,7 +96,8 @@ $breadcrumb->push($lang->trans('melo.order.list.page.title'));
                                                 </td>
 
                                                 <td class="align-middle">
-                                                    <span class="order-state text-{{ $item->state->getColor() }} text-nowrap">
+                                                    <span
+                                                        class="order-state text-{{ $item->state->getColor() }} text-nowrap">
                                                         {{ $item->state->getTitle($lang) }}
                                                     </span>
                                                 </td>

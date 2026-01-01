@@ -1,12 +1,22 @@
 {
     "extends": [
-        "./tsconfig.js.json",
-        "./tsconfig.vue.json"
+        "@windwalker-io/unicorn-next/tsconfig.js.json"
+    ],
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.vue"
+    ],
+    "exclude": [
+        "node_modules/**/*"
+    ],
+    "types": [
+        "reflect-metadata"
     ],
     "compilerOptions": {
         "paths": {
-            "@/*": ["./resources/assets/"],
-            "@js/*": ["./resources/assets/src/*"],
+            "~melo/*": [
+                "./src/*"
+            ]
         }
     }
 }

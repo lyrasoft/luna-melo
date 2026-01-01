@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Repository;
 
-use Lyrasoft\Melo\Entity\Order;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\Repository;
 use Unicorn\Repository\Actions\BatchAction;
@@ -16,7 +16,7 @@ use Unicorn\Repository\ManageRepositoryInterface;
 use Unicorn\Repository\ManageRepositoryTrait;
 use Unicorn\Selector\ListSelector;
 
-#[Repository(entityClass: Order::class)]
+#[Repository(entityClass: MeloOrder::class)]
 class OrderRepository implements ManageRepositoryInterface, ListRepositoryInterface
 {
     use ManageRepositoryTrait;
@@ -26,7 +26,7 @@ class OrderRepository implements ManageRepositoryInterface, ListRepositoryInterf
     {
         $selector = $this->createSelector();
 
-        $selector->from(Order::class);
+        $selector->from(MeloOrder::class);
 
         return $selector;
     }

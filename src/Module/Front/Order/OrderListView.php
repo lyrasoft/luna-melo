@@ -7,7 +7,7 @@ namespace Lyrasoft\Melo\Module\Front\Order;
 use Lyrasoft\Luna\Repository\UserRepository;
 use Lyrasoft\Luna\User\Exception\AccessDeniedException;
 use Lyrasoft\Luna\User\UserService;
-use Lyrasoft\Melo\Entity\Order;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Repository\OrderRepository;
 use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
@@ -68,7 +68,7 @@ class OrderListView implements ViewModelInterface
             ->ordering($ordering)
             ->page($page)
             ->limit($limit)
-            ->setDefaultItemClass(Order::class);
+            ->setDefaultItemClass(MeloOrder::class);
 
         $pagination = $items->getPagination();
 

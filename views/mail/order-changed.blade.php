@@ -16,9 +16,9 @@ namespace App\view;
  * @var $lang      LangService     The language translation service.
  */
 
-use Lyrasoft\Melo\Entity\OrderHistory;
+use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\MeloPackage;
-use Lyrasoft\Melo\Entity\Order;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;

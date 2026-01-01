@@ -14,14 +14,14 @@ use Windwalker\Core\Router\RouteCreator;
 $router->group('order')
     ->extra('menu', ['sidemenu' => 'order_list'])
     ->register(function (RouteCreator $router) {
-        $router->any('order_list', '/order/list')
+        $router->any('melo_order_list', '/melo/order/list')
             ->controller(OrderController::class)
             ->view(OrderListView::class)
             ->postHandler('copy')
             ->putHandler('filter')
             ->patchHandler('batch');
 
-        $router->any('order_edit', '/order/edit[/{id}]')
+        $router->any('melo_order_edit', '/melo/order/edit[/{id}]')
             ->controller(OrderController::class)
             ->view(OrderEditView::class);
     });

@@ -32,8 +32,8 @@ use Windwalker\Form\Form;
  * @var $item Segment
  */
 
-$app->service(VueScript::class)->vue();
-$asset->js('vendor/lyrasoft/melo/dist/admin/segment-edit/index.js');
+// $app->service(VueScript::class)->vue();
+// $asset->js('vendor/lyrasoft/melo/dist/admin/segment-edit/index.js');
 ?>
 
 @extends('melo.admin.lesson-edit-layout', ['lessonId' => $lessonId])

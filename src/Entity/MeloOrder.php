@@ -25,9 +25,11 @@ use Windwalker\ORM\EntityInterface;
 use Windwalker\ORM\EntityTrait;
 use Windwalker\ORM\Metadata\EntityMetadata;
 
+// phpcs:disable
+// todo: remove this when phpcs supports 8.4
 #[Table('melo_orders', 'order')]
 #[\AllowDynamicProperties]
-class Order implements EntityInterface
+class MeloOrder implements EntityInterface
 {
     use EntityTrait;
 
@@ -48,7 +50,9 @@ class Order implements EntityInterface
 
     #[Column('invoice_type')]
     #[Cast(InvoiceType::class)]
-    public InvoiceType $invoiceType;
+    public InvoiceType $invoiceType {
+        set(InvoiceType|string $value) => $this->invoiceType = InvoiceType::wrap($value);
+    }
 
     #[Column('invoice_data')]
     #[Cast(JsonCast::class)]
@@ -56,11 +60,15 @@ class Order implements EntityInterface
 
     #[Column('state')]
     #[Cast(OrderState::class)]
-    public OrderState $state;
+    public OrderState $state {
+        set(OrderState|string $value) => $this->state = OrderState::wrap($value);
+    }
 
     #[Column('payment')]
     #[Cast(Payment::class)]
-    public Payment $payment;
+    public Payment $payment {
+        set(Payment|string $value) => $this->payment = Payment::wrap($value);
+    }
 
     #[Column('payment_no')]
     public string $paymentNo = '';
@@ -74,15 +82,21 @@ class Order implements EntityInterface
 
     #[Column('paid_at')]
     #[CastNullable(ServerTimeCast::class)]
-    public ?Chronos $paidAt = null;
+    public ?Chronos $paidAt = null {
+        set(\DateTimeInterface|string|null $value) => $this->paidAt = Chronos::tryWrap($value);
+    }
 
     #[Column('cancelled_at')]
     #[CastNullable(ServerTimeCast::class)]
-    public ?Chronos $cancelledAt = null;
+    public ?Chronos $cancelledAt = null {
+        set(\DateTimeInterface|string|null $value) => $this->cancelledAt = Chronos::tryWrap($value);
+    }
 
     #[Column('expired_on')]
     #[CastNullable(ServerTimeCast::class)]
-    public ?Chronos $expiredOn = null;
+    public ?Chronos $expiredOn = null {
+        set(\DateTimeInterface|string|null $value) => $this->expiredOn = Chronos::tryWrap($value);
+    }
 
     #[Column('search_index')]
     public string $searchIndex = '';
@@ -90,12 +104,16 @@ class Order implements EntityInterface
     #[Column('created')]
     #[CastNullable(ServerTimeCast::class)]
     #[CreatedTime]
-    public ?Chronos $created = null;
+    public ?Chronos $created = null {
+        set(\DateTimeInterface|string|null $value) => $this->created = Chronos::tryWrap($value);
+    }
 
     #[Column('modified')]
     #[CastNullable(ServerTimeCast::class)]
     #[CurrentTime]
-    public ?Chronos $modified = null;
+    public ?Chronos $modified = null {
+        set(\DateTimeInterface|string|null $value) => $this->modified = Chronos::tryWrap($value);
+    }
 
     #[Column('created_by')]
     #[Author]

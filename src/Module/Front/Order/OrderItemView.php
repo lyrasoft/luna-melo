@@ -8,8 +8,8 @@ use Lyrasoft\Luna\Access\AccessService;
 use Lyrasoft\Luna\Repository\UserRepository;
 use Lyrasoft\Luna\User\Exception\AccessDeniedException;
 use Lyrasoft\Luna\User\UserService;
-use Lyrasoft\Melo\Entity\Order;
-use Lyrasoft\Melo\Entity\OrderHistory;
+use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Repository\OrderRepository;
 use Windwalker\Core\Application\AppContext;
@@ -60,7 +60,7 @@ class OrderItemView implements ViewModelInterface
 
         $user = $this->userService->getUser();
 
-        /** @var Order $item */
+        /** @var MeloOrder $item */
         $item = $this->repository->mustGetItem($id);
 
         if (
@@ -73,7 +73,7 @@ class OrderItemView implements ViewModelInterface
         $view[$item::class] = $item;
 
         $histories = $this->orm->findList(
-            OrderHistory::class,
+            MeloOrderHistory::class,
             [
                 'order_id' => $item->id,
             ]

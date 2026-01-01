@@ -24,7 +24,7 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
-$asset->js('vendor/lyrasoft/melo/dist/lesson.js');
+$asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
 ?>
 
 <table class="l-cart-items table">

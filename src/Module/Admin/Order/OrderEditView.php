@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Order;
 
-use Lyrasoft\Melo\Entity\Order;
-use Lyrasoft\Melo\Entity\OrderItem;
+use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Module\Admin\Order\Form\EditForm;
 use Lyrasoft\Melo\Repository\OrderRepository;
 use Lyrasoft\Contact\Entity\Contact;
@@ -53,11 +53,11 @@ class OrderEditView implements ViewModelInterface
     {
         $id = $app->input('id');
 
-        /** @var Order $item */
+        /** @var MeloOrder $item */
         $item = $this->repository->getItem($id);
 
         // Bind item for injection
-        $view[Order::class] = $item;
+        $view[MeloOrder::class] = $item;
 
         $user = $this->orm->findOne(
             User::class,
@@ -97,7 +97,7 @@ class OrderEditView implements ViewModelInterface
             );
 
         $orderItems = $this->orm->findList(
-            OrderItem::class,
+            MeloOrderItem::class,
             [
                 'order_id' => $item?->id,
             ]

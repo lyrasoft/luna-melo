@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Order;
 
-use Lyrasoft\Melo\Entity\Order;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Module\Admin\Order\Form\GridForm;
 use Lyrasoft\Melo\Repository\OrderRepository;
 use Windwalker\Core\Application\AppContext;
@@ -73,7 +73,7 @@ class OrderListView implements ViewModelInterface, FilterAwareViewModelInterface
             ->ordering($ordering)
             ->page($page)
             ->limit($limit)
-            ->setDefaultItemClass(Order::class);
+            ->setDefaultItemClass(MeloOrder::class);
 
         $pagination = $items->getPagination();
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Service;
 
 use Lyrasoft\Luna\Entity\User;
-use Lyrasoft\Melo\Entity\Order;
-use Lyrasoft\Melo\Entity\OrderHistory;
-use Lyrasoft\Melo\Entity\OrderItem;
+use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Entity\MeloOrderHistory;
+use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\UserAnswer;
 use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
@@ -23,11 +23,13 @@ use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Mailer\MailerInterface;
 use Windwalker\DI\Attributes\Autowire;
+use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
 use Windwalker\Utilities\Str;
 
 use function Windwalker\now;
 
+#[Service]
 class OrderService
 {
     public function __construct(
@@ -40,7 +42,7 @@ class OrderService
     }
 
     public function createHistory(
-        Order $order,
+        MeloOrder $order,
         ?OrderState $state,
         OrderHistoryType $type,
         string $message = '',
@@ -62,7 +64,7 @@ class OrderService
         string $message = '',
         bool $notify = false
     ): object {
-        $history = new OrderHistory();
+        $history = new MeloOrderHistory();
 
         $history->type = $type;
         $history->createdBy = 0;
@@ -71,7 +73,7 @@ class OrderService
         $history->message = $message;
         $history->notify = $notify;
 
-        return $this->orm->saveOne(OrderHistory::class, $history);
+        return $this->orm->saveOne(MeloOrderHistory::class, $history);
     }
 
     public function changeState(
@@ -81,7 +83,7 @@ class OrderService
         bool $notify = false,
         string $message = ''
     ): void {
-        $order = $this->orm->findOne(Order::class, ['id' => $id]);
+        $order = $this->orm->findOne(MeloOrder::class, ['id' => $id]);
 
         if (!$order) {
             throw new ValidateFailException('訂單編號: ' . $order->no . 'ID: ' . $id . ' 找不到');
@@ -94,7 +96,7 @@ class OrderService
         $this->orm->getDb()->transaction(function () use ($order, $historyType, $id, $state, $notify, $message) {
             $order->state = $state;
 
-            $this->orm->updateOne(Order::class, $order, 'id');
+            $this->orm->updateOne(MeloOrder::class, $order, 'id');
 
             $history = $this->createHistory($order, $state, $historyType, $message, $notify);
 
@@ -136,10 +138,10 @@ class OrderService
 
     public function removeUserLesson(int $orderId): void
     {
-        $order = $this->orm->mustFindOne(Order::class, ['id' => $orderId]);
-        $orderItems = $this->orm->findList(OrderItem::class, ['order_id' => $orderId]);
+        $order = $this->orm->mustFindOne(MeloOrder::class, ['id' => $orderId]);
+        $orderItems = $this->orm->findList(MeloOrderItem::class, ['order_id' => $orderId]);
 
-        /** @var OrderItem $orderItem */
+        /** @var MeloOrderItem $orderItem */
         foreach ($orderItems as $orderItem) {
             $this->orm->deleteWhere(
                 UserLessonMap::class,
@@ -169,10 +171,10 @@ class OrderService
 
     public function assignLessonToUser($orderId): void
     {
-        $order = $this->orm->mustFindOne(Order::class, ['id' => $orderId]);
-        $orderItems = $this->orm->findList(OrderItem::class, ['order_id' => $orderId]);
+        $order = $this->orm->mustFindOne(MeloOrder::class, ['id' => $orderId]);
+        $orderItems = $this->orm->findList(MeloOrderItem::class, ['order_id' => $orderId]);
 
-        /** @var OrderItem $orderItem */
+        /** @var MeloOrderItem $orderItem */
         foreach ($orderItems as $orderItem) {
             $map = new UserLessonMap();
 
@@ -239,7 +241,7 @@ class OrderService
             do {
                 $no = $prefix . BaseConvert::encode(base_convert($uid, 16, 10), $seed);
 
-                $exists = $this->orm->findOne(Order::class, ['no' => $no]);
+                $exists = $this->orm->findOne(MeloOrder::class, ['no' => $no]);
             } while ($exists !== null);
 
             return $no;

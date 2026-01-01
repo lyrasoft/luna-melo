@@ -24,9 +24,6 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Unicorn\Legacy\Html\MenuHelper;
 
-$app->service(\Windwalker\Core\Html\HtmlFrame::class)
-    ->addBodyClass('sidebar-enable vertical-collpsed');
-
 $menuHelper = $app->service(MenuHelper::class);
 
 $lessonId ??= null;

@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Service;
 
 use Lyrasoft\Melo\Entity\Lesson;
-use Lyrasoft\Melo\Entity\Order;
-use Lyrasoft\Melo\Entity\OrderItem;
+use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Luna\User\UserService;
@@ -118,10 +118,10 @@ class LessonService
 
         $user = $this->userService->getCurrentUser();
 
-        $exist = (bool) $this->orm->from(Order::class)
+        $exist = (bool) $this->orm->from(MeloOrder::class)
             ->where('user_id', $user->id)
             ->whereExists(
-                fn (Query $query) => $query->from(OrderItem::class)
+                fn (Query $query) => $query->from(MeloOrderItem::class)
                     ->where('lesson_id', $lessonId)
                     ->where('order_id', qn('order.id'))
             )

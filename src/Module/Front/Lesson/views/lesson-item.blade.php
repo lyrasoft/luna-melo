@@ -65,7 +65,7 @@ $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
 $uniScript = $app->service(UnicornScript::class);
 $uniScript->addRoute('@cart_ajax');
 $uniScript->addRoute('cart');
-$asset->js('vendor/lyrasoft/melo/dist/lesson.js');
+$asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
 ?>
 
 @extends('global.body')
