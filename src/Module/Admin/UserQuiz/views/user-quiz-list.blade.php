@@ -117,16 +117,16 @@ use Lyrasoft\Melo\Module\Admin\UserQuiz\UserQuizListView;
                         </td>
 
                         <td class="text-nowrap">
-                            {{ $item->getScore() }}
+                            {{ $item->score }}
                         </td>
 
                         <td class="text-nowrap">
-                            {{ $item->getStatus()->getTitle() }}
+                            {{ $item->status->getTitle() }}
                         </td>
 
                         {{-- ID --}}
                         <td class="text-end">
-                            {{ $item->getId() }}
+                            {{ $item->id }}
                         </td>
                     </tr>
                 @empty

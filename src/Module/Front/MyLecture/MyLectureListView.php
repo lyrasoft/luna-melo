@@ -48,7 +48,7 @@ class MyLectureListView implements ViewModelInterface
             throw new AccessDeniedException('請先登入', 403);
         }
 
-        $userId = $this->userService->getUser()->getId();
+        $userId = $this->userService->getUser()->id;
 
         $page = (int) $app->input('page');
         $limit = 12;

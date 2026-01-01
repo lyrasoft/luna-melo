@@ -39,7 +39,7 @@ class LessonService
 
     public function myLessonCount(): int
     {
-        $userId = $this->userService->getUser()->getId();
+        $userId = $this->userService->getUser()->id;
 
         return (int) $this->orm->from(Lesson::class, 'lesson')
             ->selectRaw('COUNT(id) AS count')
@@ -54,7 +54,7 @@ class LessonService
 
     public function myLectureCount(): int
     {
-        $userId = $this->userService->getUser()->getId();
+        $userId = $this->userService->getUser()->id;
 
         return (int) $this->orm->from(Lesson::class)
             ->selectRaw('COUNT(id) AS count')
@@ -77,7 +77,7 @@ class LessonService
             return 0;
         }
 
-        $userId = $this->userService->getUser()->getId();
+        $userId = $this->userService->getUser()->id;
 
         $total = $this->orm->from(Segment::class)
             ->where('lesson_id', $lessonId)
@@ -119,7 +119,7 @@ class LessonService
         $user = $this->userService->getCurrentUser();
 
         $exist = (bool) $this->orm->from(Order::class)
-            ->where('user_id', $user->getId())
+            ->where('user_id', $user->id)
             ->whereExists(
                 fn (Query $query) => $query->from(OrderItem::class)
                     ->where('lesson_id', $lessonId)
@@ -130,7 +130,7 @@ class LessonService
         return $exist || $this->orm->findOne(
             UserLessonMap::class,
             [
-                'user_id' => $user->getId(),
+                'user_id' => $user->id,
                 'lesson_id' => $lessonId,
             ]
         );

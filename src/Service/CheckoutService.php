@@ -10,7 +10,7 @@ use Lyrasoft\Melo\Cart\Price\PriceObject;
 use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Lyrasoft\Melo\Entity\Order;
 use Lyrasoft\Melo\Entity\OrderItem;
-use Lyrasoft\Melo\Entity\OrderTotal;
+use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\MeloPackage;
@@ -57,11 +57,9 @@ class CheckoutService
             throw new ValidateFailException('Cannot process checkout for negative price.');
         }
 
-        $orderData->setTotal($grandTotal);
-        $orderData->setState(OrderState::PENDING);
-        $orderData->setExpiredOn(
-            $this->melo->config('checkout.default_expiry') ?? '+7days'
-        );
+        $orderData->total = $grandTotal;
+        $orderData->state = OrderState::PENDING;
+        $orderData->expiredOn = $this->melo->config('checkout.default_expiry') ?? '+7days';
 
         $order = $this->orm->createOne(Order::class, $orderData);
 
@@ -79,10 +77,10 @@ class CheckoutService
         );
 
         if (
-            $order->getState() === OrderState::PAID
-            || $order->getState() === OrderState::FREE
+            $order->state === OrderState::PAID
+            || $order->state === OrderState::FREE
         ) {
-            $this->orderService->assignLessonToUser($order->getId());
+            $this->orderService->assignLessonToUser($order->id);
         }
 
         return $order;
@@ -97,14 +95,14 @@ class CheckoutService
         foreach ($cartItems as $item) {
             $orderItem = new OrderItem();
 
-            $orderItem->setOrderId($order->getId());
-            $orderItem->setLessonId((int) $item['id']);
-            $orderItem->setTitle($item['title']);
-            $orderItem->setImage($item['image']);
-            $orderItem->setLessonData($item);
-            $orderItem->setPrice((float) $item['prices']->get('final')->__toString());
-            $orderItem->setTotal((float) $item['prices']->get('final')->__toString());
-            $orderItem->setPriceSet((array) $item['prices']);
+            $orderItem->orderId = $order->id;
+            $orderItem->lessonId = (int) $item['id'];
+            $orderItem->title = $item['title'];
+            $orderItem->image = $item['image'];
+            $orderItem->lessonData = $item;
+            $orderItem->price = (float) $item['prices']->get('final')->__toString();
+            $orderItem->total = (float) $item['prices']->get('final')->__toString();
+            $orderItem->priceSet = (array) $item['prices'];
 
             $orderItem = $this->orm->createOne($orderItem);
 
@@ -122,23 +120,21 @@ class CheckoutService
 
         /** @var PriceObject $total */
         foreach ($totals as $total) {
-            $orderTotal = new OrderTotal();
-            $orderTotal->setOrderId($order->getId());
-            $orderTotal->setType(
-                str_starts_with($total->getName(), 'discount')
+            $orderTotal = new MeloOrderTotal();
+            $orderTotal->orderId = $order->id;
+            $orderTotal->type = str_starts_with($total->getName(), 'discount')
                     ? 'discount'
-                    : 'total'
-            );
-            $orderTotal->setCode($total->getName());
-            $orderTotal->setTitle($total->getLabel());
-            $orderTotal->setValue($total->getPrice()->toFloat());
-            $orderTotal->setParams($total->getParams());
-            $orderTotal->setDiscountId($total->getParams()['discount_id'] ?? 0);
-            $orderTotal->setDiscountType($total->getParams()['discount_type'] ?? '');
-            $orderTotal->setOrdering($i);
-            $orderTotal->setProtect($orderTotal->getType() === 'total');
+                    : 'total';
+            $orderTotal->code = $total->getName();
+            $orderTotal->title = $total->getLabel();
+            $orderTotal->value = $total->getPrice()->toFloat();
+            $orderTotal->params = $total->getParams();
+            $orderTotal->discountId = $total->getParams()['discount_id'] ?? 0;
+            $orderTotal->discountType = $total->getParams()['discount_type'] ?? '';
+            $orderTotal->ordering = $i;
+            $orderTotal->protect = $orderTotal->type === 'total';
 
-            $this->orm->createOne(OrderTotal::class, $orderTotal);
+            $this->orm->createOne(MeloOrderTotal::class, $orderTotal);
 
             $orderTotals[] = $orderTotal;
 
@@ -153,25 +149,25 @@ class CheckoutService
      */
     protected function prepareOrderAndPaymentNo(Order $order, bool $test = false): Order
     {
-        $no = $this->orderService->createOrderNo($order->getId());
+        $no = $this->orderService->createOrderNo($order->id);
         $tradeNo = $this->orderService->getPaymentNo($no, $test);
 
         // Save NO
         $this->orm->updateWhere(
             Order::class,
             ['no' => $no, 'payment_no' => $tradeNo],
-            ['id' => $order->getId()]
+            ['id' => $order->id]
         );
 
-        $order->setNo($no);
-        $order->setPaymentNo($tradeNo);
+        $order->no = $no;
+        $order->paymentNo = $tradeNo;
 
         return $order;
     }
 
     public function notifyForCheckout(Order $order, array $cartData, User $user): Order
     {
-        $userMail = $user->getEmail();
+        $userMail = $user->email;
 
         if ($userMail) {
             $this->notifyBuyer($order, $cartData, $user);
@@ -191,11 +187,11 @@ class CheckoutService
         $this->mailer->createMessage(
             $this->trans(
                 'melo.mail.new.order.subject.for.buyer',
-                no: $order->getNo(),
+                no: $order->no,
                 sitename: $this->melo->config('shop.sitename'),
             )
         )
-            ->to($user->getEmail())
+            ->to($user->email)
             ->renderBody(
                 'mail.new-order',
                 compact('order', 'cartData', 'isAdmin')
@@ -226,8 +222,8 @@ class CheckoutService
             $this->mailer->createMessage(
                 $this->trans(
                     'melo.mail.new.order.subject.for.admin',
-                    no:       $order->getNo(),
-                    buyer:    $user->getName(),
+                    no:       $order->no,
+                    buyer:    $user->name,
                     sitename: $this->melo->config('shop.sitename'),
                 )
             )

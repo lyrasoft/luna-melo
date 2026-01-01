@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Front\Lesson;
 
-use Lyrasoft\Melo\Entity\Option;
+use Lyrasoft\Melo\Entity\MeloOption;
 use Lyrasoft\Melo\Entity\Question;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserAnswer;
@@ -97,10 +97,10 @@ class LessonController
         $userSegmentMap = $orm->findOne(
             UserSegmentMap::class,
             [
-                'user_id' => $user->getId(),
-                'segment_id' => $segment->getId(),
-                'lesson_id' => $segment->getLessonId(),
-                'segment_type' => $segment->getType(),
+                'user_id' => $user->id,
+                'segment_id' => $segment->id,
+                'lesson_id' => $segment->lessonId,
+                'segment_type' => $segment->type,
                 [
                     'assignment',
                     '!=',
@@ -115,28 +115,28 @@ class LessonController
 
         $assignment = $fileUploadService->handleFileIfUploaded(
             $file ?? null,
-            'segment/' . $item['segment_id'] . '/homework/' . md5((string) $user->getId()) . '.{ext}'
+            'segment/' . $item['segment_id'] . '/homework/' . md5((string) $user->id) . '.{ext}'
         )?->getUri(true);
 
         $userSegmentMap = $orm->findOneOrCreate(
             UserSegmentMap::class,
             [
-                'user_id' => $user->getId(),
-                'segment_id' => $segment->getId(),
-                'lesson_id' => $segment->getLessonId(),
-                'segment_type' => $segment->getType(),
+                'user_id' => $user->id,
+                'segment_id' => $segment->id,
+                'lesson_id' => $segment->lessonId,
+                'segment_type' => $segment->type,
             ],
             [
                 'status' => UserSegmentStatus::PENDING,
             ]
         );
 
-        $userSegmentMap->setDescription($item['description']);
-        $userSegmentMap->setFrontShow((bool) $item['front_show']);
+        $userSegmentMap->description = $item['description'];
+        $userSegmentMap->frontShow = (bool) $item['front_show'];
 
         if ($assignment) {
-            $userSegmentMap->setAssignment((string) $assignment);
-            $userSegmentMap->setAssignmentUploadTime($chronosService::create());
+            $userSegmentMap->assignment = (string) $assignment;
+            $userSegmentMap->assignmentUploadTime = $chronosService::create();
         }
 
         return $orm->updateOne(UserSegmentMap::class, $userSegmentMap, 'id');
@@ -170,17 +170,17 @@ class LessonController
         }
 
         $questions = $orm->from(Question::class)
-            ->where('question.segment_id', $segment->getId())
+            ->where('question.segment_id', $segment->id)
             ->order('question.ordering', 'ASC')
             ->all(Question::class);
 
         $ids = $questions->column('id')->dump();
 
-        $optionGroup = $orm->from(Option::class)
+        $optionGroup = $orm->from(MeloOption::class)
             ->where('question_id', $ids ?: [0])
             ->order('ordering', 'ASC')
-            ->all(Option::class)
-            ->groupBy(fn(Option $option) => $option->question_id ?? 0);
+            ->all(MeloOption::class)
+            ->groupBy(fn(MeloOption $option) => $option->question_id ?? 0);
 
         $userAnswers = [];
         $segmentScore = 0;
@@ -191,46 +191,46 @@ class LessonController
             $isCorrect = false;
             $value = [];
 
-            if ($question->getType() === QuestionType::BOOLEAN) {
-                $isCorrect = (int) $userQuizzes[$question->getId()] === (int) $question->getAnswer();
-                $value = [$userQuizzes[$question->getId()]];
+            if ($question->type === QuestionType::BOOLEAN) {
+                $isCorrect = (int) $userQuizzes[$question->id] === (int) $question->answer;
+                $value = [$userQuizzes[$question->id]];
             }
 
-            if ($question->getType() === QuestionType::SELECT) {
-                foreach ($optionGroup[$question->getId()] as $option) {
-                    if ($option->isAnswer()) {
-                        $isCorrect = (int) $userQuizzes[$question->getId()][0] === $option->getId();
+            if ($question->type === QuestionType::SELECT) {
+                foreach ($optionGroup[$question->id] as $option) {
+                    if ($option->isAnswer) {
+                        $isCorrect = (int) $userQuizzes[$question->id][0] === $option->getId();
                     }
                 }
-                $value = $userQuizzes[$question->getId()];
+                $value = $userQuizzes[$question->id];
             }
 
-            if ($question->getType() === QuestionType::MULTIPLE) {
+            if ($question->type === QuestionType::MULTIPLE) {
                 $corrects = [];
 
-                foreach ($optionGroup[$question->getId()] as $option) {
-                    if ($option->isAnswer()) {
-                        $corrects[] = in_array($option->getId(), $userQuizzes[$question->getId()], false);
+                foreach ($optionGroup[$question->id] as $option) {
+                    if ($option->isAnswer) {
+                        $corrects[] = in_array($option->getId(), $userQuizzes[$question->id], false);
                     } else {
-                        $corrects[] = !in_array($option->getId(), $userQuizzes[$question->getId()], false);
+                        $corrects[] = !in_array($option->getId(), $userQuizzes[$question->id], false);
                     }
                 }
 
                 $isCorrect = !in_array(false, $corrects, true);
-                $value = $userQuizzes[$question->getId()];
+                $value = $userQuizzes[$question->id];
             }
 
-            $userAnswer->setUserId($user->getId());
-            $userAnswer->setLessonId($segment->getLessonId());
-            $userAnswer->setQuestionId($question->getId());
-            $userAnswer->setQuestionType($question->getType());
-            $userAnswer->setIsCorrect($isCorrect);
-            $userAnswer->setValue($value ?? []);
-            $userAnswer->setScore($isCorrect ? $question->getScore() : 0);
+            $userAnswer->userId = $user->id;
+            $userAnswer->lessonId = $segment->lessonId;
+            $userAnswer->questionId = $question->id;
+            $userAnswer->questionType = $question->type;
+            $userAnswer->isCorrect = $isCorrect;
+            $userAnswer->value = $value ?? [];
+            $userAnswer->score = $isCorrect ? $question->score : 0;
 
             $userAnswers[] = $userAnswer;
 
-            $segmentScore += $isCorrect ? $question->getScore() : 0;
+            $segmentScore += $isCorrect ? $question->score : 0;
         }
 
         $orm->saveMultiple(
@@ -245,8 +245,8 @@ class LessonController
         $orm->updateOne(
             UserSegmentMap::class,
             [
-                'user_id' => $user->getId(),
-                'segment_id' => $segment->getId(),
+                'user_id' => $user->id,
+                'segment_id' => $segment->id,
                 'score' => $segmentScore,
             ],
             [
@@ -282,7 +282,7 @@ class LessonController
 
         $ids = $prepareQuestions->column('id')->dump();
 
-        $optionGroup = $orm->from(Option::class)
+        $optionGroup = $orm->from(MeloOption::class)
             ->where('question_id', $ids ?: [0])
             ->order('ordering', 'ASC')
             ->all()
@@ -294,7 +294,7 @@ class LessonController
             foreach ($options as $option) {
                 unset($option['is_answer']);
 
-                $option = $orm->toEntity(Option::class, $option);
+                $option = $orm->toEntity(MeloOption::class, $option);
 
                 $optionsForQuestion[$k][] = $option;
             }

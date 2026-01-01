@@ -86,31 +86,31 @@ $breadcrumb->push($lang->trans('melo.order.list.page.title'));
                                         @foreach($items as $item)
                                             <tr>
                                                 <td class="align-middle text-center">
-                                                    <a href="{{ $nav->to('order_item', ['id' => $item->getId()]) }}">
+                                                    <a href="{{ $nav->to('order_item', ['id' => $item->id]) }}">
                                                         <i class="fal fa-file-alt fa-2x"></i>
                                                     </a>
                                                 </td>
 
                                                 <td class="align-middle">
-                                                    {{ $item->getNo() }}
+                                                    {{ $item->no }}
                                                 </td>
 
                                                 <td class="align-middle">
-                                                    <span class="order-state text-{{ $item->getState()->getColor() }} text-nowrap">
-                                                        {{ $item->getState()->getTitle($lang) }}
+                                                    <span class="order-state text-{{ $item->state->getColor() }} text-nowrap">
+                                                        {{ $item->state->getTitle($lang) }}
                                                     </span>
                                                 </td>
 
                                                 <td class="align-middle">
-                                                    {{ $item->getPayment()->getTitle($lang) }}
+                                                    {{ $item->payment->getTitle($lang) }}
                                                 </td>
 
                                                 <td class="align-middle">
-                                                    {{ $chronos->toLocalFormat($item->getCreated(), 'Y-m-d') }}
+                                                    {{ $chronos->toLocalFormat($item->created, 'Y-m-d') }}
                                                 </td>
 
                                                 <td class="text-light-danger align-middle">
-                                                    NT${{ number_format($item->getTotal()) }}
+                                                    NT${{ number_format($item->total) }}
                                                 </td>
                                             </tr>
                                         @endforeach

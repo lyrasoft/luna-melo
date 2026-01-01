@@ -104,7 +104,7 @@ class CartController
         /**
          * @var Order $order
          */
-        [$order, $cartData] = $orm->getDb()->transaction(
+        [$order, $cartData] = (array) $orm->getDb()->transaction(
             function () use ($input, $cartService, $user, $checkoutService) {
                 $order = new Order();
 
@@ -120,11 +120,11 @@ class CartController
                     ],
                 ];
 
-                $order->setInvoiceData($invoiceData);
-                $order->setInvoiceType($input['invoice_type'] ?? '');
-                $order->setUserId($user->getId());
-                $order->setPayment($input['payment']);
-                $order->setCreatedBy($user->getId());
+                $order->invoiceData = $invoiceData;
+                $order->invoiceType = $input['invoice_type'] ?? '';
+                $order->userId = $user->id;
+                $order->payment = $input['payment'];
+                $order->createdBy = $user->id;
 
                 $cartData = $cartService->getData();
 

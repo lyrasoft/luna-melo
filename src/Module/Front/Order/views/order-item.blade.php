@@ -17,9 +17,9 @@ namespace App\View;
  */
 
 use Unicorn\Html\Breadcrumb;
-use Lyrasoft\Melo\Entity\Order;
-use Lyrasoft\Melo\Entity\OrderHistory;
-use Lyrasoft\Melo\Entity\OrderItem;
+use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Entity\MeloOrderHistory;
+use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Enum\Payment;
@@ -70,19 +70,19 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                             訂單編號
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->getNo() }}
+                                            {{ $item->no }}
                                         </dd>
                                         <dt class="col-4">
                                             訂單狀態
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->getState()->getTitle($lang) }}
+                                            {{ $item->state->getTitle($lang) }}
                                         </dd>
                                         <dt class="col-4">
                                             付款方式
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->getPayment()->getTitle($lang) }}
+                                            {{ $item->payment->getTitle($lang) }}
                                         </dd>
                                     </dl>
                                 </div>
@@ -93,18 +93,18 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                             購買時間
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $chronos->toLocalFormat($item->getCreated(), 'Y-m-d H:i:s') }}
+                                            {{ $chronos->toLocalFormat($item->created, 'Y-m-d H:i:s') }}
                                         </dd>
                                         <dt class="col-4">
                                             發票編號
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->getInvoiceNo() ?? '' }}
+                                            {{ $item->invoiceNo ?? '' }}
                                         </dd>
                                     </dl>
                                 </div>
 
-                                @if($item->getPayment() === Payment::ATM && $item->getState() === OrderState::PENDING)
+                                @if($item->payment === Payment::ATM && $item->state === OrderState::PENDING)
                                     <div class="col-md-6">
                                         <dt class="mb-2">
                                             付款資訊
@@ -115,19 +115,19 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                                 銀行代碼
                                             </dt>
                                             <dd class="col-8">
-                                                {{ $item->getPaymentData()['bank_code'] ?? '' }}
+                                                {{ $item->paymentData['bank_code'] ?? '' }}
                                             </dd>
                                             <dt class="col-4">
                                                 銀行帳號
                                             </dt>
                                             <dd class="col-8">
-                                                {{ $item->getPaymentData()['bank_account'] ?? '' }}
+                                                {{ $item->paymentData['bank_account'] ?? '' }}
                                             </dd>
                                             <dt class="col-4">
                                                 付款期限
                                             </dt>
                                             <dd class="col-8">
-                                                {{ $chronos->toLocalFormat($item->getExpiredOn(), 'Y-m-d') }}
+                                                {{ $chronos->toLocalFormat($item->expiredOn, 'Y-m-d') }}
                                             </dd>
                                         </dl>
                                     </div>
@@ -144,16 +144,16 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                             @foreach ($orderItems as $orderItem)
                                                 <tr>
                                                     <td>
-                                                        <img src="{{ $orderItem->getImage() }}"
+                                                        <img src="{{ $orderItem->image }}"
                                                             width="150px"
-                                                            alt="{{ $orderItem->getTitle() }}"
+                                                            alt="{{ $orderItem->title }}"
                                                         >
                                                     </td>
                                                     <td class="fw-bold">
-                                                        {{ $orderItem->getTitle() }}
+                                                        {{ $orderItem->title }}
                                                     </td>
                                                     <td class="text-end">
-                                                        {{ number_format($orderItem->getTotal()) }}
+                                                        {{ number_format($orderItem->total) }}
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -163,7 +163,7 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                                 <td></td>
                                                 <td class="text-end">總計 :</td>
                                                 <td class="text-end">
-                                                    {{ number_format($item->getTotal()) }}
+                                                    {{ number_format($item->total) }}
                                                 </td>
                                             </tr>
                                             </tfoot>
@@ -187,33 +187,33 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                             發票類型
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->getInvoiceType()->getTitle($lang) }}
+                                            {{ $item->invoiceType->getTitle($lang) }}
                                         </dd>
-                                        @if($item->getInvoiceType() === InvoiceType::COMPANY)
+                                        @if($item->invoiceType === InvoiceType::COMPANY)
                                             <dt class="col-4">
                                                 統一編號
                                             </dt>
                                             <dd class="col-8">
-                                                {{ $item->getInvoiceData()['invoice_vat'] ?? '' }}
+                                                {{ $item->invoiceData['invoice_vat'] ?? '' }}
                                             </dd>
                                             <dt class="col-4">
                                                 發票抬頭
                                             </dt>
                                             <dd class="col-8">
-                                                {{ $item->getInvoiceData()['invoice_title'] ?? '' }}
+                                                {{ $item->invoiceData['invoice_title'] ?? '' }}
                                             </dd>
                                         @endif
                                         <dt class="col-4">
                                             收件人
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->getInvoiceData()['invoice_name'] ?? '' }}
+                                            {{ $item->invoiceData['invoice_name'] ?? '' }}
                                         </dd>
                                         <dt class="col-4">
                                             寄送地址
                                         </dt>
                                         <dd class="col-8">
-                                            {{ implode('', $item->getInvoiceData()['address'] ?? []) }}
+                                            {{ implode('', $item->invoiceData['address'] ?? []) }}
                                         </dd>
                                     </dl>
                                 </div>
@@ -241,26 +241,26 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                 @foreach($histories as $history)
                                     <tr class="text-base">
                                         <td class="text-nowrap">
-                                            {{ $chronos->toLocalFormat($history->getCreated(), 'Y-m-d H:i:s') }}
+                                            {{ $chronos->toLocalFormat($history->created, 'Y-m-d H:i:s') }}
                                         </td>
                                         <td class="text-nowrap">
                                             <span
-                                                class="order-state {{ $history->getState()->getColor() }} text-nowrap">
-                                                {{ $history->getState()->getTitle($lang) }}
+                                                class="order-state {{ $history->state->getColor() }} text-nowrap">
+                                                {{ $history->state->getTitle($lang) }}
                                             </span>
                                         </td>
                                         <td class="text-nowrap">
-                                            @if($history->isNotify())
+                                            @if($history->notify)
                                                 已通知
                                             @else
                                                 未通知
                                             @endif
                                         </td>
                                         <td class="text-nowrap">
-                                            {{ $history->getType()->getTitle($lang) }}
+                                            {{ $history->type->getTitle($lang) }}
                                         </td>
                                         <td>
-                                            {{ $history->getMessage() ?? '' }}
+                                            {{ $history->message ?? '' }}
                                         </td>
                                     </tr>
                                 @endforeach

@@ -74,14 +74,14 @@ class LessonItemView implements ViewModelInterface
         $user = $this->userService->getUser();
 
         $chapters = $this->orm->from(Segment::class)
-            ->where('lesson_id', $item->getId())
+            ->where('lesson_id', $item->id)
             ->where('parent_id', 0)
             ->order('ordering', 'ASC')
             ->all(Segment::class);
 
         if (!$segmentId) {
             $segmentId = $this->orm->from(Segment::class)
-                ->where('lesson_id', $item->getId())
+                ->where('lesson_id', $item->id)
                 ->where('parent_id', $chapters[0]->getId())
                 ->order('ordering', 'ASC')
                 ->get(Segment::class)
@@ -91,7 +91,7 @@ class LessonItemView implements ViewModelInterface
                 $this->nav->to(
                     'lesson_item',
                     [
-                        'id' => $item->getId(),
+                        'id' => $item->id,
                         'segment_id' => (int) $segmentId,
                     ]
                 )
@@ -101,7 +101,7 @@ class LessonItemView implements ViewModelInterface
         $currentSegment = $this->orm->mustFindOne(
             Segment::class,
             [
-                'lesson_id' => $item->getId(),
+                'lesson_id' => $item->id,
                 'id' => $segmentId,
             ]
         );
@@ -110,7 +110,7 @@ class LessonItemView implements ViewModelInterface
             ->whereExists(
                 fn(Query $query) => $query->from(TagMap::class)
                     ->where('type', 'lesson')
-                    ->where('target_id', $item->getId())
+                    ->where('target_id', $item->id)
                     ->where('tag_id', qn('id'))
             )
             ->getIterator(Tag::class);
@@ -118,8 +118,8 @@ class LessonItemView implements ViewModelInterface
         /** @var Segment $chapter */
         foreach ($chapters as $chapter) {
             $sections = $this->orm->from(Segment::class)
-                ->where('lesson_id', $item->getId())
-                ->where('parent_id', $chapter->getId())
+                ->where('lesson_id', $item->id)
+                ->where('parent_id', $chapter->id)
                 ->order('ordering', 'ASC')
                 ->all(Segment::class);
 
@@ -127,24 +127,24 @@ class LessonItemView implements ViewModelInterface
         }
 
         $totalChapter = $this->orm->from(Segment::class)
-            ->where('lesson_id', $item->getId())
+            ->where('lesson_id', $item->id)
             ->where('parent_id', 0)
             ->count();
 
         $totalSection = $this->orm->from(Segment::class)
-            ->where('lesson_id', $item->getId())
+            ->where('lesson_id', $item->id)
             ->where('parent_id', '!=', 0)
             ->count();
 
         $totalDuration = $this->orm->from(Segment::class)
             ->selectRaw('SUM(duration)')
-            ->where('lesson_id', $item->getId())
+            ->where('lesson_id', $item->id)
             ->result();
 
         $teacher = $this->orm->findOne(
             User::class,
             [
-                'id' => $item->getTeacherId(),
+                'id' => $item->teacherId,
             ]
         );
 
@@ -152,7 +152,7 @@ class LessonItemView implements ViewModelInterface
             Attachment::class,
             [
                 'type' => 'lesson',
-                'target_id' => $item->getId(),
+                'target_id' => $item->id,
             ]
         );
 
@@ -160,14 +160,14 @@ class LessonItemView implements ViewModelInterface
             Attachment::class,
             [
                 'type' => 'lesson',
-                'target_id' => $item->getId(),
+                'target_id' => $item->id,
             ]
         );
 
-        $ownedLesson = $this->lessonService->checkUserHasLesson($item->getId());
+        $ownedLesson = $this->lessonService->checkUserHasLesson($item->id);
 
         $totalAssignment = $this->orm->from(UserSegmentMap::class)
-            ->where('lesson_id', $item->getId())
+            ->where('lesson_id', $item->id)
             ->where('segment_type', SegmentType::HOMEWORK)
             ->where('assignment', '!=', '')
             ->where('front_show', 1)
@@ -185,10 +185,10 @@ class LessonItemView implements ViewModelInterface
             $map = $this->orm->findOneOrCreate(
                 UserSegmentMap::class,
                 [
-                    'user_id' => $user->getId(),
-                    'lesson_id' => $item->getId(),
-                    'segment_id' => $currentSegment->getId(),
-                    'segment_type' => $currentSegment->getType(),
+                    'user_id' => $user->id,
+                    'lesson_id' => $item->id,
+                    'segment_id' => $currentSegment->id,
+                    'segment_type' => $currentSegment->type,
                 ],
                 [
                     'status' => UserSegmentStatus::PROCESS,
@@ -196,9 +196,9 @@ class LessonItemView implements ViewModelInterface
             );
         }
 
-        $progress = $this->lessonService->getLessonProgress($item->getId());
+        $progress = $this->lessonService->getLessonProgress($item->id);
 
-        $this->uniScript->data('lessonId', (int) $item->getId());
+        $this->uniScript->data('lessonId', (int) $item->id);
         $this->uniScript->data('totalAssignment', $totalAssignment);
         $this->uniScript->data('lessonSectionOrder', $lessonSectionOrder);
 
@@ -226,7 +226,7 @@ class LessonItemView implements ViewModelInterface
     ): int|null {
         foreach ($chapters as $k => $chapter) {
             foreach ($chapter->sections as $section) {
-                if ($section->getId() === $current->getId()) {
+                if ($section->getId() === $current->id) {
                     return (int) $k;
                 }
             }

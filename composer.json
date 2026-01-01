@@ -16,6 +16,8 @@
     ],
     "minimum-stability": "beta",
     "require": {
+        "php": ">=8.4.6",
+        "lyrasoft/luna": "^2.2",
         "lyrasoft/favorite": "^1.0||^2.0",
         "lyrasoft/attachment": "^1.0"
     },

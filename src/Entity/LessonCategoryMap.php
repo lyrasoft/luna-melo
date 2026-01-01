@@ -21,54 +21,18 @@ class LessonCategoryMap implements EntityInterface
     use EntityTrait;
 
     #[Column('lesson_id')]
-    protected int $lessonId = 0;
+    public int $lessonId = 0;
 
     #[Column('category_id')]
-    protected int $categoryId = 0;
+    public int $categoryId = 0;
 
     #[Column('is_primary')]
     #[Cast('bool', 'int')]
-    protected bool $isPrimary = false;
+    public bool $isPrimary = false;
 
     #[EntitySetup]
     public static function setup(EntityMetadata $metadata): void
     {
         //
-    }
-
-    public function getLessonId(): int
-    {
-        return $this->lessonId;
-    }
-
-    public function setLessonId(int $lessonId): static
-    {
-        $this->lessonId = $lessonId;
-
-        return $this;
-    }
-
-    public function getCategoryId(): int
-    {
-        return $this->categoryId;
-    }
-
-    public function setCategoryId(int $categoryId): static
-    {
-        $this->categoryId = $categoryId;
-
-        return $this;
-    }
-
-    public function isPrimary(): bool
-    {
-        return $this->isPrimary;
-    }
-
-    public function setIsPrimary(bool $isPrimary): static
-    {
-        $this->isPrimary = $isPrimary;
-
-        return $this;
     }
 }

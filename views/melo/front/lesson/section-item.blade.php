@@ -44,41 +44,41 @@ if (!$app->service(UserService::class)->isLogin()) {
     $link = $nav->to('login')->withReturn();
 }
 
-if ($item->getType() === SegmentType::VIDEO) {
+if ($item->type === SegmentType::VIDEO) {
     $link = $nav->to(
         'lesson_item',
         [
-            'id' => $item->getLessonId(),
-            'segment_id' => $item->getId()
+            'id' => $item->lessonId,
+            'segment_id' => $item->id
         ]
     );
 }
 
 $format = 'i:s';
 
-if ($item->getDuration() >= 3600) {
+if ($item->duration >= 3600) {
     $format = 'H:i:s';
 }
 ?>
 
-<a class="link-dark {{ $item->getType() !== SegmentType::VIDEO ? 'j-section-modal' : '' }}"
-    data-type="{{ $item->getType()->getValue() }}" data-section-id="{{ $item->getId() }}"
-    data-section-title="{{ $item->getTitle() }}" data-section-index="第{{ $chapterIndex }}章 第{{ $index }}節"
-    data-section-content="{{ $item->getContent() }}"
+<a class="link-dark {{ $item->type !== SegmentType::VIDEO ? 'j-section-modal' : '' }}"
+    data-type="{{ $item->type->getValue() }}" data-section-id="{{ $item->id }}"
+    data-section-title="{{ $item->title }}" data-section-index="第{{ $chapterIndex }}章 第{{ $index }}節"
+    data-section-content="{{ $item->content }}"
     href="{{ $link ?: 'javascript://' }}">
     <div class="c-section-item {{ $isActive ? 'active' : '' }}">
         <div class="c-section-item__inner">
             <div class="d-flex gap-2">
                 <div>
-                    @if($item->getType() === SegmentType::VIDEO)
+                    @if($item->type === SegmentType::VIDEO)
                         <i class="fa-solid fa-circle-play"></i>
                     @else
                         <i class="fa-regular fa-circle-check"></i>
                     @endif
                 </div>
-                @if(count($sectionOrderName[$item->getType()->getValue()]) > 0)
+                @if(count($sectionOrderName[$item->type->getValue()]) > 0)
                     <div class="text-nowrap">
-                        @switch($item->getType())
+                        @switch($item->type)
                             @case(SegmentType::VIDEO)
                                 單元
                                 @break
@@ -89,17 +89,17 @@ if ($item->getDuration() >= 3600) {
                                 測驗
                                 @break
                         @endswitch
-                        {{ count($sectionOrderName[$item->getType()->getValue()]) }}
+                        {{ count($sectionOrderName[$item->type->getValue()]) }}
                     </div>
                 @endif
                 <div>
-                    {{ $item->getTitle() }}
+                    {{ $item->title }}
                 </div>
             </div>
 
             <div class="text-nowrap">
-                @if ($item->getType() === SegmentType::VIDEO)
-                    {{ $chronos::toFormat((string) $item->getDuration(), $format) }}
+                @if ($item->type === SegmentType::VIDEO)
+                    {{ $chronos::toFormat((string) $item->duration, $format) }}
                 @endif
             </div>
         </div>

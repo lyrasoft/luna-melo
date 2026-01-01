@@ -77,13 +77,13 @@ class LessonController
                     if ($path) {
                         $file = $attachmentMapper->createEntity();
 
-                        $file->setType('lesson');
-                        $file->setTargetId((int) $data['id']);
-                        $file->setTitle($attachment->getClientFilename());
-                        $file->setSize($attachment->getSize());
-                        $file->setPath($path->getPath());
-                        $file->setOrdering(count($existsAttachments) + $k + 1);
-                        $file->setMime($attachment->getClientMediaType());
+                        $file->type = 'lesson';
+                        $file->targetId = (int) $data['id'];
+                        $file->title = $attachment->getClientFilename();
+                        $file->size = $attachment->getSize();
+                        $file->path = $path->getPath();
+                        $file->ordering = count($existsAttachments) + $k + 1;
+                        $file->mime = $attachment->getClientMediaType();
 
                         $attachmentMapper->createOne($file);
                     }

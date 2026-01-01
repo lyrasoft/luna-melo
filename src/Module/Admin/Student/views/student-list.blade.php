@@ -95,7 +95,7 @@ $app->service(HtmlFrame::class)->addBodyClass('sidebar-enable vertical-collpsed'
                     <tr>
                         {{-- Checkbox --}}
                         <td>
-                            <x-row-checkbox :row="$i" :id="$item->getId()"></x-row-checkbox>
+                            <x-row-checkbox :row="$i" :id="$item->id"></x-row-checkbox>
                         </td>
 
                         {{-- State --}}
@@ -104,25 +104,25 @@ $app->service(HtmlFrame::class)->addBodyClass('sidebar-enable vertical-collpsed'
                                 button-style="width: 100%"
                                 use-states
                                 :workflow="$workflow"
-                                :id="$item->getId()"
-                                :value="$item->getStatus()"
+                                :id="$item->id"
+                                :value="$item->status"
                             ></x-state-dropdown>
                         </td>
 
                         {{-- Title --}}
                         <td>
-                            <a href="{{ $nav->to('student_lesson_list', ['user_id' => $item->getUserId()]) }}">
+                            <a href="{{ $nav->to('student_lesson_list', ['user_id' => $item->userId]) }}">
                                 {{ $item->user->name }}
                             </a>
                         </td>
 
                         <td class="text-nowrap">
-                            {{ $chronos->toLocalFormat($item->getCreated(), 'Y-m-d H:i:s') }}
+                            {{ $chronos->toLocalFormat($item->created, 'Y-m-d H:i:s') }}
                         </td>
 
                         {{-- ID --}}
                         <td class="text-end">
-                            {{ $item->getId() }}
+                            {{ $item->id }}
                         </td>
                     </tr>
                 @empty

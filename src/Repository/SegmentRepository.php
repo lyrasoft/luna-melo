@@ -43,7 +43,7 @@ class SegmentRepository implements ManageRepositoryInterface, ListRepositoryInte
     {
         $action->setReorderGroupHandler(
             function (Query $query, Segment $segment) {
-                $query->where('parent_id', $segment->getParentId());
+                $query->where('parent_id', $segment->parentId);
             }
         );
     }

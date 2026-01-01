@@ -75,7 +75,7 @@ class LessonEditView implements ViewModelInterface
                 LessonCategoryMap::class,
                 'category_id',
                 [
-                    'lesson_id' => $item->getId(),
+                    'lesson_id' => $item->id,
                     'is_primary' => 0,
                 ]
             )
@@ -89,7 +89,7 @@ class LessonEditView implements ViewModelInterface
             $tagIds = $this->orm->findColumn(
                 TagMap::class,
                 'tag_id',
-                ['type' => 'lesson', 'target_id' => $item->getId()]
+                ['type' => 'lesson', 'target_id' => $item->id]
             )->dump();
 
             $form->fill(
@@ -105,7 +105,7 @@ class LessonEditView implements ViewModelInterface
             Attachment::class,
             [
                 'type' => 'lesson',
-                'target_id' => $item?->getId()
+                'target_id' => $item?->id
             ]
         );
 

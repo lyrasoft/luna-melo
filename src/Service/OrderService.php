@@ -47,7 +47,7 @@ class OrderService
         bool $notify = false
     ): object {
         return $this->createHistoryByOrderId(
-            $order->getId(),
+            $order->id,
             $state,
             $type,
             $message,
@@ -64,12 +64,12 @@ class OrderService
     ): object {
         $history = new OrderHistory();
 
-        $history->setType($type);
-        $history->setCreatedBy(0);
-        $history->setState($state);
-        $history->setOrderId($orderId);
-        $history->setMessage($message);
-        $history->setNotify($notify);
+        $history->type = $type;
+        $history->createdBy = 0;
+        $history->state = $state;
+        $history->orderId = $orderId;
+        $history->message = $message;
+        $history->notify = $notify;
 
         return $this->orm->saveOne(OrderHistory::class, $history);
     }
@@ -84,36 +84,36 @@ class OrderService
         $order = $this->orm->findOne(Order::class, ['id' => $id]);
 
         if (!$order) {
-            throw new ValidateFailException('訂單編號: ' . $order->getNo() . 'ID: ' . $id . ' 找不到');
+            throw new ValidateFailException('訂單編號: ' . $order->no . 'ID: ' . $id . ' 找不到');
         }
 
-        if ($order->getState() === $state) {
+        if ($order->state === $state) {
             return;
         }
 
         $this->orm->getDb()->transaction(function () use ($order, $historyType, $id, $state, $notify, $message) {
-            $order->setState($state);
+            $order->state = $state;
 
             $this->orm->updateOne(Order::class, $order, 'id');
 
             $history = $this->createHistory($order, $state, $historyType, $message, $notify);
 
-            if ($order->getState() === OrderState::PAID
-                || $order->getState() === OrderState::FREE
+            if ($order->state === OrderState::PAID
+                || $order->state === OrderState::FREE
             ) {
-                $this->assignLessonToUser($order->getId());
+                $this->assignLessonToUser($order->id);
             }
 
-            if ($order->getState() === OrderState::CANCELLED) {
-                $this->removeUserLesson($order->getId());
+            if ($order->state === OrderState::CANCELLED) {
+                $this->removeUserLesson($order->id);
             }
 
             if ($notify) {
-                $user = $this->orm->findOne(User::class, ['id' => $order->getUserId()]);
+                $user = $this->orm->findOne(User::class, ['id' => $order->userId]);
 
                 $subject = sprintf(
                     '您的訂單 #%s 狀態變更為: : %s',
-                    $order->getNo(),
+                    $order->no,
                     $state->getTitle()
                 );
 
@@ -127,7 +127,7 @@ class OrderService
                         ]
                     );
 
-                $mail->to($user?->getEmail());
+                $mail->to($user?->email);
 
                 $mail->send();
             }
@@ -144,24 +144,24 @@ class OrderService
             $this->orm->deleteWhere(
                 UserLessonMap::class,
                 [
-                    'lesson_id' => $orderItem->getLessonId(),
-                    'user_id' => $order->getUserId()
+                    'lesson_id' => $orderItem->lessonId,
+                    'user_id' => $order->userId
                 ]
             );
 
             $this->orm->deleteWhere(
                 UserSegmentMap::class,
                 [
-                    'lesson_id' => $orderItem->getLessonId(),
-                    'user_id' => $order->getUserId()
+                    'lesson_id' => $orderItem->lessonId,
+                    'user_id' => $order->userId
                 ]
             );
 
             $this->orm->deleteWhere(
                 UserAnswer::class,
                 [
-                    'lesson_id' => $orderItem->getLessonId(),
-                    'user_id' => $order->getUserId()
+                    'lesson_id' => $orderItem->lessonId,
+                    'user_id' => $order->userId
                 ]
             );
         }
@@ -176,15 +176,15 @@ class OrderService
         foreach ($orderItems as $orderItem) {
             $map = new UserLessonMap();
 
-            $map->setLessonId($orderItem->getLessonId());
-            $map->setUserId($order->getUserId());
-            $map->setStatus(UserLessonStatus::PROCESS);
+            $map->lessonId = $orderItem->lessonId;
+            $map->userId = $order->userId;
+            $map->status = UserLessonStatus::PROCESS;
 
             $hasLesson = $this->orm->findOne(
                 UserLessonMap::class,
                 [
-                    'lesson_id' => $orderItem->getLessonId(),
-                    'user_id' => $order->getUserId(),
+                    'lesson_id' => $orderItem->lessonId,
+                    'user_id' => $order->userId,
                 ]
             );
 

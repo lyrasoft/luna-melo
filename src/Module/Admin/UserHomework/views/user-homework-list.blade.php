@@ -98,19 +98,19 @@ $workflow = $app->service(HomeworkStatusWorkflow::class);
                             <x-state-dropdown color-on="text"
                                 button-style="width: 100%"
                                 :workflow="$workflow"
-                                :id="$item->getId()"
-                                :value="$item->getStatus()"
+                                :id="$item->id"
+                                :value="$item->status"
                             ></x-state-dropdown>
                         </td>
 
                         <td class="text-nowrap">
-                            <a href="{{ $item->getAssignment() }}" target="_blank">
-                                {{ $item->getAssignment() }}
+                            <a href="{{ $item->assignment }}" target="_blank">
+                                {{ $item->assignment }}
                             </a>
                         </td>
 
                         <td>
-                            {{ \Windwalker\str($item->getDescription())->truncate(80, '...') }}
+                            {{ \Windwalker\str($item->description)->truncate(80, '...') }}
                         </td>
 
                         <td>
@@ -123,7 +123,7 @@ $workflow = $app->service(HomeworkStatusWorkflow::class);
 
                         {{-- ID --}}
                         <td class="text-end">
-                            {{ $item->getId() }}
+                            {{ $item->id }}
                         </td>
                     </tr>
                 @empty

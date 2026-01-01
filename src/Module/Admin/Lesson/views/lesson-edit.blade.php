@@ -44,7 +44,7 @@ $formService = $app->service(FormScript::class)
 
 ?>
 
-@extends('melo.admin.lesson-edit-layout', ['lessonId' => $item?->getId()])
+@extends('melo.admin.lesson-edit-layout', ['lessonId' => $item?->id])
 
 @section('toolbar-buttons')
     @include('edit-toolbar')

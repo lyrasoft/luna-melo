@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Repository;
 
-use Lyrasoft\Melo\Entity\Option;
+use Lyrasoft\Melo\Entity\MeloOption;
 use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\Repository;
 use Unicorn\Repository\Actions\BatchAction;
@@ -17,7 +17,7 @@ use Unicorn\Repository\ManageRepositoryTrait;
 use Unicorn\Selector\ListSelector;
 use Windwalker\Query\Query;
 
-#[Repository(entityClass: Option::class)]
+#[Repository(entityClass: MeloOption::class)]
 class OptionRepository implements ManageRepositoryInterface, ListRepositoryInterface
 {
     use ManageRepositoryTrait;
@@ -27,7 +27,7 @@ class OptionRepository implements ManageRepositoryInterface, ListRepositoryInter
     {
         $selector = $this->createSelector();
 
-        $selector->from(Option::class);
+        $selector->from(MeloOption::class);
 
         return $selector;
     }
@@ -42,8 +42,8 @@ class OptionRepository implements ManageRepositoryInterface, ListRepositoryInter
     protected function configureReorderAction(ReorderAction $action): void
     {
         $action->setReorderGroupHandler(
-            function (Query $query, Option $option) {
-                $query->where('question_id', $option->getQuestionId());
+            function (Query $query, MeloOption $option) {
+                $query->where('question_id', $option->questionId);
             }
         );
     }

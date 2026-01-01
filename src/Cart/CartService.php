@@ -114,14 +114,14 @@ class CartService
     {
         $prices = new PriceSet();
 
-        $originPrice  = $lesson->getPrice();
-        $specialPrice = $lesson->getSpecialPrice();
+        $originPrice  = $lesson->price;
+        $specialPrice = $lesson->specialPrice;
 
         $prices->set(new PriceObject('origin', $originPrice));
 
-        if ($lesson->isFree()) {
+        if ($lesson->isFree) {
             $prices->set(new PriceObject('final', '0'));
-        } elseif ($lesson->isSpecial()) {
+        } elseif ($lesson->isSpecial) {
             $prices->set(new PriceObject('final', $specialPrice));
         } else {
             $prices->set(new PriceObject('final', $originPrice));

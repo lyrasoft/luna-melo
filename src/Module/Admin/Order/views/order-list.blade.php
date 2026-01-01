@@ -112,7 +112,7 @@ $workflow = $app->service(OrderWorkflow::class);
                     <tr>
                         {{-- Checkbox --}}
                         <td>
-                            <x-row-checkbox :row="$i" :id="$item->getId()"></x-row-checkbox>
+                            <x-row-checkbox :row="$i" :id="$item->id"></x-row-checkbox>
                         </td>
 
                         {{-- State --}}
@@ -121,7 +121,7 @@ $workflow = $app->service(OrderWorkflow::class);
                                 button-style="width: 100%"
                                 use-states
                                 :workflow="$workflow"
-                                :id="$item->getId()"
+                                :id="$item->id"
                                 :value="$item->state"
                             ></x-state-dropdown>
                         </td>
@@ -129,28 +129,28 @@ $workflow = $app->service(OrderWorkflow::class);
                         {{-- Title --}}
                         <td>
                             <div>
-                                <a href="{{ $nav->to('order_edit')->id($item->getId()) }}">
-                                    {{ $item->getNo() }}
+                                <a href="{{ $nav->to('order_edit')->id($item->id) }}">
+                                    {{ $item->no }}
                                 </a>
                             </div>
                         </td>
 
                         <td>
-                            {{ number_format($item->getTotal()) }}
+                            {{ number_format($item->total) }}
                         </td>
 
                         <td>
-                            {{ $item->getPayment()->getTitle() }}
+                            {{ $item->payment->getTitle() }}
                         </td>
 
                         <td>
-                            {{ $chronos->toLocalFormat($item->getCreated()) }}
+                            {{ $chronos->toLocalFormat($item->created) }}
                         </td>
 
                         {{-- Delete --}}
                         <td class="text-center">
                             <button type="button" class="btn btn-sm btn-outline-secondary"
-                                @click="grid.deleteItem('{{ $item->getId() }}')"
+                                @click="grid.deleteItem('{{ $item->id }}')"
                                 data-dos
                             >
                                 <i class="fa-solid fa-trash"></i>
@@ -159,7 +159,7 @@ $workflow = $app->service(OrderWorkflow::class);
 
                         {{-- ID --}}
                         <td class="text-end">
-                            {{ $item->getId() }}
+                            {{ $item->id }}
                         </td>
                     </tr>
                 @empty

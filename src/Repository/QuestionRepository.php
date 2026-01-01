@@ -43,7 +43,7 @@ class QuestionRepository implements ManageRepositoryInterface, ListRepositoryInt
     {
         $action->setReorderGroupHandler(
             function (Query $query, Question $question) {
-                $query->where('segment_id', $question->getSegmentId());
+                $query->where('segment_id', $question->segmentId);
             }
         );
     }

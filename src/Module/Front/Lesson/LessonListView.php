@@ -69,8 +69,8 @@ class LessonListView implements ViewModelInterface
             ->addFilter('lesson.state', 1)
             ->tapIf(
                 (bool) $category,
-                fn(ListSelector $query) => $query->where('category.lft', '>=', $category->getLft())
-                    ->where('category.rgt', '<=', $category->getRgt())
+                fn(ListSelector $query) => $query->where('category.lft', '>=', $category->lft)
+                    ->where('category.rgt', '<=', $category->rgt)
             )
             ->tapIf(
                 (bool) $teacherId,

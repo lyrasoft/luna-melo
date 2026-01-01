@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace App\Migration;
 
-use Lyrasoft\Melo\Entity\Option;
+use Lyrasoft\Melo\Entity\MeloOption;
 use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\Core\Migration\Migration;
 use Windwalker\Database\Schema\Schema;
@@ -25,7 +25,7 @@ use Windwalker\Database\Schema\Schema;
 $mig->up(
     static function () use ($mig) {
         $mig->createTable(
-            Option::class,
+            MeloOption::class,
             function (Schema $schema) {
                 $schema->primary('id');
                 $schema->integer('question_id');
@@ -46,6 +46,6 @@ $mig->up(
  */
 $mig->down(
     static function () use ($mig) {
-        $mig->dropTables(Option::class);
+        $mig->dropTables(MeloOption::class);
     }
 );

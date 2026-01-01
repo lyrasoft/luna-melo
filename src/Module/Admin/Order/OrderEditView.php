@@ -62,7 +62,7 @@ class OrderEditView implements ViewModelInterface
         $user = $this->orm->findOne(
             User::class,
             [
-                'id' => $item?->getUserId()
+                'id' => $item?->userId
             ]
         )
             ?->dump(true);
@@ -72,7 +72,7 @@ class OrderEditView implements ViewModelInterface
             [
                 'type' => 'remittance',
                 [
-                    'details ->> order_no', '=', $item->getNo()
+                    'details ->> order_no', '=', $item->no
                 ]
             ]
         );
@@ -89,9 +89,9 @@ class OrderEditView implements ViewModelInterface
                 [
                     'user' => array_merge($user, ['phone' => $user['params']['phone'] ?? '']),
                     'remit' => [
-                        'time' => $remit?->getDetails()['time'] ?? null,
-                        'account' => $remit?->getDetails()['account'],
-                        'note' => $remit?->getContent()
+                        'time' => $remit?->details['time'] ?? null,
+                        'account' => $remit?->details['account'],
+                        'note' => $remit?->content
                     ]
                 ]
             );
@@ -99,7 +99,7 @@ class OrderEditView implements ViewModelInterface
         $orderItems = $this->orm->findList(
             OrderItem::class,
             [
-                'order_id' => $item?->getId(),
+                'order_id' => $item?->id,
             ]
         );
 

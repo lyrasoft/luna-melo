@@ -82,19 +82,19 @@ $melo = $app->service(MeloPackage::class);
     </div>
 
 
-    <p>訂單 #{{ $item->getNo() }} 的內容已變更:</p>
+    <p>訂單 #{{ $item->no }} 的內容已變更:</p>
 
     <p>
-        訂單編號：#{{ $item->getNo() }}
+        訂單編號：#{{ $item->no }}
     </p>
     <p>
-        訂購時間：{{ $item->getCreated()->format('Y-m-d H:i:s') }}
+        訂購時間：{{ $item->created->format('Y-m-d H:i:s') }}
     </p>
 
     <p>
         訂購狀態:
-        <span class="c-order-state text-{{ $history->getState()->getColor() }}">
-            {{ $history->getState()->getTitle($lang) }}
+        <span class="c-order-state text-{{ $history->state->getColor() }}">
+            {{ $history->state->getTitle($lang) }}
         </span>
     </p>
 
@@ -103,7 +103,7 @@ $melo = $app->service(MeloPackage::class);
 
     <div style="margin-top: 40px">
         @if ($isAdmin)
-            <a href="{{ $nav->to('admin::order_edit')->id($item->getId())->full() }}"
+            <a href="{{ $nav->to('admin::order_edit')->id($item->id)->full() }}"
                 class="btn btn-primary"
                 target="_blank"
                 style="width: 100%"
@@ -111,7 +111,7 @@ $melo = $app->service(MeloPackage::class);
                 觀看訂單內容
             </a>
         @else
-            <a href="{{ $nav->to('front::order_item')->id($item->getId())->full() }}"
+            <a href="{{ $nav->to('front::order_item')->id($item->id)->full() }}"
                 class="btn btn-primary"
                 target="_blank"
                 style="width: 100%"

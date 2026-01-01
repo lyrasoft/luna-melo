@@ -37,20 +37,20 @@ $uniScript->addRoute('cart');
 $asset->js('vendor/lyrasoft/melo/dist/lesson.js');
 
 $lessonService = $app->service(LessonService::class);
-$ownedLesson = $lessonService->checkUserHasLesson($item->getId());
+$ownedLesson = $lessonService->checkUserHasLesson($item->id);
 ?>
 
 <div class="card h-100 border-0 shadow">
     <div class="card-img-top ratio ratio-4x3">
-        <img src="{{ $item->getImage() }}"
+        <img src="{{ $item->image }}"
             class="img-fluid object-fit-cover rounded-top"
-            alt="{{ $item->getTitle() }}">
+            alt="{{ $item->title }}">
     </div>
 
     <div class="card-body d-flex flex-column">
-        <a href="{{ $nav->to('lesson_item', ['id' => $item->getId()]) }}" class="stretched-link">
+        <a href="{{ $nav->to('lesson_item', ['id' => $item->id]) }}" class="stretched-link">
             <h4>
-                {{ $item->getTitle() }}
+                {{ $item->title }}
             </h4>
         </a>
         <div class="">
@@ -69,26 +69,26 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->getId());
 
         <div class="mt-auto d-flex justify-content-between align-items-end">
             <div>
-                @if(!$item->isFree())
-                    @if($item->isSpecial())
+                @if(!$item->isFree)
+                    @if($item->isSpecial)
                         <div class="text-decoration-line-through">
                             <span>售價</span>
                             <span>
-                                {{ $item->getPrice() }}
+                                {{ $item->price }}
                             </span>
                         </div>
 
                         <h4 class="text-primary">
                             <span>特價</span>
                             <span>
-                                {{ $item->getSpecialPrice() }}
+                                {{ $item->specialPrice }}
                             </span>
                         </h4>
                     @else
                         <h4 class="text-primary">
                             <span>售價</span>
                             <span>
-                                {{ $item->getPrice() }}
+                                {{ $item->price }}
                             </span>
                         </h4>
                     @endif
@@ -103,7 +103,7 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->getId());
                 <button type="button"
                     class="btn btn-primary position-relative z-3 rounded-pill"
                     data-task="buy"
-                    data-id="{{ $item->getId() }}"
+                    data-id="{{ $item->id }}"
                 >
                     立即購買
                 </button>

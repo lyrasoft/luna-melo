@@ -10,7 +10,7 @@ use Lyrasoft\Luna\User\Exception\AccessDeniedException;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Entity\Order;
 use Lyrasoft\Melo\Entity\OrderHistory;
-use Lyrasoft\Melo\Entity\OrderItem;
+use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Repository\OrderRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
@@ -65,7 +65,7 @@ class OrderItemView implements ViewModelInterface
 
         if (
             !$this->accessService->userInRoles($user, ['admin', 'superuser'])
-            && $item->getUserId() !== $user->getId()
+            && $item->userId !== $user->id
         ) {
             return new AccessDeniedException('無權限觀看這份訂單', 403);
         }
@@ -75,19 +75,19 @@ class OrderItemView implements ViewModelInterface
         $histories = $this->orm->findList(
             OrderHistory::class,
             [
-                'order_id' => $item->getId(),
+                'order_id' => $item->id,
             ]
         );
 
         $orderItems = $this->orm->findList(
-            OrderItem::class,
+            MeloOrderItem::class,
             [
-                'order_id' => $item->getId(),
+                'order_id' => $item->id,
             ]
         );
 
         $userInfo = $this->userRepository->getListSelector()
-            ->addFilter('user.id', $user->getId())
+            ->addFilter('user.id', $user->id)
             ->get();
 
         return compact(

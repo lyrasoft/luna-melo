@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace App\Seeder;
 
-use Lyrasoft\Melo\Entity\Option;
+use Lyrasoft\Melo\Entity\MeloOption;
 use Lyrasoft\Melo\Entity\Question;
 use Lyrasoft\Melo\Enum\QuestionType;
 use Windwalker\Core\Seed\Seeder;
@@ -31,13 +31,13 @@ $seeder->import(
     static function () use ($seeder, $orm, $db) {
         $faker = $seeder->faker('zh_TW');
 
-        /** @var EntityMapper<Option> $mapper */
-        $mapper = $orm->mapper(Option::class);
+        /** @var EntityMapper<MeloOption> $mapper */
+        $mapper = $orm->mapper(MeloOption::class);
         $questions = $orm->findList(Question::class);
 
         /** @var Question $question */
         foreach ($questions as $question) {
-            if ($question->getType() === QuestionType::BOOLEAN) {
+            if ($question->type === QuestionType::BOOLEAN) {
                 return;
             }
 
@@ -45,7 +45,7 @@ $seeder->import(
 
             $answers = array_fill(0, $total, false);
 
-            if ($question->isMultiple()) {
+            if ($question->isMultiple) {
                 $trueCount = random_int(2, $total);
 
                 foreach (range(0, $trueCount) as $i) {
@@ -60,15 +60,13 @@ $seeder->import(
             foreach (range(1, $total) as $j) {
                 $item = $mapper->createEntity();
 
-                $item->setTitle(
-                    Utf8String::ucwords(
+                $item->title = Utf8String::ucwords(
                         $faker->sentence(3)
-                    )
-                );
-                $item->setQuestionId($question->getId());
-                $item->setState(1);
-                $item->setOrdering($j);
-                $item->setIsAnswer($answers[$j - 1]);
+                    );
+                $item->questionId = $question->id;
+                $item->state = 1;
+                $item->ordering = $j;
+                $item->isAnswer = $answers[$j - 1];
 
                 $mapper->createOne($item);
 
@@ -80,6 +78,6 @@ $seeder->import(
 
 $seeder->clear(
     static function () use ($seeder, $orm, $db) {
-        $seeder->truncate(Option::class);
+        $seeder->truncate(MeloOption::class);
     }
 );

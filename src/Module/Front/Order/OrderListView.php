@@ -56,7 +56,7 @@ class OrderListView implements ViewModelInterface
         $limit = $app->input('limit') ?? 30;
         $ordering = $this->getDefaultOrdering();
 
-        $userId = $this->userService->getUser()->getId();
+        $userId = $this->userService->getUser()->id;
 
         $userInfo = $this->userRepository->getListSelector()
             ->addFilter('user.id', $userId)

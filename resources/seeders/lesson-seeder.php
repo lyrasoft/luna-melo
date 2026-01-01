@@ -86,56 +86,54 @@ $seeder->import(
 
             $faker = $seeder->faker($langCode);
 
-            $item->setCategoryId((int) $faker->randomElement($categoryIds));
-            $item->setTitle(
-                Utf8String::ucwords(
+            $item->categoryId = (int) $faker->randomElement($categoryIds);
+            $item->title = Utf8String::ucwords(
                     $faker->sentence(3)
-                )
-            );
-            $item->setTeacherId((int) $faker->randomElement($teacherIds));
-            $item->setDescription($faker->paragraph(6));
-            $item->setAcquired($faker->paragraph(6));
-            $item->setAlias(SlugHelper::safe($item->getTitle()));
-            $item->setImage($faker->unsplashImage(800, 600));
-            $item->setState($faker->optional(0.7, 0)->passthrough(1));
-            $item->setStartDate($faker->dateTimeThisYear());
-            $item->setEndDate($item->getStartDate()->modify('+30days'));
-            $item->setIsStepByStep((bool) $faker->optional(0.7, 0)->passthrough(1));
-            $item->setHasCertificate((bool) $faker->optional(0.7, 0)->passthrough(1));
-            $item->setIsFree((bool) $faker->optional(0.2, 0)->passthrough(1));
-            $item->setIsSpecial((bool) $faker->optional(0.7, 0)->passthrough(1));
+                );
+            $item->teacherId = (int) $faker->randomElement($teacherIds);
+            $item->description = $faker->paragraph(6);
+            $item->acquired = $faker->paragraph(6);
+            $item->alias = SlugHelper::safe($item->title);
+            $item->image = $faker->unsplashImage(800, 600);
+            $item->state = $faker->optional(0.7, 0)->passthrough(1);
+            $item->startDate = $faker->dateTimeThisYear();
+            $item->endDate = $item->startDate->modify('+30days');
+            $item->isStepByStep = (bool) $faker->optional(0.7, 0)->passthrough(1);
+            $item->hasCertificate = (bool) $faker->optional(0.7, 0)->passthrough(1);
+            $item->isFree = (bool) $faker->optional(0.2, 0)->passthrough(1);
+            $item->isSpecial = (bool) $faker->optional(0.7, 0)->passthrough(1);
 
-            if ($item->isFree()) {
-                $item->setPrice(0);
+            if ($item->isFree) {
+                $item->price = 0;
             } else {
-                $item->setPrice(random_int(3, 30) * 100);
+                $item->price = random_int(3, 30) * 100;
             }
 
-            if ($item->isSpecial()) {
-                $item->setSpecialPrice($item->getPrice() * 0.9);
+            if ($item->isSpecial) {
+                $item->specialPrice = $item->price * 0.9;
             }
 
-            $item->setPassAverageScore($faker->randomElement([60, 70, 80]));
-            $item->setPassMinScore($item->getPassAverageScore() - 10);
-            $item->setOrdering($i);
-            $item->setCreated($faker->dateTimeThisYear());
-            $item->setModified($item->getCreated()->modify('+10days'));
-            $item->setCreatedBy((int) $faker->randomElement($userIds));
+            $item->passAverageScore = $faker->randomElement([60, 70, 80]);
+            $item->passMinScore = $item->passAverageScore - 10;
+            $item->ordering = $i;
+            $item->created = $faker->dateTimeThisYear();
+            $item->modified = $item->created->modify('+10days');
+            $item->createdBy = (int) $faker->randomElement($userIds);
 
             $item = $mapper->createOne($item);
 
             foreach ($faker->randomElements($tagIds, random_int(3, 5)) as $tagId) {
                 $map = new TagMap();
-                $map->setTagId((int) $tagId);
-                $map->setType('lesson');
-                $map->setTargetId($item->getId());
+                $map->tagId = (int) $tagId;
+                $map->type = 'lesson';
+                $map->targetId = $item->id;
 
                 $orm->createOne(TagMap::class, $map);
 
                 $seeder->outCounting();
             }
 
-            $category = $orm->findOne(Category::class, ['id' => $item->getCategoryId()]);
+            $category = $orm->findOne(Category::class, ['id' => $item->categoryId]);
 
             $subCategoryIds = $orm->findColumn(
                 Category::class,
@@ -143,28 +141,28 @@ $seeder->import(
                 [
                     'type' => 'lesson',
                     [
-                        'lft', '>', $category?->getLft(),
+                        'lft', '>', $category?->lft,
                     ],
                     [
-                        'rgt', '<', $category?->getRgt(),
+                        'rgt', '<', $category?->rgt,
                     ]
                 ]
             )->dump(true);
 
             $map = $mapMapper->createEntity();
 
-            $map->setCategoryId($item->getCategoryId());
-            $map->setIsPrimary(true);
-            $map->setLessonId($item->getId());
+            $map->categoryId = $item->categoryId;
+            $map->isPrimary = true;
+            $map->lessonId = $item->id;
 
             $mapMapper->createOne($map);
 
             foreach ($subCategoryIds as $categoryId) {
                 $map = $mapMapper->createEntity();
 
-                $map->setCategoryId((int) $categoryId);
-                $map->setLessonId($item->getId());
-                $map->setIsPrimary(false);
+                $map->categoryId = (int) $categoryId;
+                $map->lessonId = $item->id;
+                $map->isPrimary = false;
 
                 $mapMapper->createOne($map);
 
@@ -175,10 +173,10 @@ $seeder->import(
             foreach ($faker->randomElements($userIds, 10) as $j) {
                 $userLessonMap = $userLessonMapMapper->createEntity();
 
-                $userLessonMap->setUserId((int) $j);
-                $userLessonMap->setLessonId((int) $item->getId());
-                $userLessonMap->setStatus($faker->randomElement(UserLessonStatus::values()));
-                $userLessonMap->setCreated($faker->dateTimeThisYear());
+                $userLessonMap->userId = (int) $j;
+                $userLessonMap->lessonId = (int) $item->id;
+                $userLessonMap->status = $faker->randomElement(UserLessonStatus::values());
+                $userLessonMap->created = $faker->dateTimeThisYear();
 
                 $userLessonMapMapper->createOne($userLessonMap);
 

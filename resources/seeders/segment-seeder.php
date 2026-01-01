@@ -54,19 +54,17 @@ $seeder->import(
                 // Chapter
                 $chapter = $mapper->createEntity();
 
-                $chapter->setLessonId((int) $lessonId);
-                $chapter->setType(SegmentType::DEFAULT);
-                $chapter->setParentId(0);
-                $chapter->setTitle(
-                    Utf8String::ucwords(
+                $chapter->lessonId = (int) $lessonId;
+                $chapter->type = SegmentType::DEFAULT;
+                $chapter->parentId = 0;
+                $chapter->title = Utf8String::ucwords(
                         $faker->sentence(3)
-                    )
-                );
-                $chapter->setState($faker->optional(0.7, 0)->passthrough(1));
-                $chapter->setOrdering($i);
-                $chapter->setCreated($faker->dateTimeThisYear());
-                $chapter->setModified($chapter->getCreated()?->modify('+10days'));
-                $chapter->setCreatedBy((int) $faker->randomElement($userIds));
+                    );
+                $chapter->state = $faker->optional(0.7, 0)->passthrough(1);
+                $chapter->ordering = $i;
+                $chapter->created = $faker->dateTimeThisYear();
+                $chapter->modified = $chapter->created?->modify('+10days');
+                $chapter->createdBy = (int) $faker->randomElement($userIds);
 
                 $chapter = $mapper->createOne($chapter);
 
@@ -82,35 +80,33 @@ $seeder->import(
 
                     $segment = $mapper->createEntity();
 
-                    $segment->setLessonId((int) $lessonId);
-                    $segment->setType($type);
-                    $segment->setParentId($chapter->getId());
-                    $segment->setTitle(
-                        Utf8String::ucwords(
+                    $segment->lessonId = (int) $lessonId;
+                    $segment->type = $type;
+                    $segment->parentId = $chapter->id;
+                    $segment->title = Utf8String::ucwords(
                             $faker->sentence(3)
-                        )
-                    );
-                    $segment->setState($faker->optional(0.7, 0)->passthrough(1));
-                    $segment->setPreview($faker->optional(0.7, false)->passthrough(true));
-                    $segment->setOrdering($k);
-                    $segment->setCreated($faker->dateTimeThisYear());
-                    $segment->setModified($segment->getCreated()?->modify('+10days'));
-                    $segment->setCreatedBy((int) $faker->randomElement($userIds));
+                        );
+                    $segment->state = $faker->optional(0.7, 0)->passthrough(1);
+                    $segment->preview = $faker->optional(0.7, false)->passthrough(true);
+                    $segment->ordering = $k;
+                    $segment->created = $faker->dateTimeThisYear();
+                    $segment->modified = $segment->created?->modify('+10days');
+                    $segment->createdBy = (int) $faker->randomElement($userIds);
 
                     if ($type === SegmentType::VIDEO) {
-                        $segment->setSrc('https://lyratest.s3.amazonaws.com/emooc/sintel-short.mp4');
-                        $segment->setCaptionSrc('https://lyratest.s3.amazonaws.com/emooc/sintel-subtitles-en.vtt');
-                        $segment->setFilename('sintel-short.mp4');
-                        $segment->setExt('mp4');
-                        $segment->setDuration(random_int(40, 240));
+                        $segment->src = 'https://lyratest.s3.amazonaws.com/emooc/sintel-short.mp4';
+                        $segment->captionSrc = 'https://lyratest.s3.amazonaws.com/emooc/sintel-subtitles-en.vtt';
+                        $segment->filename = 'sintel-short.mp4';
+                        $segment->ext = 'mp4';
+                        $segment->duration = random_int(40, 240);
                     }
 
                     if ($type === SegmentType::HOMEWORK) {
-                        $segment->setContent($faker->paragraph(5));
+                        $segment->content = $faker->paragraph(5);
                     }
 
                     if ($type === SegmentType::QUIZ) {
-                        $segment->setCanSkip($faker->optional(0.8, true)->passthrough(false));
+                        $segment->canSkip = $faker->optional(0.8, true)->passthrough(false);
                     }
 
                     $segment = $mapper->createOne($segment);
@@ -119,37 +115,33 @@ $seeder->import(
                         /** @var UserSegmentMap $map */
                         $map = $mapMapper->createEntity();
 
-                        $map->setUserId((int) $studentId);
-                        $map->setLessonId((int) $lessonId);
-                        $map->setSegmentId($segment->getId());
-                        $map->setSegmentType($segment->getType());
-                        $map->setDescription($faker->paragraph());
-                        $map->setCreated($faker->dateTimeThisYear());
+                        $map->userId = (int) $studentId;
+                        $map->lessonId = (int) $lessonId;
+                        $map->segmentId = $segment->id;
+                        $map->segmentType = $segment->type;
+                        $map->description = $faker->paragraph();
+                        $map->created = $faker->dateTimeThisYear();
 
-                        if ($map->getSegmentType() === SegmentType::QUIZ) {
-                            $map->setScore(random_int(60, 100));
-                            $map->setStatus(
-                                $faker->randomElement(
+                        if ($map->segmentType === SegmentType::QUIZ) {
+                            $map->score = random_int(60, 100);
+                            $map->status = $faker->randomElement(
                                     [
                                         UserSegmentStatus::PROCESS,
                                         UserSegmentStatus::PASSED,
                                         UserSegmentStatus::FAILED,
                                     ]
-                                )
-                            );
+                                );
                         }
 
-                        if ($map->getSegmentType() === SegmentType::HOMEWORK) {
-                            $map->setAssignment($faker->unsplashImage());
-                            $map->setStatus(
-                                $faker->randomElement(
+                        if ($map->segmentType === SegmentType::HOMEWORK) {
+                            $map->assignment = $faker->unsplashImage();
+                            $map->status = $faker->randomElement(
                                     [
                                         UserSegmentStatus::PENDING,
                                         UserSegmentStatus::DONE,
                                     ]
-                                )
-                            );
-                            $map->setAssignmentUploadTime($map->getCreated()?->modify('+3 days'));
+                                );
+                            $map->assignmentUploadTime = $map->created?->modify('+3 days');
                         }
 
                         $mapMapper->createOne($map);

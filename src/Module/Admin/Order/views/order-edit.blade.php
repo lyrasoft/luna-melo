@@ -82,10 +82,10 @@ use Windwalker\Form\Form;
                             @foreach ($orderItems as $orderItem)
                                 <tr>
                                     <td>
-                                        {{ $orderItem->getTitle() }}
+                                        {{ $orderItem->title }}
                                     </td>
                                     <td>
-                                        {{ number_format($orderItem->getTotal()) }}
+                                        {{ number_format($orderItem->total) }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -93,7 +93,7 @@ use Windwalker\Form\Form;
                             <tfoot>
                             <tr>
                                 <td></td>
-                                <td>總計 : {{ number_format($item->getTotal()) }}</td>
+                                <td>總計 : {{ number_format($item->total) }}</td>
                             </tr>
                             </tfoot>
                         </table>

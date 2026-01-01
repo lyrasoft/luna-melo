@@ -43,26 +43,24 @@ $seeder->import(
             foreach (range(1, 10) as $i) {
                 $item = $mapper->createEntity();
 
-                $item->setType($faker->randomElement(QuestionType::values()));
-                $item->setTitle(
-                    Utf8String::ucwords(
+                $item->type = $faker->randomElement(QuestionType::values());
+                $item->title = Utf8String::ucwords(
                         $faker->sentence(3)
-                    )
-                );
-                $item->setLessonId($segment->getLessonId());
-                $item->setSegmentId($segment->getId());
-                $item->setContent($faker->paragraph());
-                $item->setIsMultiple($item->getType() === QuestionType::MULTIPLE);
-                $item->setImage($faker->unsplashImage());
-                $item->setScore(10);
-                $item->setState(1);
-                $item->setOrdering($i);
-                $item->setCreated($faker->dateTimeThisYear());
-                $item->setModified($segment->getCreated()?->modify('+10days'));
-                $item->setCreatedBy((int) $faker->randomElement($userIds));
+                    );
+                $item->lessonId = $segment->lessonId;
+                $item->segmentId = $segment->id;
+                $item->content = $faker->paragraph();
+                $item->isMultiple = $item->type === QuestionType::MULTIPLE;
+                $item->image = $faker->unsplashImage();
+                $item->score = 10;
+                $item->state = 1;
+                $item->ordering = $i;
+                $item->created = $faker->dateTimeThisYear();
+                $item->modified = $segment->created?->modify('+10days');
+                $item->createdBy = (int) $faker->randomElement($userIds);
 
-                if ($item->getType() === QuestionType::BOOLEAN) {
-                    $item->setAnswer($faker->randomElement(['0', '1']));
+                if ($item->type === QuestionType::BOOLEAN) {
+                    $item->answer = $faker->randomElement(['0', '1']);
                 }
 
                 $mapper->createOne($item);

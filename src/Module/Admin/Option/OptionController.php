@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Option;
 
-use Lyrasoft\Melo\Entity\Option;
+use Lyrasoft\Melo\Entity\MeloOption;
 use Lyrasoft\Melo\Repository\OptionRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
@@ -35,7 +35,7 @@ class OptionController
             ->where('question_id', (int) $questionId)
             ->order('ordering', 'ASC')
             ->limit(0)
-            ->all(Option::class);
+            ->all(MeloOption::class);
     }
 
     #[Method('POST')]
@@ -47,10 +47,10 @@ class OptionController
         $isNew = (int) $app->input('is_new');
 
         if ($isNew === 1) {
-            return $orm->createOne(Option::class, $data);
+            return $orm->createOne(MeloOption::class, $data);
         }
 
-        return $orm->saveOne(Option::class, $data);
+        return $orm->saveOne(MeloOption::class, $data);
     }
 
     #[Method('POST')]
@@ -70,7 +70,7 @@ class OptionController
     ): void {
         $id = $app->input('id');
 
-        $orm->deleteWhere(Option::class, ['id' => $id]);
+        $orm->deleteWhere(MeloOption::class, ['id' => $id]);
     }
 
     #[Method('POST')]
@@ -80,6 +80,6 @@ class OptionController
     ): iterable {
         $data = $app->input('data');
 
-        return $orm->saveMultiple(Option::class, $data);
+        return $orm->saveMultiple(MeloOption::class, $data);
     }
 }
