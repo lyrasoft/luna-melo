@@ -2,6 +2,7 @@ import vuePlugin from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
 import dts from 'unplugin-dts/vite';
 import { defineConfig } from 'vite';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
 export default defineConfig(({ mode }) => {
 
@@ -62,6 +63,8 @@ export default defineConfig(({ mode }) => {
           }
         }
       }),
+
+      cssInjectedByJsPlugin(),
 
       dts({
         tsconfigPath: resolve('./tsconfig.json'),

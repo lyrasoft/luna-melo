@@ -1,2 +1,0 @@
-System.register(["@main"],(function(t,r){async function a(t){try{await async function(t){const r=t.dataset.id;if(!r)throw new Error("No lesson ID");try{return(await u.$http.post("@cart_ajax/addToCart",{id:r})).data}catch(t){throw console.error(t),t}}(t)}catch(t){return void u.alert(t.message,"","warning")}location.href=u.route("cart")}return{setters:[function(t){}],execute:function(){u.delegate(document,"[data-task=buy]","click",(t=>{a(t.currentTarget)}))}}}));
-//# sourceMappingURL=lesson.js.map

@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import { toRefs } from 'vue';
+import { MeloOption } from '~melo/types';
+import { useDebounceFn } from '@vueuse/core';
+
+const props = defineProps<{
+  item: MeloOption;
+  index: number;
+}>();
+
+const emit = defineEmits<{
+  'delete': [optionId: number];
+  'edit': [option: MeloOption];
+  'setAnswer': [index: number, isAnswer: boolean];
+}>();
+const { item } = toRefs(props);
+
+function deleteOption() {
+  emit('delete', item.value.id);
+}
+
+const edit = useDebounceFn(() => {
+  emit('edit', item.value);
+}, 300);
+
+function setIsAnswer() {
+  emit('setAnswer', props.index, item.value.isAnswer);
+}
+</script>
+
 <template>
   <div>
     <!-- Bar -->
@@ -34,31 +64,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { toRefs } from 'vue';
-import type { Option } from '../../../types/question.type';
-
-const props = defineProps<{
-  item: Option;
-  index: number;
-}>();
-
-const emit = defineEmits(['delete', 'edit', 'setAnswer']);
-const { item } = toRefs(props);
-
-function deleteOption() {
-  emit('delete', item.value.id);
-}
-
-const edit = u.debounce(() => {
-  emit('edit', item.value);
-}, 300);
-
-function setIsAnswer() {
-  emit('setAnswer', props.index, item.value.isAnswer);
-}
-</script>
 
 <style scoped lang="scss">
 .c-option-item {

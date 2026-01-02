@@ -5,7 +5,7 @@
  * @license    __LICENSE__
  */
 
-import Stack from '../../stack';
+import { data, route, useAssetUri, useStack, useSystemUri } from '@windwalker-io/unicorn-next';
 import { merge } from 'lodash-es';
 
 export interface CustomOptions {
@@ -14,10 +14,13 @@ export interface CustomOptions {
 }
 
 export function defaultOptions(override: (options: Record<string, any>) => void | CustomOptions = () => {}): Record<string, any> {
-  const lang = u.data('locale.short') || 'zh_TW';
+  const lang = data('locale.short') || 'zh_TW';
+
+  const { root } = useSystemUri();
+  const { root: assetRoot } = useAssetUri();
 
   const options: Record<string, any> = {
-    document_base_url: u.uri('root'),
+    document_base_url: root(),
     plugins: [
       'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
       'preview', 'anchor', 'pagebreak', 'searchreplace', 'wordcount',
@@ -32,7 +35,7 @@ export function defaultOptions(override: (options: Record<string, any>) => void 
       'blocks fontsize styles styleselect formatselect fontsizeselect | ' +
       'link image media table code | fullscreen',
     language: lang === 'en_GB' ? null : lang,
-    language_url: u.uri('asset').root + 'vendor/tinymce-i18n/langs5/zh_TW.js',
+    language_url: assetRoot() + 'vendor/tinymce-i18n/langs5/zh_TW.js',
     font_size_formats: "13px 14px 15px 16px 18px 20px 22px 28px 36px 48px",
     menubar: false,
     remove_script_host: true,
@@ -43,10 +46,10 @@ export function defaultOptions(override: (options: Record<string, any>) => void 
     entity_encoding: 'raw',
     table_header_type: 'sectionCells',
     paste_data_images: true,
-    images_upload_url: u.route('file_upload'),
+    images_upload_url: route('file_upload'),
     images_upload_handler: tinyMceImageUploader(),
     height: 450,
-    content_css: u.uri('asset').root + 'css/front/editor.css',
+    content_css: assetRoot() + 'css/front/editor.css',
   };
 
   if (typeof override === 'object') {
@@ -60,21 +63,22 @@ export function defaultOptions(override: (options: Record<string, any>) => void 
 }
 
 export function tinyMceImageUploader() {
-  return function (blobInfo, progress) {
+  return function (blobInfo: any, progress: any) {
     return new Promise((resolve, reject) => {
-      u.data('no.save', true);
-      Stack.get('uploading').push();
+      data('no.save', true);
+      const stack = useStack('uploading');
+      stack.push();
 
       const xhr = new XMLHttpRequest;
       xhr.withCredentials = false;
-      xhr.open('POST', u.route('file_upload'));
+      xhr.open('POST', route('file_upload'));
 
       xhr.upload.onprogress = (e) => {
         progress(e.loaded / e.total * 100);
       };
 
       xhr.onload = function() {
-        Stack.get('uploading').pop();
+        stack.pop();
 
         if (xhr.status !== 200) {
           reject('HTTP Error: ' + decodeURIComponent(xhr.statusText));
@@ -86,7 +90,7 @@ export function tinyMceImageUploader() {
         if (!json || typeof json.data.url !== 'string') {
           reject('Invalid JSON: ' + xhr.responseText);
           console.error('Invalid JSON: ' + xhr.responseText);
-          u.data('no.save', false);
+          data('no.save', false);
           return;
         }
 
@@ -96,12 +100,12 @@ export function tinyMceImageUploader() {
 
         resolve(json.data.url);
 
-        u.data('no.save', false);
+        data('no.save', false);
       };
 
       const formData = new FormData();
       formData.append('file', blobInfo.blob(), blobInfo.filename());
-      formData.append(u.data('csrf-token'), '1');
+      formData.append(data('csrf-token'), '1');
 
       xhr.send(formData);
     })

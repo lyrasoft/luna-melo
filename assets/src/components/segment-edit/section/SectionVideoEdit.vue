@@ -1,3 +1,80 @@
+<script setup lang="ts">
+import type { VideoInfo } from 'js-video-url-parser/lib/urlParser';
+import { computed, ref } from 'vue';
+import type { Segment } from '../../../types/segment.type';
+import urlParser from 'js-video-url-parser';
+import FileUploader from '../../uploader/FileUploader.vue';
+
+const props = defineProps<{
+  item: Segment;
+}>();
+
+const emit = defineEmits();
+
+const item = defineModel<Segment>({
+  required: true
+});
+const videoName = computed<string>(() => isFile.value ? item.value.filename : item.value.src);
+const isFile = computed<boolean>(() => item.value.src !== '' && videoInfo.value === null);
+const isCloudVideo = computed<boolean>(() => item.value.src !== '' && videoInfo.value !== null);
+const itemSrcVal = ref<string>('');
+
+const videoInfo = computed<VideoInfo|undefined>(() => {
+  if (item.value.src !== '') {
+    return urlParser.parse(item.value.src);
+  }
+
+  return undefined;
+});
+
+const videoEmbedUrl = computed<string|undefined>(() => {
+  if (item.value.src !== '') {
+    return urlParser.create(
+      {
+        videoInfo: videoInfo.value,
+        format: 'embed'
+      }
+    );
+  }
+
+  return undefined;
+});
+
+async function clear(field: string) {
+  const v = await swal({
+    title: '確定要刪除嗎？此動作無法重置',
+    buttons: [
+      '取消',
+      '確認'
+    ],
+  });
+
+  if (v) {
+    props.item[field] = '';
+
+    emit('save', item.value);
+  }
+}
+
+function setItemSrc() {
+  item.value.src = itemSrcVal.value;
+
+  emit('save', item.value);
+}
+
+async function uploadVideo(src: string) {
+  item.value.src = src;
+
+  emit('save', item.value);
+}
+
+async function uploadCaption(src: string) {
+  item.value.captionSrc = src;
+
+  emit('save', item.value);
+}
+</script>
+
 <template>
   <div class="l-section-video-edit">
     <BFormGroup
@@ -111,81 +188,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import type { VideoInfo } from 'js-video-url-parser/lib/urlParser';
-import { computed, ref } from 'vue';
-import type { Segment } from '../../../types/segment.type';
-import urlParser from 'js-video-url-parser';
-import FileUploader from '../../uploader/FileUploader.vue';
-
-const props = defineProps<{
-  item: Segment;
-}>();
-
-const emit = defineEmits(['save']);
-
-const item = ref<Segment>(props.item);
-const videoName = computed<string>(() => isFile.value ? item.value.filename : item.value.src);
-const isFile = computed<boolean>(() => item.value.src !== '' && videoInfo.value === null);
-const isCloudVideo = computed<boolean>(() => item.value.src !== '' && videoInfo.value !== null);
-const itemSrcVal = ref<string>('');
-
-const videoInfo = computed<VideoInfo|undefined>(() => {
-  if (item.value.src !== '') {
-    return urlParser.parse(item.value.src);
-  }
-
-  return undefined;
-});
-
-const videoEmbedUrl = computed<string|undefined>(() => {
-  if (item.value.src !== '') {
-    return urlParser.create(
-      {
-        videoInfo: videoInfo.value,
-        format: 'embed'
-      }
-    );
-  }
-
-  return undefined;
-});
-
-async function clear(field: string) {
-  const v = await swal({
-    title: '確定要刪除嗎？此動作無法重置',
-    buttons: [
-      '取消',
-      '確認'
-    ],
-  });
-
-  if (v) {
-    props.item[field] = '';
-
-    emit('save', item.value);
-  }
-}
-
-function setItemSrc() {
-  item.value.src = itemSrcVal.value;
-
-  emit('save', item.value);
-}
-
-async function uploadVideo(src: string) {
-  item.value.src = src;
-
-  emit('save', item.value);
-}
-
-async function uploadCaption(src: string) {
-  item.value.captionSrc = src;
-
-  emit('save', item.value);
-}
-</script>
 
 <style scoped lang="scss">
 .l-section-video-edit {

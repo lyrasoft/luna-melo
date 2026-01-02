@@ -1,128 +1,8 @@
-<template>
-  <div>
-    <BFormGroup
-      label="題目內容編輯"
-      label-for="input-question-content"
-      label-class="mb-2"
-      class="mb-3"
-    >
-      <BFormTextarea id="input-question-content" v-model="question.content" rows="5" />
-    </BFormGroup>
-
-    <BFormGroup
-      label="題型"
-      label-for="input-question-type"
-      label-class="mb-2"
-      class="mb-3"
-    >
-      <BFormRadioGroup
-        v-model="question.type"
-        :options="typeOptions"
-        button-variant="outline-primary"
-        name="input-question-type"
-        buttons
-      />
-    </BFormGroup>
-
-    <image-uploader
-      :image="question.image"
-      label="上傳圖片(選填)"
-      @uploaded="imageUploaded"
-      @clear="clearImage"
-    ></image-uploader>
-
-    <BFormGroup v-if="question.type === 'boolean'"
-      label="答案"
-      label-for="input-question-answer"
-      label-class="mb-2"
-      class="mb-3"
-    >
-      <BFormRadioGroup
-        v-model="question.answer"
-        :options="booleanOptions"
-        button-variant="outline-primary"
-        name="input-question-answer"
-        buttons
-      />
-    </BFormGroup>
-
-    <BFormGroup v-if="question.type === 'cloze'"
-      label="答案"
-      label-for="input-question-answer"
-      label-class="mb-2"
-      class="mb-3"
-    >
-      <BFormInput
-        id="input-question-answer"
-        v-model="question.answer"
-        type="text"
-        trim
-      />
-    </BFormGroup>
-
-    <div class="c-option-list mt-5"
-      v-if="hasOptionsType.indexOf(question.type) !== -1"
-    >
-      <div class="d-flex">
-        <div style="width: 45px;"></div>
-        <div class="text-center" style="width: 300px;">
-          選項內容
-        </div>
-
-        <div class="ms-3">
-          正確答案
-        </div>
-      </div>
-      <draggable
-        v-model="options"
-        item-key="uid"
-        handle=".handle"
-        @change="reorder"
-      >
-        <template #item="{element, index}">
-          <option-edit
-            :item="element"
-            :key="element.id"
-            :index="index"
-            @delete="deleteOption"
-            @edit="save"
-            @setAnswer="setAnswer"
-          ></option-edit>
-        </template>
-      </draggable>
-
-      <div class="text-center mb-2 mt-3">
-        <BButton @click="createOption">
-          新增選項
-        </BButton>
-      </div>
-    </div>
-
-    <BFormGroup
-      label="配分"
-      label-for="input-question-score"
-      label-class="mb-2"
-      class="mb-3"
-      description="限填 1~100，測驗滿分為 100"
-    >
-      <BFormInput
-        id="input-question-score"
-        v-model="question.score"
-        type="number"
-        max="100"
-        min="1"
-        @input="changeScore"
-      />
-    </BFormGroup>
-  </div>
-</template>
-
 <script setup lang="ts">
 import swal from 'sweetalert';
 import { onMounted, ref, toRefs, watch } from 'vue';
 import { scoreLimit } from '~melo/features/quiz/question-service';
-import Utilities from '../../../services/utilities';
-import { Option, Question } from '../../../types/question.type';
+import { MeloOption, Question } from '~melo/types';
 import OptionEdit from './OptionEdit.vue';
 import ImageUploader from '../../uploader/ImageUploader.vue';
 
@@ -134,7 +14,7 @@ const emit = defineEmits(['save']);
 
 const { question } = toRefs(props);
 const image = ref<null|File>(null)
-const options = ref<Option[]>([]);
+const options = ref<MeloOption[]>([]);
 
 const typeOptions = [
   { text: '是非題', value: 'boolean' },
@@ -282,6 +162,125 @@ watch(question.value, (newValue) => {
   question.value.isMultiple = newValue.type === 'multiple';
 }, { deep: true });
 </script>
+
+<template>
+  <div>
+    <BFormGroup
+      label="題目內容編輯"
+      label-for="input-question-content"
+      label-class="mb-2"
+      class="mb-3"
+    >
+      <BFormTextarea id="input-question-content" v-model="question.content" rows="5" />
+    </BFormGroup>
+
+    <BFormGroup
+      label="題型"
+      label-for="input-question-type"
+      label-class="mb-2"
+      class="mb-3"
+    >
+      <BFormRadioGroup
+        v-model="question.type"
+        :options="typeOptions"
+        button-variant="outline-primary"
+        name="input-question-type"
+        buttons
+      />
+    </BFormGroup>
+
+    <image-uploader
+      :image="question.image"
+      label="上傳圖片(選填)"
+      @uploaded="imageUploaded"
+      @clear="clearImage"
+    ></image-uploader>
+
+    <BFormGroup v-if="question.type === 'boolean'"
+      label="答案"
+      label-for="input-question-answer"
+      label-class="mb-2"
+      class="mb-3"
+    >
+      <BFormRadioGroup
+        v-model="question.answer"
+        :options="booleanOptions"
+        button-variant="outline-primary"
+        name="input-question-answer"
+        buttons
+      />
+    </BFormGroup>
+
+    <BFormGroup v-if="question.type === 'cloze'"
+      label="答案"
+      label-for="input-question-answer"
+      label-class="mb-2"
+      class="mb-3"
+    >
+      <BFormInput
+        id="input-question-answer"
+        v-model="question.answer"
+        type="text"
+        trim
+      />
+    </BFormGroup>
+
+    <div class="c-option-list mt-5"
+      v-if="hasOptionsType.indexOf(question.type) !== -1"
+    >
+      <div class="d-flex">
+        <div style="width: 45px;"></div>
+        <div class="text-center" style="width: 300px;">
+          選項內容
+        </div>
+
+        <div class="ms-3">
+          正確答案
+        </div>
+      </div>
+      <draggable
+        v-model="options"
+        item-key="uid"
+        handle=".handle"
+        @change="reorder"
+      >
+        <template #item="{element, index}">
+          <option-edit
+            :item="element"
+            :key="element.id"
+            :index="index"
+            @delete="deleteOption"
+            @edit="save"
+            @setAnswer="setAnswer"
+          ></option-edit>
+        </template>
+      </draggable>
+
+      <div class="text-center mb-2 mt-3">
+        <BButton @click="createOption">
+          新增選項
+        </BButton>
+      </div>
+    </div>
+
+    <BFormGroup
+      label="配分"
+      label-for="input-question-score"
+      label-class="mb-2"
+      class="mb-3"
+      description="限填 1~100，測驗滿分為 100"
+    >
+      <BFormInput
+        id="input-question-score"
+        v-model="question.score"
+        type="number"
+        max="100"
+        min="1"
+        @input="changeScore"
+      />
+    </BFormGroup>
+  </div>
+</template>
 
 <style scoped lang="scss">
 

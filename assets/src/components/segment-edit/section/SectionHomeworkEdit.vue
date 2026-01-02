@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { ref, toRefs } from 'vue';
+import { Segment } from '../../../types/segment.type';
+import Editor from '@tinymce/tinymce-vue';
+import { defaultOptions } from '~melo/shared/form/tinymce-option';
+
+const props = defineProps<{
+  item: Segment;
+}>();
+
+const { item } = toRefs(props);
+const editorOptions = ref(defaultOptions());
+</script>
+
 <template>
   <div>
     <BFormGroup
@@ -23,20 +37,6 @@
     </BFormGroup>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, toRefs } from 'vue';
-import { Segment } from '../../../types/segment.type';
-import Editor from '@tinymce/tinymce-vue';
-import { defaultOptions } from '~melo/shared/form/tinymce-option';
-
-const props = defineProps<{
-  item: Segment;
-}>();
-
-const { item } = toRefs(props);
-const editorOptions = ref(defaultOptions());
-</script>
 
 <style scoped lang="scss">
 

@@ -39,13 +39,9 @@ use Windwalker\Form\Form;
 @extends('melo.admin.lesson-edit-layout', ['lessonId' => $lessonId])
 
 @section('content')
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="l-segment-edit__card card">
-                <div class="l-segment-edit__card-body card-body">
-                    <segment-edit-app id="segment-edit-app"></segment-edit-app>
-                </div>
-            </div>
+    <div class="l-segment-edit">
+        <div class="l-segment-edit__card-body">
+            <segment-edit-app id="segment-edit-app"></segment-edit-app>
         </div>
     </div>
 @stop

@@ -34,52 +34,46 @@ $lessonId ??= null;
 @section('content-container')
     @include('@messages')
 
-    <div class="row">
+    <div class="">
         @if($lessonId)
-            <div class="col-12">
-                <div class="mb-4">
-                    <ul class="nav nav-pills">
-                        <li class="nav-item">
-                            <a class="nav-link {{ $menuHelper->active('lesson_edit') }}"
-                                href="{{ $nav->to('lesson_edit', ['id' => $lessonId]) }}">
-                                基本資料
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $menuHelper->active('segment_edit') }}"
-                                href="{{ $nav->to('segment_edit', ['lesson_id' => $lessonId]) }}">
-                                章節編輯
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $menuHelper->active('user_quiz_list') }}"
-                                href="{{ $nav->to('user_quiz_list', ['lesson_id' => $lessonId]) }}">
-                                考試報表
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $menuHelper->active('user_homework_list') }}"
-                                href="{{ $nav->to('user_homework_list', ['lesson_id' => $lessonId]) }}">
-                                作業瀏覽
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $menuHelper->active(['student_list', 'student_lesson_list']) }}"
-                                href="{{ $nav->to('student_list', ['lesson_id' => $lessonId]) }}">
-                                學生列表
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="mb-4">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link {{ $menuHelper->active('lesson_edit') }}"
+                            href="{{ $nav->to('lesson_edit', ['id' => $lessonId]) }}">
+                            基本資料
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ $menuHelper->active('segment_edit') }}"
+                            href="{{ $nav->to('segment_edit', ['lesson_id' => $lessonId]) }}">
+                            章節編輯
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ $menuHelper->active('user_quiz_list') }}"
+                            href="{{ $nav->to('user_quiz_list', ['lesson_id' => $lessonId]) }}">
+                            考試報表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ $menuHelper->active('user_homework_list') }}"
+                            href="{{ $nav->to('user_homework_list', ['lesson_id' => $lessonId]) }}">
+                            作業瀏覽
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ $menuHelper->active(['student_list', 'student_lesson_list']) }}"
+                            href="{{ $nav->to('student_list', ['lesson_id' => $lessonId]) }}">
+                            學生列表
+                        </a>
+                    </li>
+                </ul>
             </div>
         @endif
 
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    @yield('content', 'Content')
-                </div>
-            </div>
+        <div class="">
+            @yield('content', 'Content')
         </div>
     </div>
 @stop

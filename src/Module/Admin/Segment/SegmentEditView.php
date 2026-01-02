@@ -27,6 +27,7 @@ use Windwalker\ORM\ORM;
  */
 #[ViewModel(
     layout: 'segment-edit',
+    js: 'segment-edit.ts'
 )]
 class SegmentEditView implements ViewModelInterface
 {

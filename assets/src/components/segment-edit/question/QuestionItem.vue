@@ -1,3 +1,31 @@
+<script setup lang="ts">
+import { toRefs } from 'vue';
+import type { Question } from '../../../types/question.type';
+import { QuestionType, scoreLimit } from '~melo/features/quiz/question-service';
+
+const props = defineProps<{
+  item: Question;
+  index: number;
+}>();
+
+const emit = defineEmits(['edit', 'delete', 'save']);
+
+const { item } = toRefs(props);
+
+function editQuestion() {
+  emit('edit', item.value);
+}
+
+function deleteQuestion() {
+  emit('delete', item.value.id);
+}
+
+const changeScore = u.debounce(() => {
+  item.value.score = scoreLimit(item.value.score);
+  emit('save', item.value);
+}, 300);
+</script>
+
 <template>
   <div>
     <!-- Bar -->
@@ -42,34 +70,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { toRefs } from 'vue';
-import type { Question } from '../../../types/question.type';
-import { QuestionType, scoreLimit } from '~melo/features/quiz/question-service';
-
-const props = defineProps<{
-  item: Question;
-  index: number;
-}>();
-
-const emit = defineEmits(['edit', 'delete', 'save']);
-
-const { item } = toRefs(props);
-
-function editQuestion() {
-  emit('edit', item.value);
-}
-
-function deleteQuestion() {
-  emit('delete', item.value.id);
-}
-
-const changeScore = u.debounce(() => {
-  item.value.score = scoreLimit(item.value.score);
-  emit('save', item.value);
-}, 300);
-</script>
 
 <style scoped lang="scss">
 .c-question-item {

@@ -1,6 +1,26 @@
+<script setup lang="ts">
+import { useModal } from 'bootstrap-vue-next';
+
+const props = defineProps<{
+  chapterId: number;
+}>();
+
+const emit = defineEmits(['create']);
+const { show, hide } = useModal('section-type-modal-' + props.chapterId);
+
+defineExpose({ show });
+
+function select(type: string, options: Object = {}) {
+  emit('create', type, options);
+
+  hide();
+}
+
+</script>
+
 <template>
   <BModal
-    :id="'section-type-modal-' + props.chapterId"
+    :id="'section-type-modal-' + chapterId"
     title="選擇想要新增的小節類型"
     dialog-class="mb-6"
     hideFooter="true"
@@ -65,26 +85,6 @@
     </div>
   </BModal>
 </template>
-
-<script setup lang="ts">
-import { useModal } from 'bootstrap-vue-next';
-
-const props = defineProps<{
-  chapterId: number;
-}>();
-
-const emit = defineEmits(['create']);
-const { show, hide } = useModal('section-type-modal-' + props.chapterId);
-
-defineExpose({ show });
-
-function select(type: string, options: Object = {}) {
-  emit('create', type, options);
-
-  hide();
-}
-
-</script>
 
 <style scoped lang="scss">
 

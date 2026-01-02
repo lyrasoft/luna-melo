@@ -6,65 +6,58 @@ namespace Lyrasoft\Melo\Module\Admin\Segment;
 
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Repository\SegmentRepository;
+use Unicorn\Attributes\Ajax;
+use Unicorn\Controller\AjaxControllerTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
+use Windwalker\Core\Attributes\Filter;
 use Windwalker\Core\Attributes\JsonApi;
 use Windwalker\Core\Attributes\Method;
+use Windwalker\Core\Attributes\Request\Input;
+use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Autowire;
+use Windwalker\DI\Attributes\Inject;
 use Windwalker\ORM\ORM;
 
 #[Controller()]
 class SegmentController
 {
-    #[JsonApi]
-    public function ajax(AppContext $app): mixed
-    {
-        $task = $app->input('task');
+    use AjaxControllerTrait;
 
-        return $app->call([$this, $task]);
-    }
-
+    #[Ajax]
     #[Method('POST')]
     public function save(
-        AppContext $app,
         ORM $orm,
+        #[Input] array $item,
     ): object {
-        $data = $app->input('data');
-        $isNew = (int) $app->input('isNew');
-
-        if ($isNew === 1) {
-            return $orm->createOne(Segment::class, $data);
-        }
-
-        return $orm->saveOne(Segment::class, $data);
+        return $orm->saveOne(Segment::class, $item);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function delete(
         AppContext $app,
         ORM $orm,
+        #[Input, Filter('int')] int $id,
     ): void {
-        $segmentId = $app->input('id');
-
-        $orm->deleteWhere(Segment::class, ['id' => $segmentId]);
+        $orm->deleteBatch(Segment::class, ['id' => $id]);
     }
 
+    #[Ajax]
     #[Method('GET')]
     public function prepareSegments(
-        AppContext $app,
         #[Autowire] SegmentRepository $repository,
-    ): \Windwalker\Data\Collection {
-        $lessonId = $app->input('lesson_id');
-        $parentId = $app->input('parent_id') ?? 0;
-
+        #[Input, Filter('int')] int $lessonId,
+        #[Input, Filter('int')] int $parentId = 0,
+    ): Collection {
         return $repository->getListSelector()
-            ->where('lesson_id', (int) $lessonId)
-            ->where('parent_id', (int) $parentId)
+            ->where('lesson_id', $lessonId)
+            ->where('parent_id', $parentId)
             ->order('ordering', 'ASC')
-            ->limit(0)
             ->all(Segment::class);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function reorder(
         AppContext $app,

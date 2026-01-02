@@ -310,15 +310,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lyrasoft/melo@workspace:."
   dependencies:
+    "@tinymce/tinymce-vue": "npm:^6.3.0"
     "@types/sortablejs": "npm:^1"
     "@vitejs/plugin-vue": "npm:^6.0.3"
     "@vue/tsconfig": "npm:^0.7.0"
+    "@vueuse/core": "npm:^14.1.0"
     "@windwalker-io/unicorn-next": "npm:^0.1.11"
-    bootstrap-vue-next: "npm:^0.26.20"
+    bootstrap-vue-next: "npm:^0.42.0"
+    js-video-url-parser: "npm:^0.5.1"
     sortablejs: "npm:^1.15.6"
     typescript: "npm:^5.7.3"
     unplugin-dts: "npm:^1.0.0-beta.6"
     vite: "npm:^7.3.0"
+    vite-plugin-css-injected-by-js: "npm:^3.5.2"
     vue: "npm:^3.5.26"
     vue-draggable-plus: "npm:^0.6.0"
   languageName: unknown
@@ -539,6 +543,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tinymce/tinymce-vue@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@tinymce/tinymce-vue@npm:6.3.0"
+  peerDependencies:
+    tinymce: ^8.0.0 || ^7.0.0 || ^6.0.0 || ^5.5.1
+    vue: ^3.0.0
+  peerDependenciesMeta:
+    tinymce:
+      optional: true
+  checksum: 10c0/74788a25aae071e1cb2f1ad91e41f9eda6ba0aa8846e687745ea2846d117fd42fd63bd8a23f44f32d31528a8fb1b28d182b07ee27f82f3f48f0d97cbc7ec41a6
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:1.0.8, @types/estree@npm:^1.0.0":
   version: 1.0.8
   resolution: "@types/estree@npm:1.0.8"
@@ -550,6 +567,13 @@ __metadata:
   version: 1.15.9
   resolution: "@types/sortablejs@npm:1.15.9"
   checksum: 10c0/d8ddf3da28a84a023d3003aa64b6495a7112e3945ac05d937afdb7c182b04a1025f126b2977ed8d5a9ede229b4bab85f037efbc97fde8a71128e056ac3122fa9
+  languageName: node
+  linkType: hard
+
+"@types/web-bluetooth@npm:^0.0.21":
+  version: 0.0.21
+  resolution: "@types/web-bluetooth@npm:0.0.21"
+  checksum: 10c0/5f47c5ec452ca31e6a9b44c8aaa54b66c4f57d4aca00166c45902a3883139580e14b254b774172ff982ba4458cc444b5aa59bb4573c2fd34562cfa599721f8e4
   languageName: node
   linkType: hard
 
@@ -723,6 +747,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vueuse/core@npm:^14.1.0":
+  version: 14.1.0
+  resolution: "@vueuse/core@npm:14.1.0"
+  dependencies:
+    "@types/web-bluetooth": "npm:^0.0.21"
+    "@vueuse/metadata": "npm:14.1.0"
+    "@vueuse/shared": "npm:14.1.0"
+  peerDependencies:
+    vue: ^3.5.0
+  checksum: 10c0/e1ed368c832f2836ae62f3969cd46691fcef40a34a3909898012e6143395cb8e31d9ebb6ccfd9b0b9fb7493b073282ce226e4fb62ab84fc2f9557d59f232b6f0
+  languageName: node
+  linkType: hard
+
+"@vueuse/metadata@npm:14.1.0":
+  version: 14.1.0
+  resolution: "@vueuse/metadata@npm:14.1.0"
+  checksum: 10c0/983296b13dc979e8a18831315631e0d08934e655edd0d12073c06512228a5a5140af0671eb28b20068ef42c55312a58287a7d51314427d2edcbbf0c38f5994c8
+  languageName: node
+  linkType: hard
+
+"@vueuse/shared@npm:14.1.0":
+  version: 14.1.0
+  resolution: "@vueuse/shared@npm:14.1.0"
+  peerDependencies:
+    vue: ^3.5.0
+  checksum: 10c0/642ca681ffea7bf24de970bed6580fafc01bd66a4a185f8eb05ddc2450265f1ede86b79b2d8660d22d39ec3f498658f9fedadf2606dfd94d730d443bb0b10f2a
+  languageName: node
+  linkType: hard
+
 "@windwalker-io/unicorn-next@npm:^0.1.11":
   version: 0.1.11
   resolution: "@windwalker-io/unicorn-next@npm:0.1.11"
@@ -815,9 +868,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap-vue-next@npm:^0.26.20":
-  version: 0.26.20
-  resolution: "bootstrap-vue-next@npm:0.26.20"
+"bootstrap-vue-next@npm:^0.42.0":
+  version: 0.42.0
+  resolution: "bootstrap-vue-next@npm:0.42.0"
   peerDependencies:
     "@floating-ui/vue": "*"
     "@vueuse/core": "*"
@@ -830,7 +883,7 @@ __metadata:
       optional: true
     vue-router:
       optional: true
-  checksum: 10c0/49724be1b6137331246684d84eb3f3b03ca15c21b229c19f7ed840cd3c24bdf1c21c3a385ef403f7d1c5cbca28319c7f4b6cce377957289825ae5743942ad97a
+  checksum: 10c0/584e77c3543b20a4e5fd9b951e268d47001da79d8a17b6471ddb882304485d9beb365f4f46c6f5ce5da22c7980237244e9834eb0b1249ea6b1cd81218a738601
   languageName: node
   linkType: hard
 
@@ -1338,6 +1391,13 @@ __metadata:
   version: 3.1.1
   resolution: "isexe@npm:3.1.1"
   checksum: 10c0/9ec257654093443eb0a528a9c8cbba9c0ca7616ccb40abd6dde7202734d96bb86e4ac0d764f0f8cd965856aacbff2f4ce23e730dc19dfb41e3b0d865ca6fdcc7
+  languageName: node
+  linkType: hard
+
+"js-video-url-parser@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "js-video-url-parser@npm:0.5.1"
+  checksum: 10c0/981e3fa5ef076d6a5dd58f0360bb9b82c018fbf343366a0143a681c0c4a8aedb499e188bd0f54d73cc2458dccc434d60af61de24b11aa101f10f87ff644c7044
   languageName: node
   linkType: hard
 
@@ -1976,6 +2036,15 @@ __metadata:
     picomatch: "npm:^4.0.3"
     webpack-virtual-modules: "npm:^0.6.2"
   checksum: 10c0/273c1eab0eca4470c7317428689295c31dbe8ab0b306504de9f03cd20c156debb4131bef24b27ac615862958c5dd950a3951d26c0723ea774652ab3624149cff
+  languageName: node
+  linkType: hard
+
+"vite-plugin-css-injected-by-js@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "vite-plugin-css-injected-by-js@npm:3.5.2"
+  peerDependencies:
+    vite: ">2.0.0-0"
+  checksum: 10c0/5c6a2434d4f302640a4bfc7695d56cf83eca03a4f89f05820057fedd8a2e788186105942360d19808042872ba0970ed6b1c04cd02337bbe67d8321993a464c04
   languageName: node
   linkType: hard
 

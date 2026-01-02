@@ -1,8 +1,10 @@
+import { SegmentType } from '~melo/enum/SegmentType';
+
 export interface Segment {
-  id: number;
+  id?: number | null;
   lessonId: number;
   parentId: number;
-  type: string;
+  type: SegmentType;
   title: string;
   content: string;
   src: string;
