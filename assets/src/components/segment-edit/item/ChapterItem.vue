@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { uniqueItemList, uniqueItem } from '@lyrasoft/ts-toolkit/vue';
-import { route, useHttpClient, useUnicorn } from '@windwalker-io/unicorn-next';
+import { route, slideDown, slideUp, useHttpClient, useUnicorn } from '@windwalker-io/unicorn-next';
 import { BButton, BModal, BTooltip, vBTooltip } from 'bootstrap-vue-next';
 import swal from 'sweetalert';
-import { computed, defineAsyncComponent, inject, onMounted, Ref, ref, shallowRef, toRefs } from 'vue';
+import {
+  computed,
+  defineAsyncComponent,
+  inject,
+  onMounted,
+  Ref,
+  ref,
+  shallowRef,
+  toRefs,
+  useTemplateRef,
+  watch
+} from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import { useSegmentEditor } from '~melo/features/segment/useSegmentEditor';
 import SectionItem from './SectionItem.vue';
@@ -18,19 +29,50 @@ const props = defineProps<{
 
 const chapter = ref(props.chapter);
 const sections = ref<Segment[]>([]);
-const sectionTypeSelector = ref<InstanceType<typeof TypeSelector>>();
 const editComponent = shallowRef<Component>();
 const currentSection = ref<Segment>();
-const currentIndex = ref<number>();
-const VideoEdit = defineAsyncComponent(() => import('../section/SectionVideoEdit.vue'));
-const HomeworkEdit = defineAsyncComponent(() => import('../section/SectionHomeworkEdit.vue'));
-const QuizEdit = defineAsyncComponent(() => import('../section/SectionQuizEdit.vue'));
+
+// Open / Close
+const isOpen = defineModel<boolean>('open', {
+  default: false,
+})
+const slideDisplay = ref(isOpen.value ? 'display: flex;' : 'display: none;');
+const sectionsContainer = useTemplateRef<HTMLDivElement>('sectionsContainer');
+
+watch(isOpen, () => {
+  if (!sectionsContainer.value) {
+    return;
+  }
+
+  slideDisplay.value = '';
+
+  if (isOpen.value) {
+    slideDown(sectionsContainer.value)
+  } else {
+    slideUp(sectionsContainer.value);
+  }
+});
+
+function open() {
+  isOpen.value = true;
+}
+
+function close() {
+  isOpen.value = false;
+}
+
+function toggleOpen() {
+  isOpen.value = !isOpen.value;
+}
+
+defineExpose({
+  open,
+  close,
+  toggleOpen,
+});
 
 // Edit
 const {
-  isEditing,
-  hasChanged,
-  segment,
   isActive,
   edit
 } = useSegmentEditor();
@@ -208,22 +250,32 @@ async function deleteSection(id: number) {
             {{ chapter?.title || '(無章節名稱)' }}
           </a>
 
-          <div class="c-chapter-item__actions ms-auto"
+          <div class="c-chapter-item__actions ms-auto d-flex align-items-center gap-2"
             style="z-index: 3;">
+            <span class="badge bg-secondary rounded-pill">
+              {{ sections.length }}
+            </span>
+
             <a href="javascript://"
               class="c-chapter-item__delete"
               v-b-tooltip="'刪除章節'"
               @click="$emit('delete', chapter.id)">
               <i class="fal fa-trash text-danger"></i>
             </a>
+
+            <a href="javascript://"
+              class="c-chapter-item__toggle"
+              v-b-tooltip="'顯示/隱藏小節'"
+              @click="toggleOpen">
+              <i class="far" :class="[isOpen ? 'fa-chevron-down' : 'fa-chevron-up']"></i>
+            </a>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card-body bg-light d-flex flex-column gap-3">
-      <h5 class="mb-0">小節 ({{ sections.length }})</h5>
-
+    <div ref="sectionsContainer" class="card-body bg-light flex-column gap-3"
+      :style="slideDisplay">
       <!-- Sections -->
       <div class="c-section-list">
         <VueDraggable

@@ -1,5 +1,5 @@
 import { createGlobalState, useDebounceFn } from '@vueuse/core';
-import { route, useHttpClient } from '@windwalker-io/unicorn-next';
+import { route, sleep, useHttpClient } from '@windwalker-io/unicorn-next';
 import { computed, ref, watch } from 'vue';
 import { useLoading } from '@lyrasoft/ts-toolkit/vue';
 import { Segment } from '~melo/types';
@@ -40,6 +40,7 @@ export const useSegmentEditor = createGlobalState(() => {
       return;
     }
 
+    const start = Date.now();
     const { post } = await useHttpClient();
 
     // Save
@@ -50,6 +51,13 @@ export const useSegmentEditor = createGlobalState(() => {
         isNew: !segment.value.id,
       }
     );
+
+    // At least run 500ms
+    const elapsed = Date.now() - start;
+
+    if (elapsed < 500) {
+      await sleep(500 - elapsed);
+    }
   });
 
   const saveDebounced = useDebounceFn(save, 500);

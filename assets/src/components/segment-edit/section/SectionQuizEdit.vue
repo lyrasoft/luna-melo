@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { useModal } from 'bootstrap-vue-next';
+import { uniqueItemList } from '@lyrasoft/ts-toolkit/vue';
+import { route, useHttpClient } from '@windwalker-io/unicorn-next';
+import { BButton, BFormGroup, BFormInput, BFormRadioGroup, BModal, useModal } from 'bootstrap-vue-next';
 import swal from 'sweetalert';
 import { onMounted, ref } from 'vue';
+import { VueDraggable } from 'vue-draggable-plus';
 import { Question, Segment } from '~melo/types';
 import QuestionItem from '../question/QuestionItem.vue';
 import QuestionEdit from '../question/QuestionEdit.vue';
 
-const props = defineProps<{
-  item: Segment;
-}>();
-
-const item = ref<Segment>(props.item);
+const item = defineModel<Segment>({
+  required: true
+});
 
 const skipOptions = [
   { text: '可以', value: true },
@@ -29,8 +30,10 @@ onMounted(async () => {
 async function prepareQuestions() {
   loading.value = true;
 
-  const res = u.$http.get(
-    u.route('prepare_questions'),
+  const { get } = await useHttpClient();
+
+  const res = await get(
+    route('prepare_questions'),
     {
       params: {
         segment_id: item.value.id
@@ -38,7 +41,7 @@ async function prepareQuestions() {
     }
   );
 
-  questions.value = Utilities.prepareList((await res).data.data);
+  questions.value = uniqueItemList(res.data.data);
 
   loading.value = false;
 }
@@ -63,14 +66,16 @@ async function createQuestion() {
 }
 
 async function reorder() {
-  const orders = {};
+  const orders: Record<number, number> = {};
 
   questions.value.forEach((item, i) => {
     orders[item.id] = i + 1;
   });
 
-  await u.$http.post(
-    u.route('reorder_questions'),
+  const { post } = await useHttpClient();
+
+  await post(
+    route('reorder_questions'),
     {
       orders: orders,
     }
@@ -101,8 +106,10 @@ async function deleteQuestion(id: number) {
   );
 
   if (v) {
-    await u.$http.post(
-      u.route('delete_question'),
+    const { post } = await useHttpClient();
+
+    await post(
+      route('delete_question'),
       {
         id: id
       }
@@ -118,8 +125,10 @@ async function saveAndCloseModal() {
 }
 
 async function save(data: any, isNew: number = 0) {
-  await u.$http.post(
-    u.route('save_question'),
+  const { post } = await useHttpClient();
+
+  await post(
+    route('save_question'),
     {
       data: data,
       isNew: isNew
@@ -177,23 +186,22 @@ async function saveQuestion(data: Question) {
       </div>
 
       <div v-else class="c-quiz-list">
-        <draggable
+        <VueDraggable
           v-model="questions"
           item-key="uid"
           handle=".handle"
           @change="reorder"
         >
-          <template #item="{element, index}">
-            <question-item
-              :item="element"
-              :key="element.id"
-              :index="index"
-              @edit="editQuestion"
-              @delete="deleteQuestion"
-              @save="saveQuestion"
-            ></question-item>
-          </template>
-        </draggable>
+          <QuestionItem
+            v-for="(element, index) in questions"
+            :item="element"
+            :key="element.id"
+            :index="index"
+            @edit="editQuestion"
+            @delete="deleteQuestion"
+            @save="saveQuestion"
+          ></QuestionItem>
+        </VueDraggable>
       </div>
     </div>
 

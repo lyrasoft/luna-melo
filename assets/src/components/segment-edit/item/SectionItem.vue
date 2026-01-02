@@ -21,6 +21,7 @@ const emit = defineEmits<{
 const {
   edit,
   isEditing,
+  isActive,
 } = useSegmentEditor();
 
 const { section } = toRefs(props);
@@ -52,41 +53,51 @@ function segmentTypeTitle(type: SegmentType) {
 <template>
   <div class="card border bg-white">
     <!-- Bar -->
-    <div class="c-section-item card-body p-2">
-      <div class="d-flex align-items-center gap-2">
-        <div class="c-section-item__handle handle" style="cursor: move;">
+    <div class="c-section-item card-body p-2"
+      :class="{ 'bg-primary-subtle': isActive(section) }">
+      <div class="c-section-item__content d-flex align-items-center gap-2 w-100" style="min-width: 1px">
+        <!-- Drag Handle -->
+        <div class="c-section-item__handle handle" style="cursor: move; z-index: 3;">
           <span class="fal fa-bars"></span>
         </div>
-        <div class="c-section-item__content d-flex align-items-center gap-2 w-100" style="min-width: 1px">
-          <div class="fa-fw pe-1 me-2" :class="SegmentTypeIcon[section.type]"></div>
-          <div class="me-1">
-            {{ props.chapterIndex + 1 }}.{{ props.sectionIndex + 1 }}
+
+        <!-- Icon -->
+        <div class="fa-fw" :class="SegmentTypeIcon[section.type]"></div>
+
+        <!-- Serial -->
+        <div class="me-1">
+          {{ props.chapterIndex + 1 }}.{{ props.sectionIndex + 1 }}
+        </div>
+
+        <!-- Title -->
+        <a href="#" class="c-section-item__title text-truncate stretched-link text-decoration-none"
+          @click.prevent="edit(section)"
+        >
+          {{ section.title || '無標題小節' }}
+        </a>
+
+        <!-- Type -->
+        <div class="fs-14 text-nowrap me-2" :class="SegmentTypeColor[section.type]">
+          {{ segmentTypeTitle(section.type) }}
+        </div>
+
+        <!-- Actions -->
+        <div class="c-section-item__actions ms-auto d-flex align-items-center gap-2"
+          style="z-index: 3;">
+          <div class="c-section-item__preview">
+            <a href="javascript://"
+              @click="setPreview"
+              class="btn btn-sm text-nowrap"
+              :class="section.preview ? 'btn-warning' : 'btn-outline-secondary'"
+              v-html="section.preview ? '可試閱' : '不可試閱'"
+            >
+            </a>
           </div>
 
-          <a class="c-section-item__title text-truncate pe-1 me-2" @click="edit(section)">
-            {{ section.title || '無標題小節' }}
-          </a>
-
-          <div class="fs-14 text-nowrap me-2" :class="SegmentTypeColor[section.type]">
-            {{ segmentTypeTitle(section.type) }}
-          </div>
-
-          <div class="c-section-item__actions ms-auto d-flex align-items-center gap-2">
-            <div class="c-section-item__preview">
-              <a href="javascript://"
-                @click="setPreview"
-                class="btn btn-sm text-nowrap"
-                :class="section.preview ? 'btn-warning' : 'btn-outline-secondary'"
-                v-html="section.preview ? '可試閱' : '不可試閱'"
-              >
-              </a>
-            </div>
-
-            <div class="c-section-item__delete">
-              <a href="javascript://" @click="deleteSection">
-                <i class="fal fa-trash text-danger"></i>
-              </a>
-            </div>
+          <div class="c-section-item__delete">
+            <a href="javascript://" @click="deleteSection">
+              <i class="fal fa-trash text-danger"></i>
+            </a>
           </div>
         </div>
       </div>

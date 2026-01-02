@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BButton, BFormGroup, BFormInput } from 'bootstrap-vue-next';
 import type { VideoInfo } from 'js-video-url-parser/lib/urlParser';
 import { computed, ref } from 'vue';
 import type { Segment } from '../../../types/segment.type';
@@ -152,7 +153,7 @@ async function uploadCaption(src: string) {
           </small>
         </div>
 
-        <file-uploader accept=".vtt" @uploaded="uploadCaption"></file-uploader>
+        <FileUploader accept=".vtt" @uploaded="uploadCaption"></FileUploader>
       </div>
 
       <div v-if="item.captionSrc" class="mb-3 d-flex">
@@ -162,9 +163,9 @@ async function uploadCaption(src: string) {
         </h6>
 
         <div class="ml-auto">
-          <b-button variant="danger" @click="clear('captionSrc')">
+          <BButton variant="danger" @click="clear('captionSrc')">
             <span class="fal fa-trash"></span>
-          </b-button>
+          </BButton>
         </div>
       </div>
     </BFormGroup>

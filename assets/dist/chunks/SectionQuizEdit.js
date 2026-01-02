@@ -1,5 +1,287 @@
-import { defineComponent, toRefs, createElementBlock, openBlock, createElementVNode, createTextVNode, toDisplayString, withDirectives, vModelText, resolveComponent, createVNode, ref, onMounted, withCtx, watch, createBlock, createCommentVNode } from "vue";
-import { _ as _export_sfc, u as useDebounceFn, s as swal, a as useModal } from "./segment-editor.js";
+import { computed, readonly, toRef, toValue, defineComponent, mergeModels, useModel, useTemplateRef, provide, createElementBlock, openBlock, mergeProps, unref, renderSlot, Fragment, renderList, createBlock, withCtx, createTextVNode, toDisplayString, useSlots, inject, normalizeClass, withDirectives, createCommentVNode, createElementVNode, vModelRadio, toRefs, vModelText, resolveComponent, createVNode, ref, onMounted, watch } from "vue";
+import { uniqueItemList } from "@lyrasoft/ts-toolkit/vue";
+import { useHttpClient, route } from "@windwalker-io/unicorn-next";
+import { u as useAriaInvalid, e as useStateClass, f as useDefaults, h as useId, i as useFocus, r as radioGroupKey, j as isEmptySlot, k as _sfc_main$6, b as _export_sfc, l as useDebounceFn, d as _sfc_main$7, s as swal, m as useModal, n as _sfc_main$8, _ as _sfc_main$9, a as _sfc_main$a } from "./segment-editor.js";
+import { VueDraggable } from "vue-draggable-plus";
+const getClasses = (items) => computed(() => {
+  const resolvedItems = toValue(items);
+  return {
+    "form-check": resolvedItems.plain === false && resolvedItems.button === false && resolvedItems.hasDefaultSlot,
+    "form-check-reverse": resolvedItems.reverse === true,
+    "form-check-inline": resolvedItems.inline === true,
+    "form-switch": resolvedItems.switch === true,
+    [`form-control-${resolvedItems.size}`]: resolvedItems.size !== void 0 && resolvedItems.size !== "md" && resolvedItems.button === false
+  };
+});
+const getInputClasses = (items) => {
+  const resolvedItems = readonly(toRef(items));
+  const stateClass = useStateClass(() => resolvedItems.value.state ?? null);
+  return computed(() => [
+    stateClass.value,
+    {
+      "form-check-input": resolvedItems.value.plain === false && resolvedItems.value.button === false,
+      "btn-check": resolvedItems.value.button === true
+    }
+  ]);
+};
+const getLabelClasses = (items) => computed(() => {
+  const resolvedItems = toValue(items);
+  return {
+    "form-check-label": resolvedItems.plain === false && resolvedItems.button === false,
+    "btn": resolvedItems.button === true,
+    [`btn-${resolvedItems.buttonVariant}`]: resolvedItems.button === true && resolvedItems.buttonVariant !== void 0 && resolvedItems.buttonVariant !== null,
+    [`btn-${resolvedItems.size}`]: resolvedItems.button && resolvedItems.size && resolvedItems.size !== "md"
+  };
+});
+const getGroupAttr = (items) => {
+  const resolvedItems = readonly(toRef(items));
+  const computedAriaInvalid = useAriaInvalid(
+    () => resolvedItems.value.ariaInvalid,
+    () => resolvedItems.value.state
+  );
+  return computed(() => ({
+    "aria-invalid": computedAriaInvalid.value,
+    "aria-required": resolvedItems.value.required === true ? true : void 0
+  }));
+};
+const getGroupClasses = (items) => computed(() => {
+  const resolvedItems = toValue(items);
+  return {
+    "was-validated": resolvedItems.validated === true,
+    "btn-group": resolvedItems.buttons === true && resolvedItems.stacked === false,
+    "btn-group-vertical": resolvedItems.stacked === true && resolvedItems.buttons === true,
+    [`btn-group-${resolvedItems.size}`]: resolvedItems.size !== void 0
+  };
+});
+const _hoisted_1$1$1 = ["id", "disabled", "required", "name", "form", "aria-label", "aria-labelledby", "value", "aria-required"];
+const _hoisted_2$5 = ["for"];
+const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
+  ...{
+    inheritAttrs: false
+  },
+  __name: "BFormRadio",
+  props: /* @__PURE__ */ mergeModels({
+    ariaLabel: { default: void 0 },
+    ariaLabelledby: { default: void 0 },
+    autofocus: { type: Boolean, default: false },
+    button: { type: Boolean, default: false },
+    buttonGroup: { type: Boolean, default: false },
+    buttonVariant: { default: null },
+    disabled: { type: Boolean, default: false },
+    form: { default: void 0 },
+    id: { default: void 0 },
+    inline: { type: Boolean, default: false },
+    name: { default: void 0 },
+    plain: { type: Boolean, default: false },
+    required: { type: Boolean, default: false },
+    reverse: { type: Boolean, default: false },
+    size: { default: void 0 },
+    state: { type: [Boolean, null], default: null },
+    value: { type: [Boolean, String, Array, Object, Number, null], default: true }
+  }, {
+    "modelValue": { type: [Boolean, String, Array, Object, Number, null], ...{
+      default: void 0
+    } },
+    "modelModifiers": {}
+  }),
+  emits: ["update:modelValue"],
+  setup(__props, { expose: __expose }) {
+    const _props = __props;
+    const props = useDefaults(_props, "BFormRadio");
+    const slots = useSlots();
+    const modelValue = useModel(__props, "modelValue");
+    const computedId = useId(() => props.id, "form-check");
+    const parentData = inject(radioGroupKey, null);
+    const input = useTemplateRef("_input");
+    const { focused } = useFocus(input, {
+      initialValue: props.autofocus
+    });
+    const hasDefaultSlot = computed(() => !isEmptySlot(slots.default));
+    const localValue = computed({
+      get: () => parentData ? parentData.modelValue.value : modelValue.value,
+      set: (newValue) => {
+        if (newValue === void 0) return;
+        if (parentData !== null) {
+          parentData.modelValue.value = newValue;
+          return;
+        }
+        modelValue.value = newValue;
+      }
+    });
+    const computedRequired = computed(
+      () => !!(props.name ?? parentData?.name.value) && (props.required || parentData?.required.value)
+    );
+    const isButtonGroup = computed(() => props.buttonGroup || (parentData?.buttons.value ?? false));
+    const classesObject = computed(() => ({
+      plain: props.plain || (parentData?.plain.value ?? false),
+      button: props.button || (parentData?.buttons.value ?? false),
+      inline: props.inline || (parentData?.inline.value ?? false),
+      state: props.state || parentData?.state.value,
+      reverse: props.reverse || (parentData?.reverse.value ?? false),
+      size: props.size ?? parentData?.size.value ?? "md",
+      // This is where the true default is made
+      buttonVariant: props.buttonVariant ?? parentData?.buttonVariant.value ?? "secondary",
+      // This is where the true default is made
+      hasDefaultSlot: hasDefaultSlot.value
+    }));
+    const computedClasses = getClasses(classesObject);
+    const inputClasses = getInputClasses(classesObject);
+    const labelClasses = getLabelClasses(classesObject);
+    __expose({
+      blur: () => {
+        focused.value = false;
+      },
+      element: input,
+      focus: () => {
+        focused.value = true;
+      }
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(_sfc_main$6, {
+        skip: isButtonGroup.value,
+        class: normalizeClass(unref(computedClasses))
+      }, {
+        default: withCtx(() => [
+          withDirectives(createElementVNode("input", mergeProps({ id: unref(computedId) }, _ctx.$attrs, {
+            ref: "_input",
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => localValue.value = $event),
+            class: unref(inputClasses),
+            type: "radio",
+            disabled: unref(props).disabled || unref(parentData)?.disabled.value,
+            required: computedRequired.value || void 0,
+            name: unref(props).name || unref(parentData)?.name.value,
+            form: unref(props).form || unref(parentData)?.form.value,
+            "aria-label": unref(props).ariaLabel,
+            "aria-labelledby": unref(props).ariaLabelledby,
+            value: unref(props).value,
+            "aria-required": computedRequired.value || void 0
+          }), null, 16, _hoisted_1$1$1), [
+            [vModelRadio, localValue.value]
+          ]),
+          hasDefaultSlot.value || unref(props).plain === false ? (openBlock(), createElementBlock("label", {
+            key: 0,
+            for: unref(computedId),
+            class: normalizeClass(unref(labelClasses))
+          }, [
+            renderSlot(_ctx.$slots, "default")
+          ], 10, _hoisted_2$5)) : createCommentVNode("", true)
+        ]),
+        _: 3
+      }, 8, ["skip", "class"]);
+    };
+  }
+});
+const _hoisted_1$5 = ["id"];
+const _sfc_main$5 = /* @__PURE__ */ defineComponent({
+  __name: "BFormRadioGroup",
+  props: /* @__PURE__ */ mergeModels({
+    ariaInvalid: { type: [Boolean, String], default: void 0 },
+    autofocus: { type: Boolean, default: false },
+    buttonVariant: { default: "secondary" },
+    buttons: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
+    disabledField: { default: "disabled" },
+    form: { default: void 0 },
+    id: { default: void 0 },
+    name: { default: void 0 },
+    options: { default: () => [] },
+    plain: { type: Boolean, default: false },
+    required: { type: Boolean, default: false },
+    reverse: { type: Boolean, default: false },
+    size: { default: "md" },
+    stacked: { type: Boolean, default: false },
+    state: { type: [Boolean, null], default: null },
+    textField: { default: "text" },
+    validated: { type: Boolean, default: false },
+    valueField: { default: "value" }
+  }, {
+    "modelValue": {
+      default: null
+    },
+    "modelModifiers": {}
+  }),
+  emits: ["update:modelValue"],
+  setup(__props, { expose: __expose }) {
+    const _props = __props;
+    const props = useDefaults(_props, "BFormRadioGroup");
+    const modelValue = useModel(__props, "modelValue");
+    const computedId = useId(() => props.id, "radio");
+    const computedName = useId(() => props.name, "checkbox");
+    const element = useTemplateRef("_element");
+    const { focused } = useFocus(element, {
+      initialValue: props.autofocus
+    });
+    provide(radioGroupKey, {
+      modelValue,
+      buttonVariant: toRef(() => props.buttonVariant),
+      form: toRef(() => props.form),
+      name: computedName,
+      buttons: toRef(() => props.buttons),
+      state: toRef(() => props.state),
+      plain: toRef(() => props.plain),
+      size: toRef(() => props.size),
+      inline: toRef(() => !props.stacked),
+      reverse: toRef(() => props.reverse),
+      required: toRef(() => props.required),
+      disabled: toRef(() => props.disabled)
+    });
+    const normalizeOptions = computed(
+      () => props.options.map(
+        (el) => typeof el === "string" || typeof el === "number" ? {
+          value: el,
+          disabled: props.disabled,
+          text: el.toString()
+        } : {
+          ...el,
+          value: el[props.valueField],
+          disabled: el[props.disabledField],
+          text: el[props.textField]
+        }
+      )
+    );
+    const classesObject = computed(() => ({
+      required: props.required,
+      ariaInvalid: props.ariaInvalid,
+      state: props.state,
+      validated: props.validated,
+      buttons: props.buttons,
+      stacked: props.stacked,
+      size: props.size
+    }));
+    const computedAttrs = getGroupAttr(classesObject);
+    const computedClasses = getGroupClasses(classesObject);
+    __expose({
+      blur: () => {
+        focused.value = false;
+      },
+      focus: () => {
+        focused.value = true;
+      }
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", mergeProps(unref(computedAttrs), {
+        id: unref(computedId),
+        ref: "_element",
+        role: "radiogroup",
+        class: [unref(computedClasses), "bv-no-focus-ring"],
+        tabindex: "-1"
+      }), [
+        renderSlot(_ctx.$slots, "first"),
+        (openBlock(true), createElementBlock(Fragment, null, renderList(normalizeOptions.value, (item, index) => {
+          return openBlock(), createBlock(_sfc_main$1$1, mergeProps({ key: index }, { ref_for: true }, item), {
+            default: withCtx(() => [
+              renderSlot(_ctx.$slots, "option", mergeProps({ ref_for: true }, item), () => [
+                createTextVNode(toDisplayString(item.text), 1)
+              ])
+            ]),
+            _: 2
+          }, 1040);
+        }), 128)),
+        renderSlot(_ctx.$slots, "default")
+      ], 16, _hoisted_1$5);
+    };
+  }
+});
 var QuestionType = /* @__PURE__ */ ((QuestionType2) => {
   QuestionType2["boolean"] = "是非題";
   QuestionType2["multiple"] = "多選題";
@@ -240,7 +522,9 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       image.value = "";
       emit("clear");
     }
-    const __returned__ = { props, emit, image, defaultImage, file, loading, fileInput, openUpload, upload, uploadImg, clear };
+    const __returned__ = { props, emit, image, defaultImage, file, loading, fileInput, openUpload, upload, uploadImg, clear, get BButton() {
+      return _sfc_main$7;
+    } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
@@ -261,7 +545,6 @@ const _hoisted_6 = { class: "me-2" };
 const _hoisted_7 = { class: "d-none" };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_BSpinner = resolveComponent("BSpinner");
-  const _component_BButton = resolveComponent("BButton");
   return openBlock(), createElementBlock("div", _hoisted_1$2, [
     createElementVNode("label", null, toDisplayString($setup.props.label), 1),
     _cache[3] || (_cache[3] = createTextVNode()),
@@ -279,7 +562,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     _cache[4] || (_cache[4] = createTextVNode()),
     createElementVNode("div", _hoisted_5, [
       createElementVNode("div", _hoisted_6, [
-        createVNode(_component_BButton, {
+        createVNode($setup["BButton"], {
           variant: "outline-primary",
           onClick: $setup.openUpload
         }, {
@@ -613,12 +896,15 @@ const QuestionEdit = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_r
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionQuizEdit",
   props: {
-    item: {}
+    "modelValue": {
+      required: true
+    },
+    "modelModifiers": {}
   },
+  emits: ["update:modelValue"],
   setup(__props, { expose: __expose }) {
     __expose();
-    const props = __props;
-    const item = ref(props.item);
+    const item = useModel(__props, "modelValue");
     const skipOptions = [
       { text: "可以", value: true },
       { text: "不可以", value: false }
@@ -632,15 +918,16 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     });
     async function prepareQuestions() {
       loading.value = true;
-      const res = u.$http.get(
-        u.route("prepare_questions"),
+      const { get } = await useHttpClient();
+      const res = await get(
+        route("prepare_questions"),
         {
           params: {
             segment_id: item.value.id
           }
         }
       );
-      questions.value = Utilities.prepareList((await res).data.data);
+      questions.value = uniqueItemList(res.data.data);
       loading.value = false;
     }
     async function createQuestion() {
@@ -665,8 +952,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       questions.value.forEach((item2, i) => {
         orders[item2.id] = i + 1;
       });
-      await u.$http.post(
-        u.route("reorder_questions"),
+      const { post } = await useHttpClient();
+      await post(
+        route("reorder_questions"),
         {
           orders
         }
@@ -694,8 +982,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }
       );
       if (v) {
-        await u.$http.post(
-          u.route("delete_question"),
+        const { post } = await useHttpClient();
+        await post(
+          route("delete_question"),
           {
             id
           }
@@ -708,8 +997,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       hide();
     }
     async function save(data, isNew = 0) {
-      await u.$http.post(
-        u.route("save_question"),
+      const { post } = await useHttpClient();
+      await post(
+        route("save_question"),
         {
           data,
           isNew
@@ -719,7 +1009,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     async function saveQuestion(data) {
       await save(data, 0);
     }
-    const __returned__ = { props, item, skipOptions, questions, currentQuestion, show, hide, loading, prepareQuestions, createQuestion, reorder, editQuestion, deleteQuestion, saveAndCloseModal, save, saveQuestion, QuestionItem, QuestionEdit };
+    const __returned__ = { item, skipOptions, questions, currentQuestion, show, hide, loading, prepareQuestions, createQuestion, reorder, editQuestion, deleteQuestion, saveAndCloseModal, save, saveQuestion, get BButton() {
+      return _sfc_main$7;
+    }, get BFormGroup() {
+      return _sfc_main$a;
+    }, get BFormInput() {
+      return _sfc_main$9;
+    }, get BFormRadioGroup() {
+      return _sfc_main$5;
+    }, get BModal() {
+      return _sfc_main$8;
+    }, get VueDraggable() {
+      return VueDraggable;
+    }, QuestionItem, QuestionEdit };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
@@ -734,22 +1036,16 @@ const _hoisted_3 = {
   class: "c-quiz-list"
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_BFormInput = resolveComponent("BFormInput");
-  const _component_BFormGroup = resolveComponent("BFormGroup");
-  const _component_BFormRadioGroup = resolveComponent("BFormRadioGroup");
   const _component_BSpinner = resolveComponent("BSpinner");
-  const _component_draggable = resolveComponent("draggable");
-  const _component_BButton = resolveComponent("BButton");
-  const _component_BModal = resolveComponent("BModal");
   return openBlock(), createElementBlock("div", null, [
-    createVNode(_component_BFormGroup, {
+    createVNode($setup["BFormGroup"], {
       label: "小節名稱編輯",
       "label-for": "input-section-title",
       "label-class": "mb-2",
       class: "mb-5"
     }, {
       default: withCtx(() => [
-        createVNode(_component_BFormInput, {
+        createVNode($setup["BFormInput"], {
           id: "input-section-title",
           modelValue: $setup.item.title,
           "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.item.title = $event),
@@ -759,14 +1055,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       _: 1
     }),
     _cache[9] || (_cache[9] = createTextVNode()),
-    createVNode(_component_BFormGroup, {
+    createVNode($setup["BFormGroup"], {
       label: "是否可跳過此測驗閱讀下一章節？",
       "label-for": "input-section-skip",
       "label-class": "mb-2",
       class: "mb-5"
     }, {
       default: withCtx(() => [
-        createVNode(_component_BFormRadioGroup, {
+        createVNode($setup["BFormRadioGroup"], {
           modelValue: $setup.item.canSkip,
           "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.item.canSkip = $event),
           options: $setup.skipOptions,
@@ -794,29 +1090,31 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $setup.loading ? (openBlock(), createElementBlock("div", _hoisted_2, [
         createVNode(_component_BSpinner)
       ])) : (openBlock(), createElementBlock("div", _hoisted_3, [
-        createVNode(_component_draggable, {
+        createVNode($setup["VueDraggable"], {
           modelValue: $setup.questions,
           "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.questions = $event),
           "item-key": "uid",
           handle: ".handle",
           onChange: $setup.reorder
         }, {
-          item: withCtx(({ element, index }) => [
-            (openBlock(), createBlock($setup["QuestionItem"], {
-              item: element,
-              key: element.id,
-              index,
-              onEdit: $setup.editQuestion,
-              onDelete: $setup.deleteQuestion,
-              onSave: $setup.saveQuestion
-            }, null, 8, ["item", "index"]))
+          default: withCtx(() => [
+            (openBlock(true), createElementBlock(Fragment, null, renderList($setup.questions, (element, index) => {
+              return openBlock(), createBlock($setup["QuestionItem"], {
+                item: element,
+                key: element.id,
+                index,
+                onEdit: $setup.editQuestion,
+                onDelete: $setup.deleteQuestion,
+                onSave: $setup.saveQuestion
+              }, null, 8, ["item", "index"]);
+            }), 128))
           ]),
           _: 1
         }, 8, ["modelValue"])
       ]))
     ]),
     _cache[11] || (_cache[11] = createTextVNode()),
-    createVNode(_component_BModal, {
+    createVNode($setup["BModal"], {
       id: "question-edit-modal",
       "ok-only": "",
       bodyBgVariant: "light",
@@ -828,7 +1126,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       onHidden: _cache[3] || (_cache[3] = ($event) => $setup.saveQuestion($setup.currentQuestion))
     }, {
       title: withCtx(() => [
-        createVNode(_component_BButton, {
+        createVNode($setup["BButton"], {
           variant: "primary",
           size: "sm",
           onClick: $setup.saveAndCloseModal

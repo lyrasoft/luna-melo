@@ -37,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { BButton, BSpinner } from 'bootstrap-vue-next';
 import { ref } from 'vue';
 
 const props = defineProps<{

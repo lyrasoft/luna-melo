@@ -1,5 +1,5 @@
 import { defineComponent, useModel, createElementBlock, openBlock, createVNode, withCtx } from "vue";
-import { b as _sfc_main$1, c as _sfc_main$2, _ as _export_sfc } from "./segment-editor.js";
+import { _ as _sfc_main$1, a as _sfc_main$2, b as _export_sfc } from "./segment-editor.js";
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "ChapterEdit",
   props: {

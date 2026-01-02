@@ -1,17 +1,29 @@
 <script setup lang="ts">
 import { BSpinner } from 'bootstrap-vue-next';
-import { computed, defineAsyncComponent } from 'vue';
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { SegmentType } from '~melo/enum/SegmentType';
 import { useSegmentEditor } from '~melo/features/segment/useSegmentEditor';
 
 const {
   isEditing,
-  hasChanged,
   segment,
   type,
   isChapter,
   saving,
+  currentEditingId,
 } = useSegmentEditor();
+
+const saved = ref(false);
+
+watch(saving, (saving) => {
+  if (!saving) {
+    saved.value = true;
+  }
+});
+
+watch(currentEditingId, () => {
+  saved.value = false;
+});
 
 const editComponent = computed(() => {
   if (!isEditing.value) {
@@ -25,9 +37,9 @@ const editComponent = computed(() => {
       case SegmentType.VIDEO:
         return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionVideoEdit.vue'));
       case SegmentType.QUIZ:
-        return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionVideoEdit.vue'));
+        return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionQuizEdit.vue'));
       case SegmentType.HOMEWORK:
-        return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionVideoEdit.vue'));
+        return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionHomeworkEdit.vue'));
       default:
         return null;
     }
@@ -39,17 +51,27 @@ const editComponent = computed(() => {
 <template>
   <div class="card position-sticky" style="top: var(--melo-segment-edit-sticky-top, 100px);">
     <div class="card-header d-flex align-items-center justify-content-between">
-      <h3 class="m-0">
-        <template v-if="isChapter">
-          編輯章節
-        </template>
-        <template v-else-if="isEditing">
-          編輯小節
-        </template>
-        <template v-else>
-          編輯
-        </template>
-      </h3>
+      <div class="d-flex align-items-center gap-2">
+        <h3 class="m-0">
+          <template v-if="isChapter">
+            編輯章節
+          </template>
+          <template v-else-if="isEditing">
+            編輯小節
+          </template>
+          <template v-else>
+            編輯
+          </template>
+        </h3>
+        <div v-if="saving" class="">
+          <BSpinner small />
+          儲存中...
+        </div>
+        <div v-else-if="saved" class="text-success">
+          <i class="far fa-check"></i>
+          已儲存
+        </div>
+      </div>
 
       <!-- Toolbar -->
       <div v-if="isEditing">

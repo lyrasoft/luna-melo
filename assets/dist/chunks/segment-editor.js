@@ -1,5 +1,5 @@
-import { getCurrentScope, onScopeDispose, effectScope, watch, computed, toValue as toValue$1, isRef, toRef as toRef$1, readonly, ref, customRef, shallowRef, defineComponent, unref, getCurrentInstance as getCurrentInstance$1, onMounted, nextTick, h, Teleport, useId as useId$1, onUnmounted, inject, watchEffect, provide, useSlots, createBlock, openBlock, resolveDynamicComponent, normalizeClass, withCtx, createElementBlock, createCommentVNode, renderSlot, createTextVNode, toDisplayString, useAttrs, mergeProps, mergeModels, useTemplateRef, useModel, Fragment, createVNode, onBeforeUnmount, Transition, withDirectives, createElementVNode, withModifiers, normalizeProps, guardReactiveProps, vShow, normalizeStyle, markRaw, isReadonly, render, shallowReadonly, onActivated, toRefs, defineAsyncComponent, renderList, createApp } from "vue";
-import { useHttpClient, route } from "@windwalker-io/unicorn-next";
+import { getCurrentScope, onScopeDispose, effectScope, watch, computed, toValue as toValue$1, isRef, toRef as toRef$1, readonly, ref, customRef, shallowRef, defineComponent, unref, getCurrentInstance as getCurrentInstance$1, onMounted, nextTick, h, Teleport, useId as useId$1, onUnmounted, inject, watchEffect, provide, useSlots, createBlock, openBlock, resolveDynamicComponent, normalizeClass, withCtx, createElementBlock, createCommentVNode, renderSlot, createTextVNode, toDisplayString, useAttrs, mergeProps, mergeModels, useTemplateRef, useModel, Fragment, createVNode, onBeforeUnmount, Transition, withDirectives, createElementVNode, withModifiers, normalizeProps, guardReactiveProps, vShow, normalizeStyle, markRaw, isReadonly, render, shallowReadonly, onActivated, toRefs, renderList, defineAsyncComponent, createApp } from "vue";
+import { useHttpClient, route, sleep, slideDown, slideUp } from "@windwalker-io/unicorn-next";
 import { useLoading, uniqueItemList, uniqueItem } from "@lyrasoft/ts-toolkit/vue";
 import { VueDraggable } from "vue-draggable-plus";
 const genericBvnPrefix = "BootstrapVueNext__";
@@ -9,6 +9,7 @@ const withBvnPrefix = (value, suffix = "") => {
 };
 const createBvnInjectionKey = (name) => withBvnPrefix(name);
 const createBvnRegistryInjectionKey = (name) => withBvnPrefix(`${name}__registry`);
+const radioGroupKey = createBvnInjectionKey("radioGroup");
 const collapseInjectionKey = createBvnInjectionKey("collapse");
 const showHideRegistryKey = createBvnRegistryInjectionKey("showHide");
 const navbarInjectionKey = createBvnInjectionKey("navbar");
@@ -927,7 +928,7 @@ const composablesWithExternalPath = {
 Object.freeze(
   Object.keys(composablesWithExternalPath)
 );
-const _sfc_main$e = defineComponent({
+const _sfc_main$f = defineComponent({
   name: "ConditionalTeleport",
   inheritAttrs: false,
   props: {
@@ -945,7 +946,7 @@ const _sfc_main$e = defineComponent({
     return () => !props.to ? slots.default?.({}) : h(Teleport, { to: props.to, disabled: props.disabled || !props.to }, [slots.default?.({})]);
   }
 });
-defineComponent({
+const _sfc_main$e = defineComponent({
   name: "ConditionalWrapper",
   inheritAttrs: false,
   props: {
@@ -3688,7 +3689,7 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
       visible: showRef
     });
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(_sfc_main$e, {
+      return openBlock(), createBlock(_sfc_main$f, {
         to: unref(props).teleportTo,
         disabled: unref(props).teleportDisabled
       }, {
@@ -6311,7 +6312,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
           style: { "display": "none" }
         }, null, 8, _hoisted_1$6),
         renderSlot(_ctx.$slots, "target", normalizeProps(guardReactiveProps(sharedSlots.value))),
-        createVNode(_sfc_main$e, {
+        createVNode(_sfc_main$f, {
           to: unref(props).teleportTo,
           disabled: !unref(props).teleportTo || unref(props).teleportDisabled
         }, {
@@ -8759,6 +8760,7 @@ const useSegmentEditor = /* @__PURE__ */ createGlobalState(() => {
     if (editing.value === false) {
       return;
     }
+    const start = Date.now();
     const { post } = await useHttpClient();
     await post(
       route("save_segment"),
@@ -8767,6 +8769,10 @@ const useSegmentEditor = /* @__PURE__ */ createGlobalState(() => {
         isNew: !segment.value.id
       }
     );
+    const elapsed = Date.now() - start;
+    if (elapsed < 500) {
+      await sleep(500 - elapsed);
+    }
   });
   const saveDebounced = /* @__PURE__ */ useDebounceFn(save, 500);
   async function disableAutoSave(handler) {
@@ -8830,7 +8836,8 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     const emit = __emit;
     const {
       edit,
-      isEditing
+      isEditing,
+      isActive
     } = useSegmentEditor();
     const { section } = toRefs(props);
     function deleteSection() {
@@ -8852,7 +8859,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
           return "未知類型";
       }
     }
-    const __returned__ = { props, emit, edit, isEditing, section, deleteSection, setPreview, segmentTypeTitle, get SegmentTypeColor() {
+    const __returned__ = { props, emit, edit, isEditing, isActive, section, deleteSection, setPreview, segmentTypeTitle, get SegmentTypeColor() {
       return SegmentTypeColor;
     }, get SegmentTypeIcon() {
       return SegmentTypeIcon;
@@ -8869,90 +8876,117 @@ const _export_sfc = (sfc, props) => {
   return target;
 };
 const _hoisted_1$3 = { class: "card border bg-white" };
-const _hoisted_2$3 = { class: "c-section-item card-body p-2" };
-const _hoisted_3$3 = { class: "d-flex align-items-center gap-2" };
-const _hoisted_4$3 = {
+const _hoisted_2$3 = {
   class: "c-section-item__content d-flex align-items-center gap-2 w-100",
   style: { "min-width": "1px" }
 };
-const _hoisted_5$3 = { class: "me-1" };
-const _hoisted_6$3 = { class: "c-section-item__actions ms-auto d-flex align-items-center gap-2" };
-const _hoisted_7$1 = { class: "c-section-item__preview" };
-const _hoisted_8$1 = ["innerHTML"];
+const _hoisted_3$3 = { class: "me-1" };
+const _hoisted_4$3 = {
+  class: "c-section-item__actions ms-auto d-flex align-items-center gap-2",
+  style: { "z-index": "3" }
+};
+const _hoisted_5$3 = { class: "c-section-item__preview" };
+const _hoisted_6$3 = ["innerHTML"];
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$3, [
-    createElementVNode("div", _hoisted_2$3, [
-      createElementVNode("div", _hoisted_3$3, [
-        _cache[7] || (_cache[7] = createElementVNode("div", {
+    createElementVNode("div", {
+      class: normalizeClass(["c-section-item card-body p-2", { "bg-primary-subtle": $setup.isActive($setup.section) }])
+    }, [
+      createElementVNode("div", _hoisted_2$3, [
+        _cache[3] || (_cache[3] = createElementVNode("div", {
           class: "c-section-item__handle handle",
-          style: { "cursor": "move" }
+          style: { "cursor": "move", "z-index": "3" }
         }, [
           createElementVNode("span", { class: "fal fa-bars" })
         ], -1)),
+        _cache[4] || (_cache[4] = createTextVNode()),
+        createElementVNode("div", {
+          class: normalizeClass(["fa-fw", $setup.SegmentTypeIcon[$setup.section.type]])
+        }, null, 2),
+        _cache[5] || (_cache[5] = createTextVNode()),
+        createElementVNode("div", _hoisted_3$3, toDisplayString($setup.props.chapterIndex + 1) + "." + toDisplayString($setup.props.sectionIndex + 1), 1),
+        _cache[6] || (_cache[6] = createTextVNode()),
+        createElementVNode("a", {
+          href: "#",
+          class: "c-section-item__title text-truncate stretched-link text-decoration-none",
+          onClick: _cache[0] || (_cache[0] = withModifiers(($event) => $setup.edit($setup.section), ["prevent"]))
+        }, toDisplayString($setup.section.title || "無標題小節"), 1),
+        _cache[7] || (_cache[7] = createTextVNode()),
+        createElementVNode("div", {
+          class: normalizeClass(["fs-14 text-nowrap me-2", $setup.SegmentTypeColor[$setup.section.type]])
+        }, toDisplayString($setup.segmentTypeTitle($setup.section.type)), 3),
         _cache[8] || (_cache[8] = createTextVNode()),
         createElementVNode("div", _hoisted_4$3, [
-          createElementVNode("div", {
-            class: normalizeClass(["fa-fw pe-1 me-2", $setup.SegmentTypeIcon[$setup.section.type]])
-          }, null, 2),
-          _cache[3] || (_cache[3] = createTextVNode()),
-          createElementVNode("div", _hoisted_5$3, toDisplayString($setup.props.chapterIndex + 1) + "." + toDisplayString($setup.props.sectionIndex + 1), 1),
-          _cache[4] || (_cache[4] = createTextVNode()),
-          createElementVNode("a", {
-            class: "c-section-item__title text-truncate pe-1 me-2",
-            onClick: _cache[0] || (_cache[0] = ($event) => $setup.edit($setup.section))
-          }, toDisplayString($setup.section.title || "無標題小節"), 1),
-          _cache[5] || (_cache[5] = createTextVNode()),
-          createElementVNode("div", {
-            class: normalizeClass(["fs-14 text-nowrap me-2", $setup.SegmentTypeColor[$setup.section.type]])
-          }, toDisplayString($setup.segmentTypeTitle($setup.section.type)), 3),
-          _cache[6] || (_cache[6] = createTextVNode()),
-          createElementVNode("div", _hoisted_6$3, [
-            createElementVNode("div", _hoisted_7$1, [
-              createElementVNode("a", {
-                href: "javascript://",
-                onClick: $setup.setPreview,
-                class: normalizeClass(["btn btn-sm text-nowrap", $setup.section.preview ? "btn-warning" : "btn-outline-secondary"]),
-                innerHTML: $setup.section.preview ? "可試閱" : "不可試閱"
-              }, null, 10, _hoisted_8$1)
-            ]),
-            _cache[2] || (_cache[2] = createTextVNode()),
-            createElementVNode("div", { class: "c-section-item__delete" }, [
-              createElementVNode("a", {
-                href: "javascript://",
-                onClick: $setup.deleteSection
-              }, [..._cache[1] || (_cache[1] = [
-                createElementVNode("i", { class: "fal fa-trash text-danger" }, null, -1)
-              ])])
-            ])
+          createElementVNode("div", _hoisted_5$3, [
+            createElementVNode("a", {
+              href: "javascript://",
+              onClick: $setup.setPreview,
+              class: normalizeClass(["btn btn-sm text-nowrap", $setup.section.preview ? "btn-warning" : "btn-outline-secondary"]),
+              innerHTML: $setup.section.preview ? "可試閱" : "不可試閱"
+            }, null, 10, _hoisted_6$3)
+          ]),
+          _cache[2] || (_cache[2] = createTextVNode()),
+          createElementVNode("div", { class: "c-section-item__delete" }, [
+            createElementVNode("a", {
+              href: "javascript://",
+              onClick: $setup.deleteSection
+            }, [..._cache[1] || (_cache[1] = [
+              createElementVNode("i", { class: "fal fa-trash text-danger" }, null, -1)
+            ])])
           ])
         ])
       ])
-    ])
+    ], 2)
   ]);
 }
-const SectionItem = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-b1abd65f"], ["__file", "SectionItem.vue"]]);
+const SectionItem = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-43dfd821"], ["__file", "SectionItem.vue"]]);
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "ChapterItem",
-  props: {
+  props: /* @__PURE__ */ mergeModels({
     chapter: {},
     index: {}
-  },
+  }, {
+    "open": { type: Boolean, ...{
+      default: false
+    } },
+    "openModifiers": {}
+  }),
+  emits: ["update:open"],
   setup(__props, { expose: __expose }) {
-    __expose();
     const props = __props;
     const chapter = ref(props.chapter);
     const sections = ref([]);
-    const sectionTypeSelector = ref();
     const editComponent = shallowRef();
     const currentSection = ref();
-    const currentIndex = ref();
-    const VideoEdit = defineAsyncComponent(() => import("./SectionVideoEdit.js"));
-    const HomeworkEdit = defineAsyncComponent(() => import("./SectionHomeworkEdit.js"));
-    const QuizEdit = defineAsyncComponent(() => import("./SectionQuizEdit.js"));
+    const isOpen = useModel(__props, "open");
+    const slideDisplay = ref(isOpen.value ? "display: flex;" : "display: none;");
+    const sectionsContainer = useTemplateRef("sectionsContainer");
+    watch(isOpen, () => {
+      if (!sectionsContainer.value) {
+        return;
+      }
+      slideDisplay.value = "";
+      if (isOpen.value) {
+        slideDown(sectionsContainer.value);
+      } else {
+        slideUp(sectionsContainer.value);
+      }
+    });
+    function open() {
+      isOpen.value = true;
+    }
+    function close() {
+      isOpen.value = false;
+    }
+    function toggleOpen() {
+      isOpen.value = !isOpen.value;
+    }
+    __expose({
+      open,
+      close,
+      toggleOpen
+    });
     const {
-      isEditing,
-      hasChanged,
-      segment,
       isActive,
       edit
     } = useSegmentEditor();
@@ -9056,7 +9090,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         await prepareSegments();
       }
     }
-    const __returned__ = { props, chapter, sections, sectionTypeSelector, editComponent, currentSection, currentIndex, VideoEdit, HomeworkEdit, QuizEdit, isEditing, hasChanged, segment, isActive, edit, sectionEditModalOpen, typeSelectModalOpen, showTypeModal, prepareSegments, createSection, saveSegment, saveAndCloseModal, sectionSave, reorder, deleteSection, get BButton() {
+    const __returned__ = { props, chapter, sections, editComponent, currentSection, isOpen, slideDisplay, sectionsContainer, open, close, toggleOpen, isActive, edit, sectionEditModalOpen, typeSelectModalOpen, showTypeModal, prepareSegments, createSection, saveSegment, saveAndCloseModal, sectionSave, reorder, deleteSection, get BButton() {
       return _sfc_main$b;
     }, get BModal() {
       return _sfc_main$9;
@@ -9077,12 +9111,11 @@ const _hoisted_3$2 = {
 };
 const _hoisted_4$2 = { class: "" };
 const _hoisted_5$2 = {
-  class: "c-chapter-item__actions ms-auto",
+  class: "c-chapter-item__actions ms-auto d-flex align-items-center gap-2",
   style: { "z-index": "3" }
 };
-const _hoisted_6$2 = { class: "card-body bg-light d-flex flex-column gap-3" };
-const _hoisted_7$2 = { class: "mb-0" };
-const _hoisted_8$2 = { class: "c-section-list" };
+const _hoisted_6$2 = { class: "badge bg-secondary rounded-pill" };
+const _hoisted_7$2 = { class: "c-section-list" };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$2, [
     createElementVNode("div", {
@@ -9090,26 +9123,28 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, [
       createElementVNode("div", _hoisted_2$2, [
         createElementVNode("div", _hoisted_3$2, [
-          _cache[6] || (_cache[6] = createElementVNode("div", {
+          _cache[8] || (_cache[8] = createElementVNode("div", {
             class: "c-chapter-item__handle handle position-relative",
             style: { "cursor": "move", "z-index": "3" }
           }, [
             createElementVNode("span", { class: "fal fa-fw fa-bars" })
           ], -1)),
-          _cache[7] || (_cache[7] = createTextVNode()),
-          _cache[8] || (_cache[8] = createElementVNode("div", { style: { "z-index": "3" } }, [
+          _cache[9] || (_cache[9] = createTextVNode()),
+          _cache[10] || (_cache[10] = createElementVNode("div", { style: { "z-index": "3" } }, [
             createElementVNode("i", { class: "far fa-folder" })
           ], -1)),
-          _cache[9] || (_cache[9] = createTextVNode()),
+          _cache[11] || (_cache[11] = createTextVNode()),
           createElementVNode("div", _hoisted_4$2, toDisplayString($setup.props.index + 1) + ".\n          ", 1),
-          _cache[10] || (_cache[10] = createTextVNode()),
+          _cache[12] || (_cache[12] = createTextVNode()),
           createElementVNode("a", {
             href: "#",
             class: "c-chapter-item__title text-truncate stretched-link text-decoration-none",
             onClick: _cache[0] || (_cache[0] = withModifiers(($event) => $setup.edit($setup.chapter), ["prevent"]))
           }, toDisplayString($setup.chapter?.title || "(無章節名稱)"), 1),
-          _cache[11] || (_cache[11] = createTextVNode()),
+          _cache[13] || (_cache[13] = createTextVNode()),
           createElementVNode("div", _hoisted_5$2, [
+            createElementVNode("span", _hoisted_6$2, toDisplayString($setup.sections.length), 1),
+            _cache[6] || (_cache[6] = createTextVNode()),
             withDirectives((openBlock(), createElementBlock("a", {
               href: "javascript://",
               class: "c-chapter-item__delete",
@@ -9118,16 +9153,30 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
               createElementVNode("i", { class: "fal fa-trash text-danger" }, null, -1)
             ])])), [
               [$setup["vBTooltip"], "刪除章節"]
+            ]),
+            _cache[7] || (_cache[7] = createTextVNode()),
+            withDirectives((openBlock(), createElementBlock("a", {
+              href: "javascript://",
+              class: "c-chapter-item__toggle",
+              onClick: $setup.toggleOpen
+            }, [
+              createElementVNode("i", {
+                class: normalizeClass(["far", [$setup.isOpen ? "fa-chevron-down" : "fa-chevron-up"]])
+              }, null, 2)
+            ])), [
+              [$setup["vBTooltip"], "顯示/隱藏小節"]
             ])
           ])
         ])
       ])
     ], 2),
-    _cache[17] || (_cache[17] = createTextVNode()),
-    createElementVNode("div", _hoisted_6$2, [
-      createElementVNode("h5", _hoisted_7$2, "小節 (" + toDisplayString($setup.sections.length) + ")", 1),
-      _cache[13] || (_cache[13] = createTextVNode()),
-      createElementVNode("div", _hoisted_8$2, [
+    _cache[18] || (_cache[18] = createTextVNode()),
+    createElementVNode("div", {
+      ref: "sectionsContainer",
+      class: "card-body bg-light flex-column gap-3",
+      style: normalizeStyle($setup.slideDisplay)
+    }, [
+      createElementVNode("div", _hoisted_7$2, [
         createVNode($setup["VueDraggable"], {
           modelValue: $setup.sections,
           "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.sections = $event),
@@ -9151,19 +9200,19 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           _: 1
         }, 8, ["modelValue"])
       ]),
-      _cache[14] || (_cache[14] = createTextVNode()),
+      _cache[15] || (_cache[15] = createTextVNode()),
       createElementVNode("div", { class: "text-center" }, [
         createElementVNode("button", {
           type: "button",
           class: "btn btn-outline-secondary btn-sm",
           onClick: $setup.showTypeModal
-        }, [..._cache[12] || (_cache[12] = [
+        }, [..._cache[14] || (_cache[14] = [
           createElementVNode("i", { class: "far fa-plus" }, null, -1),
           createTextVNode("\n          新增小節\n        ", -1)
         ])])
       ])
-    ]),
-    _cache[18] || (_cache[18] = createTextVNode()),
+    ], 4),
+    _cache[19] || (_cache[19] = createTextVNode()),
     createVNode($setup["BModal"], {
       id: "section-edit-modal-" + $setup.props.chapter.id,
       "ok-only": "",
@@ -9181,14 +9230,14 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           size: "sm",
           onClick: _cache[3] || (_cache[3] = ($event) => $setup.saveAndCloseModal($setup.currentSection, 0))
         }, {
-          default: withCtx(() => [..._cache[15] || (_cache[15] = [
+          default: withCtx(() => [..._cache[16] || (_cache[16] = [
             createTextVNode("\n          儲存\n        ", -1)
           ])]),
           _: 1
         })
       ]),
       default: withCtx(() => [
-        _cache[16] || (_cache[16] = createTextVNode()),
+        _cache[17] || (_cache[17] = createTextVNode()),
         (openBlock(), createBlock(resolveDynamicComponent($setup.editComponent), {
           item: $setup.currentSection,
           onSave: $setup.sectionSave,
@@ -9199,19 +9248,28 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["id"])
   ]);
 }
-const ChapterItem = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-434cbddf"], ["__file", "ChapterItem.vue"]]);
+const ChapterItem = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-043eb601"], ["__file", "ChapterItem.vue"]]);
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "SegmentEditBox",
   setup(__props, { expose: __expose }) {
     __expose();
     const {
       isEditing,
-      hasChanged,
       segment,
       type,
       isChapter,
-      saving
+      saving,
+      currentEditingId
     } = useSegmentEditor();
+    const saved = ref(false);
+    watch(saving, (saving2) => {
+      if (!saving2) {
+        saved.value = true;
+      }
+    });
+    watch(currentEditingId, () => {
+      saved.value = false;
+    });
     const editComponent = computed(() => {
       if (!isEditing.value) {
         return null;
@@ -9223,15 +9281,17 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           case SegmentType.VIDEO:
             return defineAsyncComponent(() => import("./SectionVideoEdit.js"));
           case SegmentType.QUIZ:
-            return defineAsyncComponent(() => import("./SectionVideoEdit.js"));
+            return defineAsyncComponent(() => import("./SectionQuizEdit.js"));
           case SegmentType.HOMEWORK:
-            return defineAsyncComponent(() => import("./SectionVideoEdit.js"));
+            return defineAsyncComponent(() => import("./SectionHomeworkEdit.js"));
           default:
             return null;
         }
       }
     });
-    const __returned__ = { isEditing, hasChanged, segment, type, isChapter, saving, editComponent };
+    const __returned__ = { isEditing, segment, type, isChapter, saving, currentEditingId, saved, editComponent, get BSpinner() {
+      return _sfc_main$d;
+    } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
@@ -9241,40 +9301,59 @@ const _hoisted_1$1 = {
   style: { "top": "var(--melo-segment-edit-sticky-top, 100px)" }
 };
 const _hoisted_2$1 = { class: "card-header d-flex align-items-center justify-content-between" };
-const _hoisted_3$1 = { class: "m-0" };
-const _hoisted_4$1 = { key: 0 };
+const _hoisted_3$1 = { class: "d-flex align-items-center gap-2" };
+const _hoisted_4$1 = { class: "m-0" };
 const _hoisted_5$1 = {
+  key: 0,
+  class: ""
+};
+const _hoisted_6$1 = {
+  key: 1,
+  class: "text-success"
+};
+const _hoisted_7$1 = { key: 0 };
+const _hoisted_8$1 = {
   key: 0,
   class: "card-body"
 };
-const _hoisted_6$1 = {
+const _hoisted_9$1 = {
   key: 1,
   class: "p-5 text-center"
 };
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$1, [
     createElementVNode("div", _hoisted_2$1, [
-      createElementVNode("h3", _hoisted_3$1, [
-        $setup.isChapter ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-          createTextVNode("\n          編輯章節\n        ")
-        ], 64)) : $setup.isEditing ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-          createTextVNode("\n          編輯小節\n        ")
-        ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 2 }, [
-          createTextVNode("\n          編輯\n        ")
-        ], 64))
+      createElementVNode("div", _hoisted_3$1, [
+        createElementVNode("h3", _hoisted_4$1, [
+          $setup.isChapter ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+            createTextVNode("\n            編輯章節\n          ")
+          ], 64)) : $setup.isEditing ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+            createTextVNode("\n            編輯小節\n          ")
+          ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 2 }, [
+            createTextVNode("\n            編輯\n          ")
+          ], 64))
+        ]),
+        _cache[3] || (_cache[3] = createTextVNode()),
+        $setup.saving ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
+          createVNode($setup["BSpinner"], { small: "" }),
+          _cache[1] || (_cache[1] = createTextVNode("\n          儲存中...\n        ", -1))
+        ])) : $setup.saved ? (openBlock(), createElementBlock("div", _hoisted_6$1, [..._cache[2] || (_cache[2] = [
+          createElementVNode("i", { class: "far fa-check" }, null, -1),
+          createTextVNode("\n          已儲存\n        ", -1)
+        ])])) : createCommentVNode("", true)
       ]),
-      _cache[2] || (_cache[2] = createTextVNode()),
-      $setup.isEditing ? (openBlock(), createElementBlock("div", _hoisted_4$1, [..._cache[1] || (_cache[1] = [
+      _cache[5] || (_cache[5] = createTextVNode()),
+      $setup.isEditing ? (openBlock(), createElementBlock("div", _hoisted_7$1, [..._cache[4] || (_cache[4] = [
         createElementVNode("span", { class: "badge bg-warning" }, "\n          修改後會即時儲存\n        ", -1)
       ])])) : createCommentVNode("", true)
     ]),
-    _cache[4] || (_cache[4] = createTextVNode()),
-    $setup.segment && $setup.editComponent ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
+    _cache[7] || (_cache[7] = createTextVNode()),
+    $setup.segment && $setup.editComponent ? (openBlock(), createElementBlock("div", _hoisted_8$1, [
       (openBlock(), createBlock(resolveDynamicComponent($setup.editComponent), {
         modelValue: $setup.segment,
         "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.segment = $event)
       }, null, 8, ["modelValue"]))
-    ])) : (openBlock(), createElementBlock("div", _hoisted_6$1, [..._cache[3] || (_cache[3] = [
+    ])) : (openBlock(), createElementBlock("div", _hoisted_9$1, [..._cache[6] || (_cache[6] = [
       createElementVNode("div", {
         class: "text-muted",
         style: { "margin": "100px auto" }
@@ -9314,6 +9393,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }
       );
       items.value = uniqueItemList(res.data.data);
+      for (const item of items.value) {
+        item.__open = false;
+      }
+      if (items.value[0]) {
+        items.value[0].__open = true;
+      }
     }
     onMounted(async () => {
       loading.value = true;
@@ -9403,14 +9488,18 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }
       );
     }
-    const __returned__ = { props, modal, loading, saving, items, current, selected, editingTitle, editingIndex, prepareSegments, showEditModal, changeChapter, createChapter, deleteChapter, saveSegment, reorder, get VueDraggable() {
+    function toggleAllOpens() {
+      const allOpen = items.value.every((item) => item.__open);
+      for (const item of items.value) {
+        item.__open = !allOpen;
+      }
+    }
+    const __returned__ = { props, modal, loading, saving, items, current, selected, editingTitle, editingIndex, prepareSegments, showEditModal, changeChapter, createChapter, deleteChapter, saveSegment, reorder, toggleAllOpens, get VueDraggable() {
       return VueDraggable;
     }, ChapterItem, SegmentEditBox, get BFormGroup() {
       return _sfc_main$5;
     }, get BModal() {
       return _sfc_main$9;
-    }, get BSpinner() {
-      return _sfc_main$d;
     }, get BFormInput() {
       return _sfc_main$4;
     }, get BButton() {
@@ -9426,31 +9515,28 @@ const _hoisted_3 = { class: "col-lg-5" };
 const _hoisted_4 = { class: "card mb-4" };
 const _hoisted_5 = { class: "card-body d-flex align-items-center justify-content-between" };
 const _hoisted_6 = { class: "bold my-1" };
-const _hoisted_7 = {
-  key: 0,
-  class: ""
-};
-const _hoisted_8 = { class: "c-chapter-list" };
-const _hoisted_9 = { class: "text-center my-4" };
-const _hoisted_10 = { class: "col-lg-7" };
+const _hoisted_7 = { class: "c-chapter-list" };
+const _hoisted_8 = { class: "text-center my-4" };
+const _hoisted_9 = { class: "col-lg-7" };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createElementVNode("div", _hoisted_2, [
       createElementVNode("div", _hoisted_3, [
         createElementVNode("div", _hoisted_4, [
           createElementVNode("div", _hoisted_5, [
-            createElementVNode("h4", _hoisted_6, "\n              課程章節 (" + toDisplayString($setup.items.length) + " )\n            ", 1),
-            _cache[5] || (_cache[5] = createTextVNode()),
+            createElementVNode("h4", _hoisted_6, "\n              課程章節 (" + toDisplayString($setup.items.length) + ")\n            ", 1),
+            _cache[4] || (_cache[4] = createTextVNode()),
             createElementVNode("div", null, [
-              $setup.saving ? (openBlock(), createElementBlock("div", _hoisted_7, [
-                createVNode($setup["BSpinner"], { small: "" }),
-                _cache[4] || (_cache[4] = createTextVNode("\n                儲存中...\n              ", -1))
-              ])) : createCommentVNode("", true)
+              createElementVNode("button", {
+                type: "button",
+                class: "btn btn-outline-secondary btn-sm",
+                onClick: $setup.toggleAllOpens
+              }, "\n                全體收合/展開\n              ")
             ])
           ])
         ]),
-        _cache[7] || (_cache[7] = createTextVNode()),
-        createElementVNode("div", _hoisted_8, [
+        _cache[6] || (_cache[6] = createTextVNode()),
+        createElementVNode("div", _hoisted_7, [
           createVNode($setup["VueDraggable"], {
             modelValue: $setup.items,
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.items = $event),
@@ -9465,21 +9551,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   key: element.uid,
                   chapter: element,
                   index,
+                  open: element.__open,
+                  "onUpdate:open": ($event) => element.__open = $event,
                   onEdit: $setup.showEditModal,
                   onDelete: $setup.deleteChapter
-                }, null, 8, ["chapter", "index"]);
+                }, null, 8, ["chapter", "index", "open", "onUpdate:open"]);
               }), 128))
             ]),
             _: 1
           }, 8, ["modelValue"])
         ]),
-        _cache[8] || (_cache[8] = createTextVNode()),
-        createElementVNode("div", _hoisted_9, [
+        _cache[7] || (_cache[7] = createTextVNode()),
+        createElementVNode("div", _hoisted_8, [
           createVNode($setup["BButton"], {
             variant: "success",
             onClick: _cache[1] || (_cache[1] = ($event) => $setup.createChapter())
           }, {
-            default: withCtx(() => [..._cache[6] || (_cache[6] = [
+            default: withCtx(() => [..._cache[5] || (_cache[5] = [
               createElementVNode("span", { class: "fal fa-plus" }, null, -1),
               createTextVNode("\n            新增章節\n          ", -1)
             ])]),
@@ -9487,12 +9575,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           })
         ])
       ]),
-      _cache[9] || (_cache[9] = createTextVNode()),
-      createElementVNode("div", _hoisted_10, [
+      _cache[8] || (_cache[8] = createTextVNode()),
+      createElementVNode("div", _hoisted_9, [
         createVNode($setup["SegmentEditBox"])
       ])
     ]),
-    _cache[10] || (_cache[10] = createTextVNode()),
+    _cache[9] || (_cache[9] = createTextVNode()),
     createVNode($setup["BModal"], {
       modelValue: $setup.modal,
       "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.modal = $event),
@@ -9537,13 +9625,24 @@ const segmentEditor = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defin
   createSegmentEditorApp
 }, Symbol.toStringTag, { value: "Module" }));
 export {
-  _export_sfc as _,
-  useModal as a,
-  _sfc_main$4 as b,
-  _sfc_main$5 as c,
-  segmentEditor as d,
+  _sfc_main$4 as _,
+  _sfc_main$5 as a,
+  _export_sfc as b,
+  _sfc_main$d as c,
+  _sfc_main$b as d,
+  useStateClass as e,
+  useDefaults as f,
   getDefaultExportFromCjs as g,
+  useId as h,
+  useFocus as i,
+  isEmptySlot as j,
+  _sfc_main$e as k,
+  useDebounceFn as l,
+  useModal as m,
+  _sfc_main$9 as n,
+  segmentEditor as o,
+  radioGroupKey as r,
   swal as s,
-  useDebounceFn as u
+  useAriaInvalid as u
 };
 //# sourceMappingURL=segment-editor.js.map

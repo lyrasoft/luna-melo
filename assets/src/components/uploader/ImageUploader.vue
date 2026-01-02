@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import { BButton } from 'bootstrap-vue-next';
 import { onMounted, ref } from 'vue';
 
 const props = defineProps<{

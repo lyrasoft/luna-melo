@@ -1,369 +1,6 @@
-import { watch, defineComponent, toRefs, ref, onMounted, onBeforeUnmount, onActivated, onDeactivated, h, nextTick, resolveComponent, createElementBlock, openBlock, createVNode, createTextVNode, withCtx } from "vue";
-import { data, useSystemUri, useAssetUri, route, useStack } from "@windwalker-io/unicorn-next";
-import { _ as _export_sfc } from "./segment-editor.js";
-var validEvents = [
-  "onActivate",
-  "onAddUndo",
-  "onBeforeAddUndo",
-  "onBeforeExecCommand",
-  "onBeforeGetContent",
-  "onBeforeRenderUI",
-  "onBeforeSetContent",
-  "onBeforePaste",
-  "onBlur",
-  "onChange",
-  "onClearUndos",
-  "onClick",
-  "onContextMenu",
-  "onCommentChange",
-  "onCompositionEnd",
-  "onCompositionStart",
-  "onCompositionUpdate",
-  "onCopy",
-  "onCut",
-  "onDblclick",
-  "onDeactivate",
-  "onDirty",
-  "onDrag",
-  "onDragDrop",
-  "onDragEnd",
-  "onDragGesture",
-  "onDragOver",
-  "onDrop",
-  "onExecCommand",
-  "onFocus",
-  "onFocusIn",
-  "onFocusOut",
-  "onGetContent",
-  "onHide",
-  "onInit",
-  "onInput",
-  "onKeyDown",
-  "onKeyPress",
-  "onKeyUp",
-  "onLoadContent",
-  "onMouseDown",
-  "onMouseEnter",
-  "onMouseLeave",
-  "onMouseMove",
-  "onMouseOut",
-  "onMouseOver",
-  "onMouseUp",
-  "onNodeChange",
-  "onObjectResizeStart",
-  "onObjectResized",
-  "onObjectSelected",
-  "onPaste",
-  "onPostProcess",
-  "onPostRender",
-  "onPreProcess",
-  "onProgressState",
-  "onRedo",
-  "onRemove",
-  "onReset",
-  "onSaveContent",
-  "onSelectionChange",
-  "onSetAttrib",
-  "onSetContent",
-  "onShow",
-  "onSubmit",
-  "onUndo",
-  "onVisualAid"
-];
-var isValidKey = function(key) {
-  return validEvents.map(function(event) {
-    return event.toLowerCase();
-  }).indexOf(key.toLowerCase()) !== -1;
-};
-var bindHandlers = function(initEvent, listeners, editor) {
-  Object.keys(listeners).filter(isValidKey).forEach(function(key) {
-    var handler = listeners[key];
-    if (typeof handler === "function") {
-      if (key === "onInit") {
-        handler(initEvent, editor);
-      } else {
-        editor.on(key.substring(2), function(e) {
-          return handler(e, editor);
-        });
-      }
-    }
-  });
-};
-var bindModelHandlers = function(props, ctx, editor, modelValue) {
-  var modelEvents = props.modelEvents ? props.modelEvents : null;
-  var normalizedEvents = Array.isArray(modelEvents) ? modelEvents.join(" ") : modelEvents;
-  watch(modelValue, function(val, prevVal) {
-    if (editor && typeof val === "string" && val !== prevVal && val !== editor.getContent({ format: props.outputFormat })) {
-      editor.setContent(val);
-    }
-  });
-  editor.on(normalizedEvents ? normalizedEvents : "change input undo redo", function() {
-    ctx.emit("update:modelValue", editor.getContent({ format: props.outputFormat }));
-  });
-};
-var initEditor = function(initEvent, props, ctx, editor, modelValue, content) {
-  editor.setContent(content());
-  if (ctx.attrs["onUpdate:modelValue"]) {
-    bindModelHandlers(props, ctx, editor, modelValue);
-  }
-  bindHandlers(initEvent, ctx.attrs, editor);
-};
-var unique = 0;
-var uuid = function(prefix) {
-  var time = Date.now();
-  var random = Math.floor(Math.random() * 1e9);
-  unique++;
-  return prefix + "_" + random + unique + String(time);
-};
-var isTextarea = function(element) {
-  return element !== null && element.tagName.toLowerCase() === "textarea";
-};
-var normalizePluginArray = function(plugins) {
-  if (typeof plugins === "undefined" || plugins === "") {
-    return [];
-  }
-  return Array.isArray(plugins) ? plugins : plugins.split(" ");
-};
-var mergePlugins = function(initPlugins, inputPlugins) {
-  return normalizePluginArray(initPlugins).concat(normalizePluginArray(inputPlugins));
-};
-var isNullOrUndefined = function(value) {
-  return value === null || value === void 0;
-};
-var isDisabledOptionSupported = function(editor) {
-  var _a;
-  return typeof ((_a = editor.options) === null || _a === void 0 ? void 0 : _a.set) === "function" && editor.options.isRegistered("disabled");
-};
-var createState = function() {
-  return {
-    listeners: [],
-    scriptId: uuid("tiny-script"),
-    scriptLoaded: false
-  };
-};
-var CreateScriptLoader = function() {
-  var state = createState();
-  var injectScriptTag = function(scriptId, doc, url, callback) {
-    var scriptTag = doc.createElement("script");
-    scriptTag.referrerPolicy = "origin";
-    scriptTag.type = "application/javascript";
-    scriptTag.id = scriptId;
-    scriptTag.src = url;
-    var handler = function() {
-      scriptTag.removeEventListener("load", handler);
-      callback();
-    };
-    scriptTag.addEventListener("load", handler);
-    if (doc.head) {
-      doc.head.appendChild(scriptTag);
-    }
-  };
-  var load = function(doc, url, callback) {
-    if (state.scriptLoaded) {
-      callback();
-    } else {
-      state.listeners.push(callback);
-      if (!doc.getElementById(state.scriptId)) {
-        injectScriptTag(state.scriptId, doc, url, function() {
-          state.listeners.forEach(function(fn) {
-            return fn();
-          });
-          state.scriptLoaded = true;
-        });
-      }
-    }
-  };
-  var reinitialize = function() {
-    state = createState();
-  };
-  return {
-    load,
-    reinitialize
-  };
-};
-var ScriptLoader = CreateScriptLoader();
-var getGlobal = function() {
-  return typeof window !== "undefined" ? window : global;
-};
-var getTinymce = function() {
-  var global2 = getGlobal();
-  return global2 && global2.tinymce ? global2.tinymce : null;
-};
-var editorProps = {
-  apiKey: String,
-  licenseKey: String,
-  cloudChannel: String,
-  id: String,
-  init: Object,
-  initialValue: String,
-  inline: Boolean,
-  modelEvents: [String, Array],
-  plugins: [String, Array],
-  tagName: String,
-  toolbar: [String, Array],
-  modelValue: String,
-  disabled: Boolean,
-  readonly: Boolean,
-  tinymceScriptSrc: String,
-  outputFormat: {
-    type: String,
-    validator: function(prop) {
-      return prop === "html" || prop === "text";
-    }
-  }
-};
-var __assign = function() {
-  __assign = Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-      s = arguments[i];
-      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-        t[p] = s[p];
-    }
-    return t;
-  };
-  return __assign.apply(this, arguments);
-};
-var renderInline = function(ce, id, elementRef, tagName) {
-  return ce(tagName ? tagName : "div", {
-    id,
-    ref: elementRef
-  });
-};
-var renderIframe = function(ce, id, elementRef) {
-  return ce("textarea", {
-    id,
-    visibility: "hidden",
-    ref: elementRef
-  });
-};
-var defaultInitValues = { selector: void 0, target: void 0 };
-var setMode = function(editor, mode) {
-  var _a;
-  if (typeof ((_a = editor.mode) === null || _a === void 0 ? void 0 : _a.set) === "function") {
-    editor.mode.set(mode);
-  } else {
-    editor.setMode(mode);
-  }
-};
-var Editor = defineComponent({
-  props: editorProps,
-  setup: function(props, ctx) {
-    var conf = props.init ? __assign(__assign({}, props.init), defaultInitValues) : __assign({}, defaultInitValues);
-    var _a = toRefs(props), disabled = _a.disabled, readonly = _a.readonly, modelValue = _a.modelValue, tagName = _a.tagName;
-    var element = ref(null);
-    var vueEditor = null;
-    var elementId = props.id || uuid("tiny-vue");
-    var inlineEditor = props.init && props.init.inline || props.inline;
-    var modelBind = !!ctx.attrs["onUpdate:modelValue"];
-    var mounting = true;
-    var initialValue = props.initialValue ? props.initialValue : "";
-    var cache = "";
-    var getContent = function(isMounting) {
-      return modelBind ? function() {
-        return (modelValue === null || modelValue === void 0 ? void 0 : modelValue.value) ? modelValue.value : "";
-      } : function() {
-        return isMounting ? initialValue : cache;
-      };
-    };
-    var initWrapper = function() {
-      var content = getContent(mounting);
-      var finalInit = __assign(__assign({}, conf), { disabled: props.disabled, readonly: props.readonly, target: element.value, plugins: mergePlugins(conf.plugins, props.plugins), toolbar: props.toolbar || conf.toolbar, inline: inlineEditor, license_key: props.licenseKey, setup: function(editor) {
-        vueEditor = editor;
-        if (!isDisabledOptionSupported(vueEditor) && props.disabled === true) {
-          setMode(vueEditor, "readonly");
-        }
-        editor.on("init", function(e) {
-          return initEditor(e, props, ctx, editor, modelValue, content);
-        });
-        if (typeof conf.setup === "function") {
-          conf.setup(editor);
-        }
-      } });
-      if (isTextarea(element.value)) {
-        element.value.style.visibility = "";
-      }
-      getTinymce().init(finalInit);
-      mounting = false;
-    };
-    watch(readonly, function(isReadonly) {
-      if (vueEditor !== null) {
-        setMode(vueEditor, isReadonly ? "readonly" : "design");
-      }
-    });
-    watch(disabled, function(isDisabled) {
-      if (vueEditor !== null) {
-        if (isDisabledOptionSupported(vueEditor)) {
-          vueEditor.options.set("disabled", isDisabled);
-        } else {
-          setMode(vueEditor, isDisabled ? "readonly" : "design");
-        }
-      }
-    });
-    watch(tagName, function(_) {
-      var _a2;
-      if (vueEditor) {
-        if (!modelBind) {
-          cache = vueEditor.getContent();
-        }
-        (_a2 = getTinymce()) === null || _a2 === void 0 ? void 0 : _a2.remove(vueEditor);
-        nextTick(function() {
-          return initWrapper();
-        });
-      }
-    });
-    onMounted(function() {
-      if (getTinymce() !== null) {
-        initWrapper();
-      } else if (element.value && element.value.ownerDocument) {
-        var channel = props.cloudChannel ? props.cloudChannel : "8";
-        var apiKey = props.apiKey ? props.apiKey : "no-api-key";
-        var scriptSrc = isNullOrUndefined(props.tinymceScriptSrc) ? "https://cdn.tiny.cloud/1/".concat(apiKey, "/tinymce/").concat(channel, "/tinymce.min.js") : props.tinymceScriptSrc;
-        ScriptLoader.load(element.value.ownerDocument, scriptSrc, initWrapper);
-      }
-    });
-    onBeforeUnmount(function() {
-      if (getTinymce() !== null) {
-        getTinymce().remove(vueEditor);
-      }
-    });
-    if (!inlineEditor) {
-      onActivated(function() {
-        if (!mounting) {
-          initWrapper();
-        }
-      });
-      onDeactivated(function() {
-        var _a2;
-        if (vueEditor) {
-          if (!modelBind) {
-            cache = vueEditor.getContent();
-          }
-          (_a2 = getTinymce()) === null || _a2 === void 0 ? void 0 : _a2.remove(vueEditor);
-        }
-      });
-    }
-    var rerender = function(init) {
-      var _a2;
-      if (vueEditor) {
-        cache = vueEditor.getContent();
-        (_a2 = getTinymce()) === null || _a2 === void 0 ? void 0 : _a2.remove(vueEditor);
-        conf = __assign(__assign(__assign({}, conf), init), defaultInitValues);
-        nextTick(function() {
-          return initWrapper();
-        });
-      }
-    };
-    ctx.expose({
-      rerender,
-      getEditor: function() {
-        return vueEditor;
-      }
-    });
-    return function() {
-      return inlineEditor ? renderInline(h, elementId, element, props.tagName) : renderIframe(h, elementId, element);
-    };
-  }
-});
+import { defineComponent, useModel, createElementBlock, openBlock, createVNode, createTextVNode, withCtx, withDirectives, createElementVNode, vModelText } from "vue";
+import { _ as _sfc_main$1, a as _sfc_main$2, b as _export_sfc } from "./segment-editor.js";
+import { data, route, useSystemUri, useTinymce } from "@windwalker-io/unicorn-next";
 var freeGlobal = typeof global == "object" && global && global.Object === Object && global;
 var freeSelf = typeof self == "object" && self && self.Object === Object && self;
 var root = freeGlobal || freeSelf || Function("return this")();
@@ -1078,131 +715,151 @@ function baseMerge(object, source, srcIndex, customizer, stack) {
     }
   }, keysIn);
 }
-var merge = createAssigner(function(object, source, srcIndex) {
-  baseMerge(object, source, srcIndex);
-});
-function defaultOptions(override = () => {
-}) {
-  const lang = data("locale.short") || "zh_TW";
-  const { root: root2 } = useSystemUri();
-  const { root: assetRoot } = useAssetUri();
-  const options = {
-    document_base_url: root2(),
-    plugins: [
-      "advlist",
-      "autolink",
-      "lists",
-      "link",
-      "image",
-      "charmap",
-      "preview",
-      "anchor",
-      "pagebreak",
-      "searchreplace",
-      "wordcount",
-      "visualblocks",
-      "visualchars",
-      "code",
-      "fullscreen",
-      "insertdatetime",
-      "media",
-      "nonbreaking",
-      "save",
-      "table",
-      "directionality",
-      "emoticons"
-    ],
-    toolbar: "undo redo bold italic strikethrough forecolor backcolor blockquote removeformat | alignleft aligncenter alignright alignjustify bullist numlist outdent indent | blocks fontsize styles styleselect formatselect fontsizeselect | link image media table code | fullscreen",
-    language: lang === "en_GB" ? null : lang,
-    language_url: assetRoot() + "vendor/tinymce-i18n/langs5/zh_TW.js",
-    font_size_formats: "13px 14px 15px 16px 18px 20px 22px 28px 36px 48px",
-    menubar: false,
-    remove_script_host: true,
-    relative_urls: true,
-    convert_urls: true,
-    forced_root_block: "div",
-    toolbar_mode: "sliding",
-    entity_encoding: "raw",
-    table_header_type: "sectionCells",
-    paste_data_images: true,
-    images_upload_url: route("file_upload"),
-    images_upload_handler: tinyMceImageUploader(),
-    height: 450,
-    content_css: assetRoot() + "css/front/editor.css"
-  };
-  if (typeof override === "object") {
-    const custom = override;
-    override = (options2) => merge(options2, custom);
+function customDefaultsMerge(objValue, srcValue, key, object, source, stack) {
+  if (isObject(objValue) && isObject(srcValue)) {
+    stack.set(srcValue, objValue);
+    baseMerge(objValue, srcValue, void 0, customDefaultsMerge, stack);
+    stack["delete"](srcValue);
   }
-  override(options);
-  return options;
+  return objValue;
 }
-function tinyMceImageUploader() {
-  return function(blobInfo, progress) {
-    return new Promise((resolve, reject) => {
-      data("no.save", true);
-      const stack = useStack("uploading");
-      stack.push();
-      const xhr = new XMLHttpRequest();
-      xhr.withCredentials = false;
-      xhr.open("POST", route("file_upload"));
-      xhr.upload.onprogress = (e) => {
-        progress(e.loaded / e.total * 100);
-      };
-      xhr.onload = function() {
-        stack.pop();
-        if (xhr.status !== 200) {
-          reject("HTTP Error: " + decodeURIComponent(xhr.statusText));
-          return;
+var mergeWith = createAssigner(function(object, source, srcIndex, customizer) {
+  baseMerge(object, source, srcIndex, customizer);
+});
+var defaultsDeep = baseRest(function(args) {
+  args.push(void 0, customDefaultsMerge);
+  return apply(mergeWith, void 0, args);
+});
+const uri = useSystemUri();
+const vTinymce = {
+  async mounted(el, { value }) {
+    const options = defaultsDeep(
+      {},
+      value || {},
+      data("tinymce_options") || {},
+      {
+        license_key: "gpl",
+        target: el,
+        height: 500,
+        plugins: [
+          "advlist",
+          "autolink",
+          "lists",
+          "link",
+          "image",
+          "charmap",
+          "preview",
+          "anchor",
+          "pagebreak",
+          "searchreplace",
+          "wordcount",
+          "visualblocks",
+          "visualchars",
+          "code",
+          "fullscreen",
+          "insertdatetime",
+          "media",
+          "nonbreaking",
+          "save",
+          "table",
+          "directionality",
+          "emoticons"
+        ],
+        toolbar: "bold italic strikethrough forecolor backcolor blockquote removeformat | styles fontsize | alignleft aligncenter alignright alignjustify bullist numlist outdent indent | link image media table code | fullscreen",
+        toolbar_mode: "sliding",
+        font_size_formats: "13px 14px 15px 16px 18px 20px 22px 28px 36px 48px",
+        menubar: false,
+        content_css: data("tinymce_content_css"),
+        document_base_url: uri.root(),
+        paste_data_images: true,
+        remove_script_host: true,
+        relative_urls: true,
+        convert_urls: true,
+        entity_encoding: "raw",
+        table_header_type: "sectionCells",
+        table_class_list: [
+          { title: "BS Simple", value: "table" },
+          { title: "BS Striped", value: "table table-striped" },
+          { title: "BS Bordered", value: "table table-bordered" },
+          { title: "BS Striped Bordered", value: "table table-striped table-bordered" },
+          { title: "None", value: "" }
+        ],
+        images_upload_url: route("@image_upload"),
+        setup: function(editor) {
+          editor.on("change undo redo", (e) => {
+            el.value = editor.getContent();
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+          });
+          editor.on("input", (e) => {
+            el.value = editor.getContent();
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+          });
+          editor.on("keydown", (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              el.dispatchEvent(
+                new KeyboardEvent("keydown", {
+                  bubbles: true,
+                  metaKey: event.metaKey,
+                  ctrlKey: event.ctrlKey,
+                  key: "s",
+                  code: "KeyS"
+                })
+              );
+            }
+          });
         }
-        const json = JSON.parse(xhr.responseText);
-        if (!json || typeof json.data.url !== "string") {
-          reject("Invalid JSON: " + xhr.responseText);
-          console.error("Invalid JSON: " + xhr.responseText);
-          data("no.save", false);
-          return;
-        }
-        const img = new Image();
-        img.src = json.data.url;
-        resolve(json.data.url);
-        data("no.save", false);
-      };
-      const formData = new FormData();
-      formData.append("file", blobInfo.blob(), blobInfo.filename());
-      formData.append(data("csrf-token"), "1");
-      xhr.send(formData);
-    });
-  };
-}
+      }
+    );
+    const { create } = await useTinymce();
+    if (window.tinymce) {
+      tinymce.get(el.id)?.remove();
+    }
+    await create(el, options);
+  },
+  async unmounted(el) {
+  }
+};
+document.addEventListener("focusin", (e) => {
+  if (e.target.closest(".mce-window, .tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+    e.stopImmediatePropagation();
+  }
+});
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionHomeworkEdit",
   props: {
-    item: {}
+    "modelValue": {
+      required: true
+    },
+    "modelModifiers": {}
   },
+  emits: ["update:modelValue"],
   setup(__props, { expose: __expose }) {
     __expose();
-    const props = __props;
-    const { item } = toRefs(props);
-    const editorOptions = ref(defaultOptions());
-    const __returned__ = { props, item, editorOptions, get Editor() {
-      return Editor;
+    const item = useModel(__props, "modelValue");
+    const __returned__ = { item, get BFormGroup() {
+      return _sfc_main$2;
+    }, get BFormInput() {
+      return _sfc_main$1;
+    }, get vTinymce() {
+      return vTinymce;
     } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
 });
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_BFormInput = resolveComponent("BFormInput");
-  const _component_BFormGroup = resolveComponent("BFormGroup");
   return openBlock(), createElementBlock("div", null, [
-    createVNode(_component_BFormGroup, {
+    createVNode($setup["BFormGroup"], {
       label: "小節名稱編輯",
       "label-for": "input-section-title",
       "label-class": "mb-2",
       class: "mb-5"
     }, {
       default: withCtx(() => [
-        createVNode(_component_BFormInput, {
+        createVNode($setup["BFormInput"], {
           id: "input-section-title",
           modelValue: $setup.item.title,
           "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.item.title = $event),
@@ -1212,19 +869,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       _: 1
     }),
     _cache[2] || (_cache[2] = createTextVNode()),
-    createVNode(_component_BFormGroup, {
+    createVNode($setup["BFormGroup"], {
       label: "小節內容",
       "label-for": "input-section-content",
       "label-class": "mb-2"
     }, {
       default: withCtx(() => [
-        createVNode($setup["Editor"], {
-          modelValue: $setup.item.content,
+        withDirectives(createElementVNode("textarea", {
+          id: "input-section-content",
           "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.item.content = $event),
-          "api-key": "23aw7u2wc0a3ufumrfftdrrv3s8mox12kdnzr6juw1togrip",
-          style: { "min-height": "216px" },
-          init: $setup.editorOptions
-        }, null, 8, ["modelValue", "init"])
+          style: { "visibility": "hidden" }
+        }, null, 512), [
+          [$setup["vTinymce"]],
+          [vModelText, $setup.item.content]
+        ])
       ]),
       _: 1
     })

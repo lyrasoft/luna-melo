@@ -20,7 +20,7 @@ const loading = ref<boolean>(false);
 const { saving } = useSegmentEditor();
 
 // Replace single reactive state with separate refs
-const items = ref<Segment[]>([]);
+const items = ref<(Segment & { __open?: boolean; })[]>([]);
 
 const current = ref<{ originTitle: string; item: Segment | Object }>({
   originTitle: '',
@@ -44,6 +44,14 @@ async function prepareSegments() {
   );
 
   items.value = uniqueItemList(res.data.data);
+
+  for (const item of items.value) {
+    item.__open = false;
+  }
+
+  if (items.value[0]) {
+    items.value[0].__open = true;
+  }
 }
 
 onMounted(async () => {
@@ -157,6 +165,15 @@ async function reorder() {
   );
 }
 
+// Open / Hide
+function toggleAllOpens() {
+  const allOpen = items.value.every(item => item.__open);
+
+  for (const item of items.value) {
+    item.__open = !allOpen;
+  }
+}
+
 </script>
 
 <template>
@@ -166,14 +183,15 @@ async function reorder() {
         <div class="card mb-4">
           <div class="card-body d-flex align-items-center justify-content-between">
             <h4 class="bold my-1">
-              課程章節 ({{ items.length }} )
+              課程章節 ({{ items.length }})
             </h4>
 
             <div>
-              <div v-if="saving" class="">
-                <BSpinner small />
-                儲存中...
-              </div>
+              <button type="button" class="btn btn-outline-secondary btn-sm"
+              @click="toggleAllOpens"
+              >
+                全體收合/展開
+              </button>
             </div>
           </div>
         </div>
@@ -190,6 +208,7 @@ async function reorder() {
               :key="element.uid"
               :chapter="element"
               :index="index"
+              v-model:open="element.__open"
               @edit="showEditModal"
               @delete="deleteChapter"
             ></ChapterItem>

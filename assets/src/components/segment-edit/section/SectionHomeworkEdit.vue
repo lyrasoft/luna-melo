@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import { BFormGroup, BFormInput } from 'bootstrap-vue-next';
 import { ref, toRefs } from 'vue';
-import { Segment } from '../../../types/segment.type';
 import Editor from '@tinymce/tinymce-vue';
 import { defaultOptions } from '~melo/shared/form/tinymce-option';
+import { Segment } from '~melo/types';
+import vTinymce from '~melo/shared/form/v-tinymce';
 
-const props = defineProps<{
-  item: Segment;
-}>();
+const item = defineModel<Segment>({
+  required: true
+});
 
-const { item } = toRefs(props);
-const editorOptions = ref(defaultOptions());
 </script>
 
 <template>
@@ -28,12 +28,12 @@ const editorOptions = ref(defaultOptions());
       label-for="input-section-content"
       label-class="mb-2"
     >
-      <editor
+      <textarea
+        id="input-section-content"
+        v-tinymce
         v-model="item.content"
-        api-key="23aw7u2wc0a3ufumrfftdrrv3s8mox12kdnzr6juw1togrip"
-        style="min-height: 216px"
-        :init="editorOptions"
-      ></editor>
+        style="visibility: hidden"
+      ></textarea>
     </BFormGroup>
   </div>
 </template>
