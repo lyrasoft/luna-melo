@@ -1,13 +1,13 @@
-import { defineComponent, provide, toRef, createElementBlock, openBlock, unref, normalizeStyle, renderSlot, createVNode, inject, computed, normalizeClass, createTextVNode, toDisplayString, ref, watchEffect, readonly, toValue, withModifiers, createElementVNode, withCtx, useModel, createBlock, createCommentVNode, Transition } from "vue";
+import { defineComponent, provide, toRef, createElementBlock, openBlock, unref, normalizeStyle, renderSlot, createVNode, inject, computed, normalizeClass, createTextVNode, toDisplayString, Fragment, toValue, mergeModels, useSlots, useModel, ref, watch, nextTick, onMounted, createBlock, resolveDynamicComponent, withCtx, createCommentVNode, createElementVNode, renderList, mergeProps, withModifiers, withKeys, useAttrs, useTemplateRef, onUnmounted, watchEffect, readonly, Transition } from "vue";
 import { useLoading } from "@lyrasoft/ts-toolkit/vue";
 import { data, useS3MultipartUploader, useHttpClient, simpleAlert, route, deleteConfirm } from "@windwalker-io/unicorn-next";
-import { u as useDefaults, p as progressInjectionKey, j as useColorVariantClasses, b as useToNumber, i as _export_sfc } from "./_plugin-vue_export-helper.js";
-import { b as createEventHook, i as isClient, h as hasOwn, _ as _sfc_main$3, a as _sfc_main$4 } from "./index.js";
-import { _ as _sfc_main$5, a as _sfc_main$6 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
+import { u as useDefaults, p as progressInjectionKey, j as useColorVariantClasses, b as useToNumber, k as sortSlotElementsByPosition, t as tabsInjectionKey, l as createReusableTemplate, a as useId, i as _export_sfc } from "./_plugin-vue_export-helper.js";
+import { B as BvEvent, b as createEventHook, i as isClient, h as hasOwn, _ as _sfc_main$4, a as _sfc_main$5 } from "./index.js";
+import { _ as _sfc_main$6, a as _sfc_main$7 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
 import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
 import { i as isObjectLike, b as baseGetTag, a as isArray, S as Symbol$1, c as isObject, r as root } from "./isObject.js";
 import { u as useSegmentController } from "./useSegmentController.js";
-const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
+const _sfc_main$1$2 = /* @__PURE__ */ defineComponent({
   __name: "BProgressBar",
   props: {
     animated: { type: Boolean, default: false },
@@ -56,8 +56,8 @@ const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$2 = ["aria-valuenow", "aria-valuemax"];
-const _sfc_main$2 = /* @__PURE__ */ defineComponent({
+const _hoisted_1$3 = ["aria-valuenow", "aria-valuemax"];
+const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   __name: "BProgress",
   props: {
     height: { default: void 0 },
@@ -92,7 +92,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         "aria-valuemax": unref(props).max
       }, [
         renderSlot(_ctx.$slots, "default", {}, () => [
-          createVNode(_sfc_main$1$1, {
+          createVNode(_sfc_main$1$2, {
             animated: unref(props).animated,
             max: unref(props).max,
             precision: unref(props).precision,
@@ -105,7 +105,588 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
             "bg-variant": unref(props).bgVariant
           }, null, 8, ["animated", "max", "precision", "show-progress", "show-value", "striped", "value", "variant", "text-variant", "bg-variant"])
         ])
-      ], 12, _hoisted_1$2);
+      ], 12, _hoisted_1$3);
+    };
+  }
+});
+function flattenFragments(nodes) {
+  return nodes.map((node) => {
+    if (node.type === Fragment) {
+      return flattenFragments(node.children);
+    }
+    return node;
+  }).flat();
+}
+const useAlignment = (align) => computed(() => {
+  const value = toValue(align);
+  return !value ? "" : `justify-content-${value}`;
+});
+const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
+  ...{
+    inheritAttrs: false
+  },
+  __name: "BTab",
+  props: /* @__PURE__ */ mergeModels({
+    buttonId: { default: void 0 },
+    disabled: { type: Boolean, default: false },
+    id: { default: void 0 },
+    lazy: { type: Boolean, default: void 0 },
+    unmountLazy: { type: Boolean, default: void 0 },
+    noBody: { type: Boolean, default: false },
+    tag: { default: "div" },
+    title: { default: void 0 },
+    titleItemClass: { default: void 0 },
+    titleLinkAttrs: { default: void 0 },
+    titleLinkClass: { default: void 0 }
+  }, {
+    "active": { type: Boolean, ...{
+      default: false
+    } },
+    "activeModifiers": {}
+  }),
+  emits: ["update:active"],
+  setup(__props, { expose: __expose }) {
+    const _props = __props;
+    const props = useDefaults(_props, "BTab");
+    const slots = useSlots();
+    const attrs = useAttrs();
+    const activeModel = useModel(__props, "active");
+    const parentData = inject(tabsInjectionKey, null);
+    const localId = ref(props.id);
+    const internalId = useId("", "tabpane");
+    const computedId = computed(() => props.id ?? localId.value ?? internalId.value);
+    const computedButtonId = useId(() => props.buttonId, "tab");
+    const lazyRenderCompleted = ref(false);
+    const el = useTemplateRef("_el");
+    const processedAttrs = computed(() => {
+      const { onClick: _, ...tabAttrs } = attrs;
+      return tabAttrs;
+    });
+    function updateTab() {
+      if (!parentData) return;
+      const newId = parentData.registerTab(
+        computed(
+          () => ({
+            internalId: internalId.value,
+            id: computedId.value,
+            active: activeModel.value,
+            buttonId: computedButtonId.value,
+            disabled: props.disabled,
+            title: props.title,
+            titleComponent: slots.title,
+            titleItemClass: props.titleItemClass,
+            titleLinkAttrs: props.titleLinkAttrs,
+            titleLinkClass: props.titleLinkClass,
+            onClick: attrs.onClick,
+            el
+          })
+        )
+      );
+      if (newId !== localId.value) {
+        localId.value = newId;
+      }
+    }
+    if (parentData) {
+      updateTab();
+      if (activeModel.value) {
+        parentData.activateTab(internalId.value);
+      }
+    }
+    onUnmounted(() => {
+      if (!parentData) return;
+      parentData.unregisterTab(internalId.value);
+    });
+    const isActive = computed(() => parentData?.activeId.value === computedId.value);
+    const show = ref(isActive.value);
+    const computedLazy = computed(() => !!(parentData?.lazy.value || props.lazy));
+    const computedActive = computed(() => isActive.value && !props.disabled);
+    const showSlot = computed(
+      () => computedActive.value || !computedLazy.value || computedLazy.value && !props.unmountLazy && lazyRenderCompleted.value
+    );
+    watch(showSlot, (shown) => {
+      if (shown && !lazyRenderCompleted.value) lazyRenderCompleted.value = true;
+    });
+    watch(isActive, (active) => {
+      if (active) {
+        activeModel.value = true;
+        setTimeout(() => {
+          show.value = true;
+        }, 0);
+        return;
+      }
+      show.value = false;
+      activeModel.value = false;
+    });
+    watch(activeModel, (active) => {
+      if (props.disabled) {
+        activeModel.value = false;
+        return;
+      }
+      if (!parentData) return;
+      if (!active) {
+        if (isActive.value) {
+          parentData.activateTab(void 0);
+        }
+        return;
+      }
+      if (!isActive.value) {
+        parentData.activateTab(internalId.value);
+      }
+    });
+    const computedClasses = computed(() => [
+      {
+        "active": isActive.value,
+        "show": show.value,
+        "card-body": parentData?.card.value && props.noBody === false,
+        "fade": !parentData?.noFade.value
+      },
+      show.value ? parentData?.activeTabClass.value : parentData?.inactiveTabClass.value,
+      parentData?.tabClass.value
+    ]);
+    __expose({
+      activate: () => {
+        activeModel.value = true;
+      },
+      deactivate: () => {
+        activeModel.value = false;
+      }
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(resolveDynamicComponent(unref(props).tag), mergeProps({
+        id: computedId.value,
+        ref: "_el",
+        class: ["tab-pane", computedClasses.value],
+        role: "tabpanel",
+        "aria-labelledby": unref(computedButtonId)
+      }, processedAttrs.value), {
+        default: withCtx(() => [
+          showSlot.value ? renderSlot(_ctx.$slots, "default", { key: 0 }) : createCommentVNode("", true)
+        ]),
+        _: 3
+      }, 16, ["id", "class", "aria-labelledby"]);
+    };
+  }
+});
+const _hoisted_1$2 = ["aria-orientation"];
+const _hoisted_2$2 = ["id", "aria-controls", "aria-selected", "disabled", "tabindex", "onClick"];
+const _sfc_main$2 = /* @__PURE__ */ defineComponent({
+  __name: "BTabs",
+  props: /* @__PURE__ */ mergeModels({
+    activeNavItemClass: { default: void 0 },
+    activeTabClass: { default: void 0 },
+    align: { default: void 0 },
+    card: { type: Boolean, default: false },
+    contentClass: { default: void 0 },
+    end: { type: Boolean, default: false },
+    fill: { type: Boolean, default: false },
+    id: { default: void 0 },
+    index: {},
+    inactiveNavItemClass: { default: void 0 },
+    inactiveTabClass: { default: void 0 },
+    justified: { type: Boolean, default: false },
+    lazy: { type: Boolean, default: false },
+    navClass: { default: void 0 },
+    navItemClass: { default: void 0 },
+    navWrapperClass: { default: void 0 },
+    noFade: { type: Boolean, default: false },
+    noKeyNav: { type: Boolean, default: false },
+    noNavStyle: { type: Boolean, default: false },
+    pills: { type: Boolean, default: false },
+    small: { type: Boolean, default: false },
+    tag: { default: "div" },
+    tabClass: { default: void 0 },
+    underline: { type: Boolean, default: false },
+    vertical: { type: Boolean, default: false }
+  }, {
+    "index": {
+      default: -1
+    },
+    "indexModifiers": {},
+    "modelValue": {
+      default: void 0
+    },
+    "modelModifiers": {}
+  }),
+  emits: /* @__PURE__ */ mergeModels(["activate-tab"], ["update:index", "update:modelValue"]),
+  setup(__props, { emit: __emit }) {
+    const _props = __props;
+    const props = useDefaults(_props, "BTabs");
+    const emit = __emit;
+    const slots = useSlots();
+    const activeIndex = useModel(__props, "index");
+    const activeId = useModel(__props, "modelValue");
+    const ReusableEmptyTab = createReusableTemplate();
+    const tabsInternal = ref([]);
+    const tabElementsArray = ref([]);
+    const isChildActive = ref(false);
+    const initialIds = ref([]);
+    const updateTabElementsArray = () => {
+      const tabElements = flattenFragments(slots.default?.({}) ?? []);
+      tabElementsArray.value = (Array.isArray(tabElements) ? tabElements : [tabElements]).filter(
+        (tab) => tab.type === _sfc_main$1$1
+      );
+      if (initialIds.value.length === 0) {
+        initialIds.value = tabElementsArray.value.map(
+          (tab) => unref(useId(() => tab.props?.id, "tabpane"))
+        );
+      }
+      isChildActive.value = tabElementsArray.value.some(
+        (tab) => tab.props?.active !== void 0 && tab.props?.active !== false
+      );
+    };
+    updateTabElementsArray();
+    watch(
+      () => slots.default?.({}),
+      () => {
+        updateTabElementsArray();
+        nextTick(() => {
+          sortTabs();
+        });
+      }
+    );
+    const tabs = computed(() => {
+      if (tabsInternal.value.length === 0) {
+        const _activeIndex = tabElementsArray.value.findIndex(
+          (tab) => tab.props?.active !== void 0 && (tab.props.disabled === false || tab.props.disabled === void 0) || activeId.value && tab.props?.id === activeId.value
+        );
+        return tabElementsArray.value.map((tab, index) => {
+          const active = _activeIndex !== -1 ? index === _activeIndex : activeIndex.value > -1 ? index === activeIndex.value : index === 0;
+          return {
+            id: tab.props?.id ?? initialIds.value[index],
+            internalId: `premount-${index}`,
+            // temporary id for the tab
+            buttonId: tab.props?.buttonId,
+            disabled: tab.props?.disabled,
+            title: tab.props?.title,
+            titleComponent: tab.children?.title,
+            titleItemClass: tab.props?.titleItemClass,
+            titleLinkAttrs: tab.props?.titleLinkAttrs,
+            titleLinkClass: tab.props?.titleLinkClass,
+            onClick: tab.props?.onClick,
+            active,
+            navItemClasses: [
+              {
+                active,
+                disabled: !(tab.props?.disabled === false || tab.props?.disabled === void 0)
+              },
+              active ? props.activeNavItemClass : props.inactiveNavItemClass,
+              props.navItemClass
+            ]
+          };
+        });
+      }
+      return tabsInternal.value.map((_tab) => {
+        const tab = unref(_tab);
+        const active = tab.id === activeId.value;
+        return {
+          ...tab,
+          active,
+          navItemClasses: [
+            {
+              active,
+              disabled: tab.disabled
+            },
+            active ? props.activeNavItemClass : props.inactiveNavItemClass,
+            props.navItemClass
+          ]
+        };
+      });
+    });
+    let initialized = false;
+    let updateInitialActiveIndex = false;
+    let updateInitialActiveId = false;
+    if (activeIndex.value === -1 && activeId.value) {
+      if (tabs.value.findIndex((t) => t.id === activeId.value) !== -1) {
+        activeIndex.value = tabs.value.findIndex((t) => t.id === activeId.value);
+      } else {
+        updateInitialActiveIndex = true;
+      }
+    } else if (activeIndex.value > -1 && !activeId.value) {
+      if (tabs.value[activeIndex.value]?.id) {
+        activeId.value = tabs.value[activeIndex.value]?.id;
+      } else {
+        updateInitialActiveId = true;
+      }
+    } else if (activeIndex.value === -1 && !activeId.value && !isChildActive.value) {
+      activeIndex.value = tabs.value.findIndex((t) => t.disabled === void 0 || t.disabled === false);
+      activeId.value = tabs.value[activeIndex.value]?.id;
+    } else if (activeIndex.value === -1 && !activeId.value && isChildActive.value) {
+      activeIndex.value = tabs.value.findIndex(
+        (t) => t.active !== void 0 && t.active !== false && (t.disabled === void 0 || t.disabled === false)
+      );
+      activeId.value = tabs.value[activeIndex.value]?.id;
+    }
+    function updateInitialIndexAndId() {
+      if (updateInitialActiveIndex) {
+        const index = tabs.value.findIndex((t) => t.id === activeId.value);
+        if (index !== -1) {
+          nextTick(() => {
+            activeIndex.value = index;
+            updateInitialActiveIndex = false;
+          });
+        }
+      }
+      if (updateInitialActiveId) {
+        if (activeIndex.value > -1 && tabs.value[activeIndex.value]?.id) {
+          nextTick(() => {
+            activeId.value = tabs.value[activeIndex.value]?.id;
+            updateInitialActiveId = false;
+          });
+        }
+      }
+    }
+    updateInitialIndexAndId();
+    const showEmpty = computed(() => !(tabs?.value && tabs.value.length > 0));
+    const computedClasses = computed(() => ({
+      "d-flex": props.vertical,
+      "align-items-start": props.vertical
+    }));
+    const alignment = useAlignment(() => props.align);
+    const navTabsClasses = computed(() => ({
+      "nav-pills": props.pills,
+      "nav-underline": props.underline,
+      "flex-column me-3": props.vertical,
+      [alignment.value]: props.align !== void 0,
+      "nav-fill": props.fill,
+      "card-header-tabs": props.card && !props.pills && !props.underline,
+      "card-header-pills": props.card && props.pills,
+      "nav-justified": props.justified,
+      "nav-tabs": !props.noNavStyle && !props.pills && !props.underline,
+      "small": props.small
+    }));
+    const handleClick = (event, index) => {
+      if (index >= 0 && !tabs.value[index].disabled && tabs.value[index]?.onClick && typeof tabs.value[index].onClick === "function") {
+        tabs.value[index].onClick?.(event);
+        if (event.defaultPrevented) {
+          document.getElementById(tabs.value[index].buttonId)?.blur();
+          return;
+        }
+      }
+      activeIndex.value = index;
+    };
+    const keynav = (e, direction) => {
+      if (tabs.value.length <= 0 || props.noKeyNav) return;
+      e.preventDefault();
+      e.stopPropagation();
+      activeIndex.value = nextIndex(activeIndex.value + direction, direction);
+      nextTick(() => {
+        if (activeIndex.value >= 0) {
+          document.getElementById(tabs.value[activeIndex.value]?.buttonId)?.focus();
+        }
+      });
+    };
+    const nextIndex = (start, direction) => {
+      let index = start;
+      let minIdx = -1;
+      let maxIdx = -1;
+      for (let i = 0; i < tabs.value.length; i++) {
+        if (!tabs.value[i].disabled) {
+          if (minIdx === -1) minIdx = i;
+          maxIdx = i;
+        }
+      }
+      while (index >= minIdx && index <= maxIdx && tabs.value[index].disabled) {
+        index += direction;
+      }
+      if (index < minIdx) index = minIdx;
+      if (index > maxIdx) index = maxIdx;
+      return index;
+    };
+    let previousIndex;
+    let isReverting = false;
+    watch(activeIndex, (newValue, oldValue) => {
+      if (tabs.value.length <= 0 || tabs.value.filter((t) => !t.disabled).length <= 0) {
+        return;
+      }
+      if (isReverting) {
+        isReverting = false;
+        return;
+      }
+      const index = nextIndex(newValue, newValue > oldValue ? 1 : -1);
+      if (index !== newValue) {
+        previousIndex = oldValue;
+        activeIndex.value = index;
+        return;
+      }
+      const tabEvent = new BvEvent("activate-tab", { cancelable: true });
+      emit(
+        "activate-tab",
+        tabs.value[index]?.id,
+        tabs.value[previousIndex ?? oldValue]?.id,
+        index,
+        previousIndex ?? oldValue,
+        tabEvent
+      );
+      if (tabEvent.defaultPrevented) {
+        isReverting = true;
+        const prev = previousIndex ?? oldValue ?? nextIndex(0, 1);
+        previousIndex = void 0;
+        if (activeId.value !== tabs.value[prev]?.id) {
+          activeId.value = tabs.value[prev]?.id;
+        }
+        nextTick(() => {
+          if (prev >= 0) {
+            document.getElementById(tabs.value[prev]?.buttonId)?.focus();
+          }
+        });
+        return;
+      }
+      if (activeId.value !== tabs.value[index]?.id) {
+        activeId.value = tabs.value[index]?.id;
+      }
+      previousIndex = void 0;
+    });
+    watch(activeId, (newValue, oldValue) => {
+      if (tabs.value.length <= 0 || tabs.value.filter((t) => !t.disabled).length <= 0) {
+        return;
+      }
+      const index = tabs.value.findIndex((t) => t.id === newValue);
+      if (index === activeIndex.value) return;
+      const oldIndex = tabs.value.findIndex((t) => t.id === oldValue);
+      if (tabs.value[index]?.disabled) {
+        activeIndex.value = nextIndex(index, index > oldIndex ? 1 : -1);
+        return;
+      }
+      if (index === -1) {
+        activeIndex.value = nextIndex(0, 1);
+        nextTick(() => {
+          activeId.value = tabs.value[activeIndex.value]?.id;
+        });
+        return;
+      }
+      activeIndex.value = index;
+    });
+    const registerTab = (tab) => {
+      const idx = tabsInternal.value.findIndex((t) => t.value.internalId === tab.value.internalId);
+      if (idx === -1) {
+        tabsInternal.value.push(tab);
+        if (initialized) {
+          nextTick(() => {
+            sortTabs();
+          });
+        }
+      } else {
+        tabsInternal.value[idx] = tab;
+        if (initialized) {
+          sortTabs();
+        }
+      }
+      const idx2 = tabsInternal.value.findIndex((t) => t.value.internalId === tab.value.internalId);
+      return tab.value.id ?? (!initialized ? initialIds.value[idx2] : tab.value.internalId);
+    };
+    onMounted(() => {
+      updateInitialIndexAndId();
+      sortTabs();
+      initialized = true;
+    });
+    const sortTabs = () => {
+      tabsInternal.value.sort((a, b) => sortSlotElementsByPosition(a.value.el.value, b.value.el.value));
+      if (activeId.value && activeIndex.value !== tabs.value.findIndex((t) => t.id === activeId.value)) {
+        activeIndex.value = tabs.value.findIndex((t) => t.id === activeId.value);
+      }
+    };
+    const unregisterTab = (id) => {
+      tabsInternal.value = tabsInternal.value.filter((t) => t.value.internalId !== id);
+    };
+    provide(tabsInjectionKey, {
+      lazy: toRef(() => props.lazy),
+      card: toRef(() => props.card),
+      noFade: toRef(() => props.noFade),
+      activeTabClass: toRef(() => props.activeTabClass),
+      inactiveTabClass: toRef(() => props.inactiveTabClass),
+      tabClass: toRef(() => props.tabClass),
+      registerTab,
+      unregisterTab,
+      activeId,
+      activateTab: (internalId) => {
+        const idx = tabs.value.findIndex((t) => t.internalId === internalId);
+        if (internalId === void 0 || idx === -1) {
+          activeIndex.value = nextIndex(0, 1);
+          return;
+        }
+        activeIndex.value = idx;
+      }
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(resolveDynamicComponent(unref(props).tag), {
+        id: unref(props).id,
+        class: normalizeClass(["tabs", computedClasses.value])
+      }, {
+        default: withCtx(() => [
+          createVNode(unref(ReusableEmptyTab).define, null, {
+            default: withCtx(() => [
+              createElementVNode("div", {
+                class: normalizeClass(["tab-content", unref(props).contentClass])
+              }, [
+                renderSlot(_ctx.$slots, "default"),
+                showEmpty.value ? (openBlock(), createElementBlock("div", {
+                  key: "bv-empty-tab",
+                  class: normalizeClass(["tab-pane active", { "card-body": unref(props).card }])
+                }, [
+                  renderSlot(_ctx.$slots, "empty")
+                ], 2)) : createCommentVNode("", true)
+              ], 2)
+            ]),
+            _: 3
+          }),
+          unref(props).end ? (openBlock(), createBlock(unref(ReusableEmptyTab).reuse, { key: 0 })) : createCommentVNode("", true),
+          createElementVNode("div", {
+            class: normalizeClass([
+              unref(props).navWrapperClass,
+              { "card-header": unref(props).card, "ms-auto": _ctx.vertical && unref(props).end }
+            ])
+          }, [
+            createElementVNode("ul", {
+              class: normalizeClass(["nav", [navTabsClasses.value, unref(props).navClass]]),
+              role: "tablist",
+              "aria-orientation": unref(props).vertical ? "vertical" : "horizontal"
+            }, [
+              renderSlot(_ctx.$slots, "tabs-start"),
+              (openBlock(true), createElementBlock(Fragment, null, renderList(tabs.value, (tab, idx) => {
+                return openBlock(), createElementBlock("li", {
+                  key: tab.id ?? tab.internalId,
+                  class: normalizeClass(["nav-item", tab.titleItemClass]),
+                  role: "presentation"
+                }, [
+                  createElementVNode("button", mergeProps({
+                    id: tab.buttonId,
+                    class: ["nav-link", [tab.navItemClasses, tab.titleLinkClass]],
+                    role: "tab",
+                    "aria-controls": tab.id,
+                    "aria-selected": tab.active,
+                    disabled: tab.disabled,
+                    tabindex: unref(props).noKeyNav ? void 0 : tab.active ? void 0 : -1,
+                    type: "button"
+                  }, { ref_for: true }, tab.titleLinkAttrs, {
+                    onKeydown: [
+                      _cache[0] || (_cache[0] = withKeys(withModifiers(($event) => !unref(props).vertical && keynav($event, -1), ["exact"]), ["left"])),
+                      _cache[1] || (_cache[1] = withKeys(withModifiers(($event) => !unref(props).vertical && keynav($event, -999), ["shift"]), ["left"])),
+                      _cache[2] || (_cache[2] = withKeys(withModifiers(($event) => unref(props).vertical && keynav($event, -1), ["exact"]), ["up"])),
+                      _cache[3] || (_cache[3] = withKeys(withModifiers(($event) => unref(props).vertical && keynav($event, -999), ["shift"]), ["up"])),
+                      _cache[4] || (_cache[4] = withKeys(withModifiers(($event) => !unref(props).vertical && keynav($event, 1), ["exact"]), ["right"])),
+                      _cache[5] || (_cache[5] = withKeys(withModifiers(($event) => !unref(props).vertical && keynav($event, 999), ["shift"]), ["right"])),
+                      _cache[6] || (_cache[6] = withKeys(withModifiers(($event) => unref(props).vertical && keynav($event, 1), ["exact"]), ["down"])),
+                      _cache[7] || (_cache[7] = withKeys(withModifiers(($event) => unref(props).vertical && keynav($event, 999), ["shift"]), ["down"])),
+                      _cache[8] || (_cache[8] = withKeys(($event) => keynav($event, -999), ["page-up"])),
+                      _cache[9] || (_cache[9] = withKeys(($event) => keynav($event, 999), ["page-down"])),
+                      _cache[10] || (_cache[10] = withKeys(($event) => keynav($event, -999), ["home"])),
+                      _cache[11] || (_cache[11] = withKeys(($event) => keynav($event, 999), ["end"]))
+                    ],
+                    onClick: withModifiers((e) => handleClick(e, idx), ["stop"])
+                  }), [
+                    tab.titleComponent ? (openBlock(), createBlock(resolveDynamicComponent(tab.titleComponent), { key: 0 })) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+                      createTextVNode(toDisplayString(tab.title), 1)
+                    ], 64))
+                  ], 16, _hoisted_2$2)
+                ], 2);
+              }), 128)),
+              renderSlot(_ctx.$slots, "tabs-end")
+            ], 10, _hoisted_1$2)
+          ], 2),
+          !unref(props).end ? (openBlock(), createBlock(unref(ReusableEmptyTab).reuse, { key: 1 })) : createCommentVNode("", true)
+        ]),
+        _: 3
+      }, 8, ["id", "class"]);
     };
   }
 });
@@ -1573,7 +2154,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     dest: { type: [Function, String] },
     accept: {}
   },
-  emits: ["uploaded", "clear"],
+  emits: ["uploaded", "clear", "start", "completed", "error"],
   setup(__props, { expose: __expose, emit: __emit }) {
     __expose();
     const props = __props;
@@ -1619,11 +2200,13 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       const dest = getDest();
       try {
         return await run(async () => {
+          emit("start", file);
           const url = await uploadWithAdapter(file, dest);
-          emit("uploaded", url);
+          emit("uploaded", url, file);
           return url;
         });
       } catch (e) {
+        emit("error", e);
         if (e instanceof Error) {
           simpleAlert(e.message);
         } else {
@@ -1631,6 +2214,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         }
       } finally {
         progress.value = 0;
+        emit("completed");
       }
     }
     async function uploadWithAdapter(file, dest) {
@@ -1673,11 +2257,11 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       dragging.value = false;
     }
     const __returned__ = { props, emit, classicUpload, s3MultiPartUpload, acceptString, acceptList, files, open, reset, onChange, onCancel, getDest, progress, uploading, run, wrap, upload, uploadWithAdapter, checkFileType, dragging, drop, get BButton() {
-      return _sfc_main$4;
+      return _sfc_main$5;
     }, get BProgress() {
-      return _sfc_main$2;
-    }, get BSpinner() {
       return _sfc_main$3;
+    }, get BSpinner() {
+      return _sfc_main$4;
     }, get round() {
       return round;
     } };
@@ -1746,7 +2330,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32);
 }
-const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-da919be7"], ["__file", "FileUploader.vue"]]);
+const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-45532586"], ["__file", "FileUploader.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionVideoEdit",
   props: {
@@ -1766,7 +2350,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const videoName = computed(() => isFile.value ? item.value.filename : item.value.src);
     const isFile = computed(() => item.value.src !== "" && videoInfo.value === null);
     const isCloudVideo = computed(() => item.value.src !== "" && videoInfo.value != null);
-    const itemSrcVal = ref("");
+    const cloudVideoUrl = ref("");
+    const videoUploading = ref(false);
     const videoInfo = computed(() => {
       if (item.value.src !== "") {
         return urlParser.parse(item.value.src);
@@ -1804,58 +2389,79 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             await deleteFile(item.value[field], item.value.id, field);
           }
           item.value[field] = "";
+          if (field === "src") {
+            item.value.duration = 0;
+          }
         });
       }
     }
-    function setItemSrc() {
-      item.value.src = itemSrcVal.value;
-      emit("save", item.value);
+    function applyCloudVideo() {
+      item.value.src = cloudVideoUrl.value;
     }
-    async function uploadVideo(src) {
+    async function videoUploaded(src, file) {
+      videoUploading.value = false;
+      item.value.duration = await calcVideoDuration(file);
       item.value.src = src;
-      emit("save", item.value);
     }
-    async function uploadCaption(src) {
+    async function captionUploaded(src) {
       item.value.captionSrc = src;
-      emit("save", item.value);
     }
-    const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, itemSrcVal, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, setItemSrc, uploadVideo, uploadCaption, get route() {
+    function calcVideoDuration(file) {
+      return new Promise((resolve) => {
+        const video = document.createElement("video");
+        const url = URL.createObjectURL(file);
+        video.preload = "metadata";
+        video.src = url;
+        video.addEventListener("loadedmetadata", () => {
+          resolve(Math.floor(video.duration));
+        });
+      });
+    }
+    const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, cloudVideoUrl, videoUploading, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, applyCloudVideo, videoUploaded, captionUploaded, calcVideoDuration, get route() {
       return route;
     }, get BButton() {
-      return _sfc_main$4;
-    }, get BFormGroup() {
-      return _sfc_main$6;
-    }, get BFormInput() {
       return _sfc_main$5;
+    }, get BFormGroup() {
+      return _sfc_main$7;
+    }, get BFormInput() {
+      return _sfc_main$6;
+    }, get BTab() {
+      return _sfc_main$1$1;
+    }, get BTabs() {
+      return _sfc_main$2;
     }, FileUploader };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
 });
 const _hoisted_1 = { class: "l-section-video-edit d-flex flex-column gap-4" };
-const _hoisted_2 = { class: "input-group" };
-const _hoisted_3 = {
+const _hoisted_2 = {
+  key: 0,
+  class: "d-flex flex-column gap-4"
+};
+const _hoisted_3 = { class: "input-group" };
+const _hoisted_4 = {
   key: 1,
   class: "d-flex flex-column gap-4"
 };
-const _hoisted_4 = { class: "input-group" };
-const _hoisted_5 = ["value"];
-const _hoisted_6 = {
+const _hoisted_5 = { class: "input-group" };
+const _hoisted_6 = ["value"];
+const _hoisted_7 = {
   key: 0,
   class: "rwd-video"
 };
-const _hoisted_7 = ["src"];
-const _hoisted_8 = { key: 1 };
-const _hoisted_9 = {
+const _hoisted_8 = ["src"];
+const _hoisted_9 = { key: 1 };
+const _hoisted_10 = {
   controls: "",
   class: "w-100",
   style: { "aspect-ratio": "16 / 9", "background-color": "black" },
   crossorigin: "anonymous"
 };
-const _hoisted_10 = ["src"];
 const _hoisted_11 = ["src"];
-const _hoisted_12 = { class: "input-group" };
-const _hoisted_13 = ["value"];
+const _hoisted_12 = ["src"];
+const _hoisted_13 = { class: "input-group" };
+const _hoisted_14 = ["value"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createVNode($setup["BFormGroup"], {
@@ -1874,84 +2480,111 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     }),
-    _cache[22] || (_cache[22] = createTextVNode()),
-    $setup.item.src === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
-      key: 0,
-      label: "影片連結",
-      "label-for": "input-section-video",
-      "label-class": "mb-2",
-      description: "支援以下平台: Youtube, Vimeo, Dailymotion",
-      class: "mb-5"
-    }, {
-      default: withCtx(() => [
-        createElementVNode("div", _hoisted_2, [
-          createVNode($setup["BFormInput"], {
-            id: "input-section-video",
-            modelValue: $setup.itemSrcVal,
-            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.itemSrcVal = $event),
-            placeholder: "請輸入影片網址",
-            trim: ""
-          }, null, 8, ["modelValue"]),
-          _cache[6] || (_cache[6] = createTextVNode()),
-          createVNode($setup["BButton"], {
-            variant: "primary",
-            class: "text-nowrap c-video-submit px-3",
-            onClick: $setup.setItemSrc
-          }, {
-            default: withCtx(() => [..._cache[5] || (_cache[5] = [
-              createElementVNode("i", { class: "far fa-check" }, null, -1),
-              createTextVNode("\n          送出\n        ", -1)
-            ])]),
-            _: 1
-          })
-        ])
-      ]),
-      _: 1
-    })) : createCommentVNode("", true),
-    _cache[23] || (_cache[23] = createTextVNode()),
+    _cache[25] || (_cache[25] = createTextVNode()),
     createVNode(Transition, {
       name: "fade",
       mode: "out-in"
     }, {
       default: withCtx(() => [
-        $setup.item.src === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
-          key: 0,
-          label: "上傳影片"
-        }, {
-          default: withCtx(() => [
-            _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted mb-2" }, [
-              createElementVNode("small", null, "\n              請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件\n            ")
-            ], -1)),
-            _cache[8] || (_cache[8] = createTextVNode()),
-            createVNode($setup["FileUploader"], {
-              accept: "video/mp4",
-              "s3-multipart": "",
-              onUploaded: $setup.uploadVideo,
-              dest: () => `segments/${$setup.item.id}/video.{ext}`
-            }, null, 8, ["dest"])
-          ]),
-          _: 1
-        })) : (openBlock(), createElementBlock("div", _hoisted_3, [
+        $setup.item.src === "" ? (openBlock(), createElementBlock("div", _hoisted_2, [
+          createVNode($setup["BTabs"], {
+            pills: "",
+            justified: "",
+            "content-class": "py-3"
+          }, {
+            default: withCtx(() => [
+              createVNode($setup["BTab"], {
+                title: "上傳影片",
+                active: "",
+                disabled: $setup.videoUploading
+              }, {
+                default: withCtx(() => [
+                  createVNode($setup["BFormGroup"], { label: "上傳影片" }, {
+                    default: withCtx(() => [
+                      _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted mb-2" }, [
+                        createElementVNode("small", null, "\n                  請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件\n                ")
+                      ], -1)),
+                      _cache[8] || (_cache[8] = createTextVNode()),
+                      createVNode($setup["FileUploader"], {
+                        accept: "video/mp4",
+                        "s3-multipart": "",
+                        onUploaded: $setup.videoUploaded,
+                        dest: () => `segments/${$setup.item.id}/video.{ext}`,
+                        onStart: _cache[1] || (_cache[1] = ($event) => $setup.videoUploading = true),
+                        onCompleted: _cache[2] || (_cache[2] = ($event) => $setup.videoUploading = false)
+                      }, null, 8, ["dest"])
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }, 8, ["disabled"]),
+              _cache[11] || (_cache[11] = createTextVNode()),
+              createVNode($setup["BTab"], {
+                title: "雲端影片",
+                disabled: $setup.videoUploading
+              }, {
+                default: withCtx(() => [
+                  $setup.item.src === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
+                    key: 0,
+                    label: "影片連結",
+                    "label-for": "input-section-video",
+                    "label-class": "mb-2",
+                    description: "支援以下平台: Youtube, Vimeo, Dailymotion",
+                    class: "mb-5"
+                  }, {
+                    default: withCtx(() => [
+                      createElementVNode("div", _hoisted_3, [
+                        createVNode($setup["BFormInput"], {
+                          id: "input-section-video",
+                          modelValue: $setup.cloudVideoUrl,
+                          "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.cloudVideoUrl = $event),
+                          placeholder: "請輸入影片網址",
+                          trim: ""
+                        }, null, 8, ["modelValue"]),
+                        _cache[10] || (_cache[10] = createTextVNode()),
+                        createVNode($setup["BButton"], {
+                          variant: "primary",
+                          class: "text-nowrap c-video-submit px-3",
+                          onClick: $setup.applyCloudVideo
+                        }, {
+                          default: withCtx(() => [..._cache[9] || (_cache[9] = [
+                            createElementVNode("i", { class: "far fa-check" }, null, -1),
+                            createTextVNode("\n                  送出\n                ", -1)
+                          ])]),
+                          _: 1
+                        })
+                      ])
+                    ]),
+                    _: 1
+                  })) : createCommentVNode("", true)
+                ]),
+                _: 1
+              }, 8, ["disabled"])
+            ]),
+            _: 1
+          })
+        ])) : (openBlock(), createElementBlock("div", _hoisted_4, [
           createVNode($setup["BFormGroup"], { label: "影片" }, {
             default: withCtx(() => [
-              createElementVNode("div", _hoisted_4, [
-                _cache[10] || (_cache[10] = createElementVNode("div", { class: "input-group-text" }, [
+              createElementVNode("div", _hoisted_5, [
+                _cache[13] || (_cache[13] = createElementVNode("div", { class: "input-group-text" }, [
                   createElementVNode("span", { class: "fal fa-fw fa-video me-2" })
                 ], -1)),
-                _cache[11] || (_cache[11] = createTextVNode()),
+                _cache[14] || (_cache[14] = createTextVNode()),
                 createElementVNode("input", {
                   type: "text",
                   class: "form-control",
                   disabled: "",
                   value: $setup.videoName
-                }, null, 8, _hoisted_5),
-                _cache[12] || (_cache[12] = createTextVNode()),
+                }, null, 8, _hoisted_6),
+                _cache[15] || (_cache[15] = createTextVNode()),
                 createVNode($setup["BButton"], {
                   variant: "danger",
-                  onClick: _cache[2] || (_cache[2] = ($event) => $setup.clear("src")),
+                  onClick: _cache[4] || (_cache[4] = ($event) => $setup.clear("src")),
                   disabled: $setup.loading
                 }, {
-                  default: withCtx(() => [..._cache[9] || (_cache[9] = [
+                  default: withCtx(() => [..._cache[12] || (_cache[12] = [
                     createElementVNode("span", { class: "fal fa-trash" }, null, -1),
                     createTextVNode("\n              移除\n            ", -1)
                   ])]),
@@ -1961,39 +2594,39 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             _: 1
           }),
-          _cache[14] || (_cache[14] = createTextVNode()),
+          _cache[17] || (_cache[17] = createTextVNode()),
           $setup.item.src !== "" ? (openBlock(), createBlock($setup["BFormGroup"], {
             key: 0,
             class: "",
             label: "預覽"
           }, {
             default: withCtx(() => [
-              $setup.videoEmbedUrl ? (openBlock(), createElementBlock("div", _hoisted_6, [
+              $setup.videoEmbedUrl ? (openBlock(), createElementBlock("div", _hoisted_7, [
                 createElementVNode("iframe", {
                   src: $setup.videoEmbedUrl,
                   frameborder: "0",
                   style: { "width": "100%" }
-                }, null, 8, _hoisted_7)
-              ])) : (openBlock(), createElementBlock("div", _hoisted_8, [
-                createElementVNode("video", _hoisted_9, [
+                }, null, 8, _hoisted_8)
+              ])) : (openBlock(), createElementBlock("div", _hoisted_9, [
+                createElementVNode("video", _hoisted_10, [
                   createElementVNode("source", {
                     src: $setup.previewSrc,
                     type: "video/mp4"
-                  }, null, 8, _hoisted_10),
-                  _cache[13] || (_cache[13] = createTextVNode()),
+                  }, null, 8, _hoisted_11),
+                  _cache[16] || (_cache[16] = createTextVNode()),
                   createElementVNode("track", {
                     default: "",
                     kind: "captions",
                     src: $setup.previewCaptionSrc,
                     srclang: "zh",
                     label: "中文"
-                  }, null, 8, _hoisted_11)
+                  }, null, 8, _hoisted_12)
                 ])
               ]))
             ]),
             _: 1
           })) : createCommentVNode("", true),
-          _cache[15] || (_cache[15] = createTextVNode()),
+          _cache[18] || (_cache[18] = createTextVNode()),
           $setup.isCloudVideo ? (openBlock(), createBlock($setup["BFormGroup"], {
             key: 1,
             label: "影片時數 (秒)",
@@ -2005,7 +2638,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createVNode($setup["BFormInput"], {
                 id: "input-section-duration",
                 modelValue: $setup.item.duration,
-                "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.item.duration = $event),
+                "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $setup.item.duration = $event),
                 trim: ""
               }, null, 8, ["modelValue"])
             ]),
@@ -2015,47 +2648,47 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     }),
-    _cache[24] || (_cache[24] = createTextVNode()),
+    _cache[26] || (_cache[26] = createTextVNode()),
     $setup.item.captionSrc === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
-      key: 1,
+      key: 0,
       label: "上傳字幕"
     }, {
       default: withCtx(() => [
-        _cache[16] || (_cache[16] = createElementVNode("div", { class: "text-muted mb-2" }, [
+        _cache[19] || (_cache[19] = createElementVNode("div", { class: "text-muted mb-2" }, [
           createElementVNode("small", null, "\n            僅支援格式為 .vtt .srt 的文件\n          ")
         ], -1)),
-        _cache[17] || (_cache[17] = createTextVNode()),
+        _cache[20] || (_cache[20] = createTextVNode()),
         createVNode($setup["FileUploader"], {
           accept: ".vtt,.srt",
-          onUploaded: $setup.uploadCaption,
+          onUploaded: $setup.captionUploaded,
           "upload-url": $setup.route("@file_upload"),
           dest: () => `segments/${$setup.item.id}/caption.{ext}`
         }, null, 8, ["upload-url", "dest"])
       ]),
       _: 1
     })) : (openBlock(), createBlock($setup["BFormGroup"], {
-      key: 2,
+      key: 1,
       label: "字幕"
     }, {
       default: withCtx(() => [
-        createElementVNode("div", _hoisted_12, [
-          _cache[19] || (_cache[19] = createElementVNode("div", { class: "input-group-text" }, [
+        createElementVNode("div", _hoisted_13, [
+          _cache[22] || (_cache[22] = createElementVNode("div", { class: "input-group-text" }, [
             createElementVNode("span", { class: "fal fa-fw fa-closed-captioning me-2" })
           ], -1)),
-          _cache[20] || (_cache[20] = createTextVNode()),
+          _cache[23] || (_cache[23] = createTextVNode()),
           createElementVNode("input", {
             type: "text",
             class: "form-control",
             disabled: "",
             value: $setup.item.captionSrc
-          }, null, 8, _hoisted_13),
-          _cache[21] || (_cache[21] = createTextVNode()),
+          }, null, 8, _hoisted_14),
+          _cache[24] || (_cache[24] = createTextVNode()),
           createVNode($setup["BButton"], {
             variant: "danger",
-            onClick: _cache[4] || (_cache[4] = ($event) => $setup.clear("captionSrc")),
+            onClick: _cache[6] || (_cache[6] = ($event) => $setup.clear("captionSrc")),
             disabled: $setup.loading
           }, {
-            default: withCtx(() => [..._cache[18] || (_cache[18] = [
+            default: withCtx(() => [..._cache[21] || (_cache[21] = [
               createElementVNode("span", { class: "fal fa-trash" }, null, -1),
               createTextVNode("\n            移除\n          ", -1)
             ])]),
@@ -2067,7 +2700,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }))
   ]);
 }
-const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6d0d1b37"], ["__file", "SectionVideoEdit.vue"]]);
+const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f84ed627"], ["__file", "SectionVideoEdit.vue"]]);
 export {
   SectionVideoEdit as default
 };

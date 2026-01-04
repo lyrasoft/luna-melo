@@ -15,8 +15,11 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  uploaded: [url: string];
+  uploaded: [url: string, file: File];
   clear: [];
+  start: [file: File];
+  completed: [];
+  error: [error: unknown];
 }>();
 
 const { classicUpload, s3MultiPartUpload } = useFileUploader();
@@ -79,13 +82,17 @@ async function upload(file: File) {
 
   try {
     return await run(async () => {
+      emit('start', file);
+
       const url = await uploadWithAdapter(file, dest);
 
-      emit('uploaded', url);
+      emit('uploaded', url, file);
 
       return url;
     })
   } catch (e) {
+    emit('error', e);
+
     if (e instanceof Error) {
       simpleAlert(e.message);
     } else {
@@ -93,6 +100,8 @@ async function upload(file: File) {
     }
   } finally {
     progress.value = 0;
+
+    emit('completed');
   }
 }
 

@@ -1,6 +1,6 @@
 import { ref, nextTick, toValue, readonly, toRef, onMounted, watch, useId, computed, onUnmounted, shallowRef, defineComponent, createElementBlock, openBlock, unref, inject, getCurrentInstance, onBeforeUnmount, mergeModels, useSlots, useModel, useTemplateRef, createBlock, withCtx, createCommentVNode, renderSlot, Transition, mergeProps, withDirectives, createElementVNode, withModifiers, normalizeClass, normalizeProps, guardReactiveProps, resolveDynamicComponent, createTextVNode, toDisplayString, Fragment, createVNode, vShow, normalizeStyle, isRef, markRaw, onScopeDispose, isReadonly } from "vue";
-import { v as useMutationObserver, c as createSharedComposable, w as toArray, x as unrefElement, y as notNullish, z as tryOnScopeDispose, A as useScrollLock$1, u as useDefaults, B as useEventListener, s as showHideRegistryKey, C as useThrottleFn, h as orchestratorRegistryKey, a as useId$1, D as onKeyStroke, n as isEmptySlot, j as useColorVariantClasses, E as getModalZIndex, _ as _sfc_main$2, m as modalManagerKey, F as getSSRHandler } from "./_plugin-vue_export-helper.js";
-import { a as _sfc_main$3 } from "./index.js";
+import { y as useMutationObserver, c as createSharedComposable, z as toArray, A as unrefElement, B as notNullish, C as tryOnScopeDispose, D as useScrollLock$1, u as useDefaults, E as useEventListener, s as showHideRegistryKey, F as useThrottleFn, h as orchestratorRegistryKey, a as useId$1, G as onKeyStroke, v as isEmptySlot, j as useColorVariantClasses, H as getModalZIndex, _ as _sfc_main$2, m as modalManagerKey, I as getSSRHandler } from "./_plugin-vue_export-helper.js";
+import { d as BvTriggerableEvent, a as _sfc_main$3 } from "./index.js";
 function buildPromise(_id, store) {
   let resolveFunc = () => {
   };
@@ -1331,73 +1331,6 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-class BvEvent {
-  cancelable = true;
-  componentId = null;
-  _defaultPrevented = false;
-  eventType = "";
-  nativeEvent = null;
-  _preventDefault;
-  relatedTarget = null;
-  target = null;
-  // Readable by everyone,
-  // But only overwritten by inherrited constructors
-  get defaultPrevented() {
-    return this._defaultPrevented;
-  }
-  set defaultPrevented(prop) {
-    this._defaultPrevented = prop;
-  }
-  // I think this is right
-  // We want to be able to have it callable to everyone,
-  // But only overwritten by inherrited constructors
-  get preventDefault() {
-    return this._preventDefault;
-  }
-  // This may not be correct, because it doesn't get correct type inferences in children
-  // Ex overwrite this.preventDefault = () => true is valid. Could be a TS issue
-  set preventDefault(setter) {
-    this._preventDefault = setter;
-  }
-  constructor(eventType, eventInit = {}) {
-    if (!eventType) {
-      throw new TypeError(
-        `Failed to construct '${this.constructor.name}'. 1 argument required, ${arguments.length} given.`
-      );
-    }
-    Object.assign(this, BvEvent.Defaults, eventInit, { eventType });
-    this._preventDefault = function _preventDefault() {
-      if (this.cancelable) {
-        this.defaultPrevented = true;
-      }
-    };
-  }
-  static get Defaults() {
-    return {
-      cancelable: true,
-      componentId: null,
-      eventType: "",
-      nativeEvent: null,
-      relatedTarget: null,
-      target: null
-    };
-  }
-}
-class BvTriggerableEvent extends BvEvent {
-  trigger = null;
-  ok = void 0;
-  constructor(eventType, eventInit = {}) {
-    super(eventType, eventInit);
-    Object.assign(this, BvEvent.Defaults, eventInit, { eventType });
-  }
-  static get Defaults() {
-    return {
-      ...super.Defaults,
-      trigger: null,
-      ok: void 0
-    };
-  }
-}
 const fadeBaseTransitionProps = {
   name: "fade",
   enterActiveClass: "",

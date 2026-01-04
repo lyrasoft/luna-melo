@@ -6,6 +6,7 @@ const withBvnPrefix = (value, suffix = "") => {
 };
 const createBvnInjectionKey = (name) => withBvnPrefix(name);
 const createBvnRegistryInjectionKey = (name) => withBvnPrefix(`${name}__registry`);
+const tabsInjectionKey = createBvnInjectionKey("tabs");
 const progressInjectionKey = createBvnInjectionKey("progress");
 const radioGroupKey = createBvnInjectionKey("radioGroup");
 const collapseInjectionKey = createBvnInjectionKey("collapse");
@@ -890,6 +891,13 @@ const isVisible = (el) => {
   const bcr = el.getBoundingClientRect();
   return !!(bcr && bcr.height > 0 && bcr.width > 0);
 };
+const sortSlotElementsByPosition = (a, b) => {
+  if (typeof Node === "undefined" || !Node || !a || !b) return 0;
+  const position = a.compareDocumentPosition(b);
+  if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+  if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+  return 0;
+};
 const getModalZIndex = (element) => {
   if (typeof window === "undefined") return 1055;
   const target = element ?? document.body;
@@ -1138,19 +1146,21 @@ const _export_sfc = (sfc, props) => {
   return target;
 };
 export {
-  useScrollLock as A,
-  useEventListener as B,
-  useThrottleFn as C,
-  onKeyStroke as D,
-  getModalZIndex as E,
-  getSSRHandler as F,
-  collapseInjectionKey as G,
-  navbarInjectionKey as H,
-  toPascalCase as I,
-  formGroupKey as J,
-  createReusableTemplate as K,
-  upperFirst as L,
-  attemptFocus as M,
+  unrefElement as A,
+  notNullish as B,
+  tryOnScopeDispose as C,
+  useScrollLock as D,
+  useEventListener as E,
+  useThrottleFn as F,
+  onKeyStroke as G,
+  getModalZIndex as H,
+  getSSRHandler as I,
+  collapseInjectionKey as J,
+  navbarInjectionKey as K,
+  toPascalCase as L,
+  formGroupKey as M,
+  upperFirst as N,
+  attemptFocus as O,
   _sfc_main$1 as _,
   useId as a,
   useToNumber as b,
@@ -1162,21 +1172,21 @@ export {
   orchestratorRegistryKey as h,
   _export_sfc as i,
   useColorVariantClasses as j,
-  useFocus as k,
-  radioGroupKey as l,
+  sortSlotElementsByPosition as k,
+  createReusableTemplate as l,
   modalManagerKey as m,
-  isEmptySlot as n,
+  useFocus as n,
   onClickOutside as o,
   progressInjectionKey as p,
-  _sfc_main as q,
+  radioGroupKey as q,
   rtlRegistryKey as r,
   showHideRegistryKey as s,
-  isVisible as t,
+  tabsInjectionKey as t,
   useDefaults as u,
-  useMutationObserver as v,
-  toArray as w,
-  unrefElement as x,
-  notNullish as y,
-  tryOnScopeDispose as z
+  isEmptySlot as v,
+  _sfc_main as w,
+  isVisible as x,
+  useMutationObserver as y,
+  toArray as z
 };
 //# sourceMappingURL=_plugin-vue_export-helper.js.map

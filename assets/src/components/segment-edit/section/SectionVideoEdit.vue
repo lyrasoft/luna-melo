@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useLoading } from '@lyrasoft/ts-toolkit/vue';
 import { deleteConfirm, route } from '@windwalker-io/unicorn-next';
-import { BButton, BFormGroup, BFormInput } from 'bootstrap-vue-next';
+import { BButton, BFormGroup, BFormInput, BTab, BTabs } from 'bootstrap-vue-next';
 import type { VideoInfo } from 'js-video-url-parser/lib/urlParser';
+import { round } from 'lodash-es';
 import { computed, ref } from 'vue';
 import urlParser from 'js-video-url-parser';
 import FileUploader from '~melo/components/uploader/FileUploader.vue';
@@ -23,7 +24,8 @@ const item = defineModel<Segment>({
 const videoName = computed<string>(() => isFile.value ? item.value.filename : item.value.src);
 const isFile = computed<boolean>(() => item.value.src !== '' && videoInfo.value === null);
 const isCloudVideo = computed<boolean>(() => item.value.src !== '' && videoInfo.value != null);
-const itemSrcVal = ref<string>('');
+const cloudVideoUrl = ref<string>('');
+const videoUploading = ref(false);
 
 const videoInfo = computed<VideoInfo|undefined>(() => {
   if (item.value.src !== '') {
@@ -71,26 +73,43 @@ async function clear(field: string) {
       }
 
       item.value[field] = '';
+
+      if (field === 'src') {
+        item.value.duration = 0;
+      }
     });
   }
 }
 
-function setItemSrc() {
-  item.value.src = itemSrcVal.value;
-
-  emit('save', item.value);
+function applyCloudVideo() {
+  item.value.src = cloudVideoUrl.value;
 }
 
-async function uploadVideo(src: string) {
+async function videoUploaded(src: string, file: File) {
+  videoUploading.value = false;
+
+  item.value.duration = await calcVideoDuration(file);
   item.value.src = src;
-
-  emit('save', item.value);
 }
 
-async function uploadCaption(src: string) {
+async function captionUploaded(src: string) {
   item.value.captionSrc = src;
+}
 
-  emit('save', item.value);
+// Duration
+function calcVideoDuration(file: File): Promise<number> {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+
+    const url = URL.createObjectURL(file);
+    
+    video.preload = 'metadata';
+    video.src = url;
+
+    video.addEventListener('loadedmetadata', () => {
+      resolve(Math.floor(video.duration));
+    });
+  });
 }
 </script>
 
@@ -105,42 +124,55 @@ async function uploadCaption(src: string) {
       <BFormInput id="input-section-title" v-model="item.title" trim />
     </BFormGroup>
 
-    <BFormGroup
-      v-if="item.src === ''"
-      label="影片連結"
-      label-for="input-section-video"
-      label-class="mb-2"
-      description="支援以下平台: Youtube, Vimeo, Dailymotion"
-      class="mb-5"
-    >
-      <div class="input-group">
-        <BFormInput
-          id="input-section-video"
-          v-model="itemSrcVal"
-          placeholder="請輸入影片網址"
-          trim
-        />
-        <BButton variant="primary" class="text-nowrap c-video-submit px-3" @click="setItemSrc">
-          <i class="far fa-check"></i>
-          送出
-        </BButton>
-      </div>
-    </BFormGroup>
-
     <Transition name="fade" mode="out-in">
-      <template v-if="item.src === ''">
-        <BFormGroup label="上傳影片">
-          <div class="text-muted mb-2">
-            <small>
-              請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件
-            </small>
-          </div>
+      <div v-if="item.src === ''" class="d-flex flex-column gap-4">
+        <BTabs pills justified content-class="py-3">
+          <BTab title="上傳影片"
+            active
+            :disabled="videoUploading">
+            <BFormGroup label="上傳影片">
+              <div class="text-muted mb-2">
+                <small>
+                  請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件
+                </small>
+              </div>
 
-          <FileUploader accept="video/mp4" s3-multipart @uploaded="uploadVideo"
-            :dest="() => `segments/${item.id}/video.{ext}`"
-          />
-        </BFormGroup>
-      </template>
+              <FileUploader accept="video/mp4" s3-multipart @uploaded="videoUploaded"
+                :dest="() => `segments/${item.id}/video.{ext}`"
+                @start="videoUploading = true"
+                @completed="videoUploading = false"
+              />
+            </BFormGroup>
+          </BTab>
+
+          <BTab
+            title="雲端影片"
+            :disabled="videoUploading"
+          >
+            <BFormGroup
+              v-if="item.src === ''"
+              label="影片連結"
+              label-for="input-section-video"
+              label-class="mb-2"
+              description="支援以下平台: Youtube, Vimeo, Dailymotion"
+              class="mb-5"
+            >
+              <div class="input-group">
+                <BFormInput
+                  id="input-section-video"
+                  v-model="cloudVideoUrl"
+                  placeholder="請輸入影片網址"
+                  trim
+                />
+                <BButton variant="primary" class="text-nowrap c-video-submit px-3" @click="applyCloudVideo">
+                  <i class="far fa-check"></i>
+                  送出
+                </BButton>
+              </div>
+            </BFormGroup>
+          </BTab>
+        </BTabs>
+      </div>
       <div v-else class="d-flex flex-column gap-4">
         <BFormGroup label="影片">
           <div class="input-group">
@@ -191,7 +223,7 @@ async function uploadCaption(src: string) {
           </small>
         </div>
 
-        <FileUploader accept=".vtt,.srt" @uploaded="uploadCaption"
+        <FileUploader accept=".vtt,.srt" @uploaded="captionUploaded"
           :upload-url="route('@file_upload')"
           :dest="() => `segments/${item.id}/caption.{ext}`"
         />

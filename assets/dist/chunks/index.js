@@ -1,5 +1,5 @@
 import { defineComponent, useSlots, computed, createBlock, openBlock, resolveDynamicComponent, unref, normalizeClass, withCtx, createElementBlock, createCommentVNode, renderSlot, createTextVNode, toDisplayString, readonly, toRef, toValue, useAttrs, inject, mergeProps, getCurrentInstance, mergeModels, useTemplateRef, useModel, Fragment, createVNode, effectScope, getCurrentScope, onScopeDispose } from "vue";
-import { u as useDefaults, j as useColorVariantClasses, n as isEmptySlot, G as collapseInjectionKey, H as navbarInjectionKey, I as toPascalCase, D as onKeyStroke } from "./_plugin-vue_export-helper.js";
+import { u as useDefaults, j as useColorVariantClasses, v as isEmptySlot, J as collapseInjectionKey, K as navbarInjectionKey, L as toPascalCase, G as onKeyStroke } from "./_plugin-vue_export-helper.js";
 const _hoisted_1 = {
   key: 0,
   class: "visually-hidden"
@@ -435,6 +435,73 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     };
   }
 });
+class BvEvent {
+  cancelable = true;
+  componentId = null;
+  _defaultPrevented = false;
+  eventType = "";
+  nativeEvent = null;
+  _preventDefault;
+  relatedTarget = null;
+  target = null;
+  // Readable by everyone,
+  // But only overwritten by inherrited constructors
+  get defaultPrevented() {
+    return this._defaultPrevented;
+  }
+  set defaultPrevented(prop) {
+    this._defaultPrevented = prop;
+  }
+  // I think this is right
+  // We want to be able to have it callable to everyone,
+  // But only overwritten by inherrited constructors
+  get preventDefault() {
+    return this._preventDefault;
+  }
+  // This may not be correct, because it doesn't get correct type inferences in children
+  // Ex overwrite this.preventDefault = () => true is valid. Could be a TS issue
+  set preventDefault(setter) {
+    this._preventDefault = setter;
+  }
+  constructor(eventType, eventInit = {}) {
+    if (!eventType) {
+      throw new TypeError(
+        `Failed to construct '${this.constructor.name}'. 1 argument required, ${arguments.length} given.`
+      );
+    }
+    Object.assign(this, BvEvent.Defaults, eventInit, { eventType });
+    this._preventDefault = function _preventDefault() {
+      if (this.cancelable) {
+        this.defaultPrevented = true;
+      }
+    };
+  }
+  static get Defaults() {
+    return {
+      cancelable: true,
+      componentId: null,
+      eventType: "",
+      nativeEvent: null,
+      relatedTarget: null,
+      target: null
+    };
+  }
+}
+class BvTriggerableEvent extends BvEvent {
+  trigger = null;
+  ok = void 0;
+  constructor(eventType, eventInit = {}) {
+    super(eventType, eventInit);
+    Object.assign(this, BvEvent.Defaults, eventInit, { eventType });
+  }
+  static get Defaults() {
+    return {
+      ...super.Defaults,
+      trigger: null,
+      ok: void 0
+    };
+  }
+}
 function tryOnScopeDispose(fn, failSilently) {
   if (getCurrentScope()) {
     onScopeDispose(fn, failSilently);
@@ -540,10 +607,12 @@ function useDebounceFn(fn, ms = 200, options = {}) {
   return createFilterWrapper(debounceFilter(ms, options), fn);
 }
 export {
+  BvEvent as B,
   _sfc_main$2 as _,
   _sfc_main as a,
   createEventHook as b,
   createGlobalState as c,
+  BvTriggerableEvent as d,
   hasOwn as h,
   isClient as i,
   useDebounceFn as u
