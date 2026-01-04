@@ -4,7 +4,7 @@ export interface Segment {
   id?: number | null;
   lessonId: number;
   parentId: number;
-  type: SegmentType;
+  type: string;
   title: string;
   content: string;
   src: string;
@@ -21,5 +21,6 @@ export interface Segment {
   modified: string | null;
   modifiedBy: number;
   params: any;
+  children?: Segment[];
   [prop: string]: any;
 }

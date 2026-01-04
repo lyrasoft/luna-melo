@@ -2,16 +2,18 @@ import { createGlobalState, useDebounceFn } from '@vueuse/core';
 import { route, sleep, useHttpClient } from '@windwalker-io/unicorn-next';
 import { computed, ref, watch } from 'vue';
 import { useLoading } from '@lyrasoft/ts-toolkit/vue';
+import { useSegmentController } from '~melo/features/segment/useSegmentController';
 import { Segment } from '~melo/types';
 
 export const useSegmentEditor = createGlobalState(() => {
+  const { save: saveSegment, saving, wrapSaving, autoSave, disableAutoSave } = useSegmentController();
+
   const editing = ref<boolean>(false);
   const segment = ref<Segment>();
   const isEditing = computed(() => editing.value && segment.value);
   const type = computed(() => segment.value?.type ?? null);
   const isChapter = computed<boolean>(() => !Boolean(segment.value?.parentId));
   const currentEditingId = computed<number | null>(() => segment.value?.id ?? null);
-  const { loading: saving, wrap } = useLoading();
 
   async function edit(item: Segment) {
     close();
@@ -22,16 +24,38 @@ export const useSegmentEditor = createGlobalState(() => {
     });
   }
 
+  async function editById(id: number, segments: Segment[]) {
+    for (const chapter of segments) {
+      if (chapter.id === id) {
+        await edit(chapter);
+        return;
+      }
+
+      if (chapter.children) {
+        for (const segment of chapter.children) {
+          if (segment.id === id) {
+            await edit(segment);
+            return;
+          }
+        }
+      }
+    }
+  }
+
   function close() {
     segment.value = undefined;
     autoSave.value = false;
     editing.value = false;
   }
 
-  // Save
-  const autoSave = ref(true);
+  function closeIfEditing(item: Segment) {
+    if (segment.value?.id === item.id) {
+      close();
+    }
+  }
 
-  const save = wrap(async () => {
+  // Save
+  const save = wrapSaving(async () => {
     if (!segment.value) {
       return;
     }
@@ -44,13 +68,7 @@ export const useSegmentEditor = createGlobalState(() => {
     const { post } = await useHttpClient();
 
     // Save
-    await post(
-      route('save_segment'),
-      {
-        item: segment.value,
-        isNew: !segment.value.id,
-      }
-    );
+    await saveSegment(segment.value, !segment.value.id);
 
     // At least run 500ms
     const elapsed = Date.now() - start;
@@ -61,16 +79,6 @@ export const useSegmentEditor = createGlobalState(() => {
   });
 
   const saveDebounced = useDebounceFn(save, 500);
-
-  async function disableAutoSave(handler: () => any) {
-    autoSave.value = false;
-
-    const r = await handler();
-
-    autoSave.value = true;
-
-    return r;
-  }
 
   // Auto save
   watch(segment, () => {
@@ -94,7 +102,9 @@ export const useSegmentEditor = createGlobalState(() => {
     autoSave,
 
     edit,
+    editById,
     close,
+    closeIfEditing,
     save,
     isActive,
     disableAutoSave,

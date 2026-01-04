@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { uniqueItemList } from '@lyrasoft/ts-toolkit/vue';
+import { useDebounceFn } from '@vueuse/core';
+import { route, useHttpClient } from '@windwalker-io/unicorn-next';
+import { BButton, BFormGroup, BFormInput, BFormRadioGroup, BFormTextarea } from 'bootstrap-vue-next';
 import swal from 'sweetalert';
 import { onMounted, ref, toRefs, watch } from 'vue';
+import { VueDraggable } from 'vue-draggable-plus';
 import { scoreLimit } from '~melo/features/quiz/question-service';
 import { MeloOption, Question } from '~melo/types';
 import OptionEdit from './OptionEdit.vue';
@@ -35,14 +40,16 @@ onMounted(async () => {
   }
 })
 
-const changeScore = u.debounce(async () => {
+const changeScore = useDebounceFn(async () => {
   question.value.score = scoreLimit(question.value.score);
   emit('save', question.value);
 }, 300);
 
 async function prepareOptions() {
-  const res = u.$http.get(
-    u.route('prepare_options'),
+  const { get } = await useHttpClient();
+
+  const res = await get(
+    route('prepare_options'),
     {
       params: {
         question_id: question.value.id
@@ -50,18 +57,20 @@ async function prepareOptions() {
     }
   );
 
-  options.value = Utilities.prepareList((await res).data.data);
+  options.value = uniqueItemList(res.data.data);
 }
 
 async function reorder() {
-  const orders = {};
+  const orders: Record<number, number> = {};
 
   options.value.forEach((item, i) => {
-    orders[item.id] = i + 1;
+    orders[item.id!] = i + 1;
   });
 
-  await u.$http.post(
-    u.route('reorder_options'),
+  const { post } = await useHttpClient();
+
+  await post(
+    route('reorder_options'),
     {
       orders: orders,
     }
@@ -86,8 +95,10 @@ async function save(
   data: Object,
   isNew: number = 0
 ) {
-  await u.$http.post(
-    u.route('save_option'),
+  const { post } = await useHttpClient();
+
+  await post(
+    route('save_option'),
     {
       data: data,
       is_new: isNew,
@@ -114,8 +125,10 @@ async function deleteOption(id: number) {
   );
 
   if (v) {
-    await u.$http.post(
-      u.route('delete_option'),
+    const { post } = await useHttpClient();
+
+    await post(
+      route('delete_option'),
       {
         id: id
       }
@@ -127,7 +140,7 @@ async function deleteOption(id: number) {
 
 async function setAnswer(index: number, currentAnswer: boolean) {
   if (question.value.type === 'select') {
-    options.value.forEach((item: Option) => {
+    options.value.forEach((item: MeloOption) => {
       item.isAnswer = false;
     })
 
@@ -139,8 +152,10 @@ async function setAnswer(index: number, currentAnswer: boolean) {
   }
 
   if (currentAnswer === options.value[index].isAnswer) {
-    await u.$http.post(
-      u.route('save_options'),
+    const { post } = await useHttpClient();
+
+    await post(
+      route('save_options'),
       {
         data: options.value,
       }
@@ -189,12 +204,12 @@ watch(question.value, (newValue) => {
       />
     </BFormGroup>
 
-    <image-uploader
+    <ImageUploader
       :image="question.image"
       label="上傳圖片(選填)"
       @uploaded="imageUploaded"
       @clear="clearImage"
-    ></image-uploader>
+    ></ImageUploader>
 
     <BFormGroup v-if="question.type === 'boolean'"
       label="答案"
@@ -238,23 +253,22 @@ watch(question.value, (newValue) => {
           正確答案
         </div>
       </div>
-      <draggable
+      <VueDraggable
         v-model="options"
         item-key="uid"
         handle=".handle"
         @change="reorder"
       >
-        <template #item="{element, index}">
-          <option-edit
-            :item="element"
-            :key="element.id"
-            :index="index"
-            @delete="deleteOption"
-            @edit="save"
-            @setAnswer="setAnswer"
-          ></option-edit>
-        </template>
-      </draggable>
+        <OptionEdit
+          v-for="(element, index) in options"
+          :item="element"
+          :key="element.id"
+          :index="index"
+          @delete="deleteOption"
+          @edit="save"
+          @setAnswer="setAnswer"
+        ></OptionEdit>
+      </VueDraggable>
 
       <div class="text-center mb-2 mt-3">
         <BButton @click="createOption">

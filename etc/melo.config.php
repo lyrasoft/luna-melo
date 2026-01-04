@@ -1,15 +1,13 @@
 <?php
 
-/**
- * Part of melo project.
- *
- * @copyright  Copyright (C) 2022 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 declare(strict_types=1);
 
+namespace App\Config;
+
 use Lyrasoft\Melo\Enum\OrderNoMode;
+use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
+use Lyrasoft\Melo\Features\Section\Quiz\QuizSection;
+use Lyrasoft\Melo\Features\Section\Video\VideoSection;
 use Lyrasoft\Melo\MeloPackage;
 use Windwalker\Core\Attributes\ConfigModule;
 
@@ -37,4 +35,18 @@ static fn() => [
         'sitename' => 'Melo',
         'logo' => 'vendor/lyrasoft/melo/images/simular-logo.png',
     ],
+
+    'upload_profiles' => [
+        's3_multipart_storage' => 's3',
+        'file' => 'default',
+        'image' => 'image',
+    ],
+
+    'sections' => [
+        'defines' => [
+            VideoSection::class,
+            HomeworkSection::class,
+            QuizSection::class,
+        ]
+    ]
 ];

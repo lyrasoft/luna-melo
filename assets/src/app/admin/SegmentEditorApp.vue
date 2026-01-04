@@ -1,168 +1,70 @@
 <script setup lang="ts">
-import { ApiReturn, route, useHttpClient, useUnicorn } from '@windwalker-io/unicorn-next';
 import { uniqueItemList } from '@lyrasoft/ts-toolkit/vue';
-import { ref, onMounted, computed, defineAsyncComponent, inject, provide } from 'vue';
+import { deleteConfirm, injectCssToDocument, useUnicorn } from '@windwalker-io/unicorn-next';
+import { BButton, BModal } from 'bootstrap-vue-next';
+import { onMounted, provide, ref } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import ChapterItem from '~melo/components/segment-edit/item/ChapterItem.vue';
-import swal from 'sweetalert';
 import SegmentEditBox from '~melo/components/segment-edit/SegmentEditBox.vue';
-import { SegmentType } from '~melo/enum/SegmentType';
+import TypeSelector from '~melo/components/segment-edit/TypeSelector.vue';
+import { useSegmentController } from '~melo/features/segment/useSegmentController';
 import { useSegmentEditor } from '~melo/features/segment/useSegmentEditor';
-import { Segment } from '~melo/types';
-import { BFormGroup, BModal, BSpinner, BFormInput, BButton } from 'bootstrap-vue-next';
+import { SectionDefine, Segment } from '~melo/types';
+
+import('@asika32764/vue-animate/dist/vue-animate.min.css?inline').then(({ default: css }) => {
+  injectCssToDocument(css);
+});
 
 const props = defineProps<{
   lessonId: number;
+  sectionDefines: Record<string, SectionDefine>;
+  segments: Segment[];
 }>();
 
-const modal = ref<boolean>(false);
-const loading = ref<boolean>(false);
-const { saving } = useSegmentEditor();
+provide('section.defines', props.sectionDefines);
+
+const { reorder: reorderSegments, save: saveChapter, remove, createEmptyChapterItem } = useSegmentController();
+const { edit, editById } = useSegmentEditor();
 
 // Replace single reactive state with separate refs
-const items = ref<(Segment & { __open?: boolean; })[]>([]);
+const items = ref<(Segment & { __open?: boolean; })[]>(prepareSegments(props.segments));
 
-const current = ref<{ originTitle: string; item: Segment | Object }>({
-  originTitle: '',
-  item: {}
+onMounted(() => {
+  // Test
+  editById(20, items.value);
 });
-const selected = ref<any[]>([]);
-const editingTitle = ref<string>('');
-const editingIndex = ref<number>();
 
-async function prepareSegments() {
-  const { get } = await useHttpClient();
+function prepareSegments(items: Segment[]) {
+  items = uniqueItemList(items);
 
-  const res = await get<ApiReturn<Segment[]>>(
-    route('prepare_segments'),
-    {
-      params: {
-        lessonId: props.lessonId,
-        parentId: 0
-      }
-    }
-  );
-
-  items.value = uniqueItemList(res.data.data);
-
-  for (const item of items.value) {
+  for (const item of items) {
     item.__open = false;
   }
 
-  if (items.value[0]) {
-    items.value[0].__open = true;
-  }
-}
-
-onMounted(async () => {
-  loading.value = true;
-
-  await prepareSegments();
-
-  loading.value = false;
-});
-
-function showEditModal(i) {
-  editingTitle.value = items.value[i].title;
-  editingIndex.value = i;
-
-  modal.value = true;
-}
-
-async function changeChapter() {
-  if (editingIndex.value === undefined) {
-    return;
+  if (items[0]) {
+    items[0].__open = true;
   }
 
-  // set the title from editingTitle
-  items.value[editingIndex.value].title = editingTitle.value;
-
-  await saveSegment(
-    {
-      id: items.value[editingIndex.value].id,
-      title: items.value[editingIndex.value].title
-    }
-  );
-
-  modal.value = false;
+  return items;
 }
 
-async function createChapter() {
-  const ordering = items.value.length;
+// Create
+async function newChapter() {
+  const chapter = createEmptyChapterItem(props.lessonId);
 
-  let newChapter = {
-    lesson_id: props.lessonId,
-    parent_id: 0,
-    duration: 0,
-    can_skip: false,
-    state: 1,
-    ordering: ordering + 1,
-  };
+  const newChapter = await saveChapter(chapter);
 
-  await saveSegment(newChapter, 1);
-  await prepareSegments();
+  items.value.push(newChapter);
+
+  edit(newChapter);
 }
 
 async function deleteChapter(id: number) {
-  const v = await swal(
-    {
-      title: "確定要刪除這個章節嗎？",
-      text: "如果刪除章節，關於章節所有資料都會遺失",
-      icon: "warning",
-      buttons: {
-        cancel: {
-          visible: true,
-          text: '取消',
-        },
-        confirm: {
-          visible: true,
-          text: '確認',
-        },
-      }
-    }
-  );
-
-  if (v) {
-    const { post } = await useHttpClient();
-
-    await post(
-      route('delete_segment'),
-      {
-        id: id
-      }
-    );
-
-    await prepareSegments();
-  }
-}
-
-async function saveSegment(data: object, isNew: number = 0) {
-  const { post } = await useHttpClient();
-
-  await post(
-    route('save_segment'),
-    {
-      data: data,
-      isNew: isNew
-    }
-  );
+  items.value = items.value.filter(item => item.id !== id);
 }
 
 async function reorder() {
-  const orders: Record<number, number> = {};
-
-  items.value.forEach((item, i) => {
-    orders[item.id!] = i + 1;
-  });
-
-  const { post } = await useHttpClient();
-
-  await post(
-    route('reorder_segment'),
-    {
-      orders: orders,
-    }
-  );
+  reorderSegments(items.value);
 }
 
 // Open / Hide
@@ -172,6 +74,33 @@ function toggleAllOpens() {
   for (const item of items.value) {
     item.__open = !allOpen;
   }
+}
+
+const u = useUnicorn();
+
+// Section Creating
+const { createEmptySectionItem, save: saveSection } = useSegmentController();
+let sectionSelectedCallback: ((section: Segment) => void) | null = null;
+let currentChapter: Segment | null = null;
+const sectionTypeSelectorModalOpen = ref(false);
+
+u.on('section.new', (chapter: Segment, callback: (section: Segment) => void) => {
+  currentChapter = chapter;
+  sectionSelectedCallback = callback;
+  sectionTypeSelectorModalOpen.value = true;
+});
+
+async function sectionSelected(type: string) {
+  if (!currentChapter) {
+    return;
+  }
+
+  const section = createEmptySectionItem(currentChapter, type);
+  const savedSection = await saveSection(section, true);
+
+  sectionSelectedCallback?.(savedSection);
+
+  sectionTypeSelectorModalOpen.value = false;
 }
 
 </script>
@@ -188,7 +117,7 @@ function toggleAllOpens() {
 
             <div>
               <button type="button" class="btn btn-outline-secondary btn-sm"
-              @click="toggleAllOpens"
+                @click="toggleAllOpens"
               >
                 全體收合/展開
               </button>
@@ -202,21 +131,24 @@ function toggleAllOpens() {
             item-key="uid"
             handle=".handle"
             class="d-flex flex-column gap-2"
-            @change="reorder"
+            :animation="300"
+            :on-update="reorder"
           >
-            <ChapterItem v-for="(element, index) in items"
-              :key="element.uid"
-              :chapter="element"
-              :index="index"
-              v-model:open="element.__open"
-              @edit="showEditModal"
-              @delete="deleteChapter"
-            ></ChapterItem>
+            <TransitionGroup name="fade">
+              <ChapterItem v-for="(element, index) in items"
+                :key="element.uid"
+                :chapter="element"
+                :index="index"
+                v-model:open="element.__open"
+                style="animation-duration: 300ms;"
+                @delete="deleteChapter"
+              ></ChapterItem>
+            </TransitionGroup>
           </VueDraggable>
         </div>
 
         <div class="text-center my-4">
-          <BButton variant="success" @click="createChapter()">
+          <BButton variant="success" @click="newChapter">
             <span class="fal fa-plus"></span>
             新增章節
           </BButton>
@@ -224,29 +156,23 @@ function toggleAllOpens() {
       </div>
 
       <div class="col-lg-7">
-        <SegmentEditBox />
+        <SegmentEditBox :sectionDefines />
       </div>
     </div>
 
-    <BModal
-      v-model="modal"
-      okTitle="儲存"
-      cancelTitle="取消"
-      @ok="changeChapter"
-      @hidden="changeChapter"
+    <BModal v-model="sectionTypeSelectorModalOpen"
+      title="選擇想要新增的小節類型"
+      no-footer
+      lazy
+      unmount-lazy
+      size="lg"
     >
-      <BFormGroup
-        id="fieldset-chapter"
-        label="章節名稱編輯"
-        label-for="input-chapter-title"
-        label-class="mb-1"
-      >
-        <BFormInput id="input-chapter-title" v-model="editingTitle" trim />
-      </BFormGroup>
+      <TypeSelector :sectionDefines @selected="sectionSelected" />
     </BModal>
+
   </div>
 </template>
 
-<style scoped>
-
+<style scoped lang="scss">
+//@import "@asika32764/vue-animate/dist/vue-animate.min.css";
 </style>

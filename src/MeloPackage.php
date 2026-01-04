@@ -20,6 +20,8 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
 
     public function register(Container $container): void
     {
+        $container->share(static::class, fn () => $this);
+
         $container->mergeParameters(
             'renderer.paths',
             [

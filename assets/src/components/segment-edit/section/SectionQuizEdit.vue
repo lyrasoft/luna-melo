@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { uniqueItemList } from '@lyrasoft/ts-toolkit/vue';
 import { route, useHttpClient } from '@windwalker-io/unicorn-next';
-import { BButton, BFormGroup, BFormInput, BFormRadioGroup, BModal, useModal } from 'bootstrap-vue-next';
+import { BButton, BFormGroup, BFormInput, BFormRadioGroup, BModal, BSpinner, useModal } from 'bootstrap-vue-next';
 import swal from 'sweetalert';
 import { onMounted, ref } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
@@ -33,7 +33,7 @@ async function prepareQuestions() {
   const { get } = await useHttpClient();
 
   const res = await get(
-    route('prepare_questions'),
+    route('@ajax_question/prepare'),
     {
       params: {
         segment_id: item.value.id
@@ -75,7 +75,7 @@ async function reorder() {
   const { post } = await useHttpClient();
 
   await post(
-    route('reorder_questions'),
+    route('@ajax_question/reorder'),
     {
       orders: orders,
     }
@@ -109,7 +109,7 @@ async function deleteQuestion(id: number) {
     const { post } = await useHttpClient();
 
     await post(
-      route('delete_question'),
+      route('@ajax_question/delete'),
       {
         id: id
       }
@@ -128,7 +128,7 @@ async function save(data: any, isNew: number = 0) {
   const { post } = await useHttpClient();
 
   await post(
-    route('save_question'),
+    route('@ajax_question/save'),
     {
       data: data,
       isNew: isNew
@@ -223,7 +223,7 @@ async function saveQuestion(data: Question) {
         </BButton>
       </template>
 
-      <question-edit :question="currentQuestion" @save="saveQuestion"></question-edit>
+      <QuestionEdit :question="currentQuestion" @save="saveQuestion"></QuestionEdit>
     </BModal>
   </div>
 </template>

@@ -28,7 +28,7 @@ class QuestionController
     }
 
     #[Method('GET')]
-    public function prepareQuestions(
+    public function prepare(
         AppContext $app,
         #[Autowire] QuestionRepository $repository,
     ): \Windwalker\Data\Collection {

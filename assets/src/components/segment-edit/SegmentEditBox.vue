@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { BSpinner } from 'bootstrap-vue-next';
-import { computed, defineAsyncComponent, ref, watch } from 'vue';
-import { SegmentType } from '~melo/enum/SegmentType';
+import { computed, defineAsyncComponent, nextTick, ref, watch } from 'vue';
+import { resolveSectionEditComponent } from '~melo/features/section/resolveSectionEditComponent';
 import { useSegmentEditor } from '~melo/features/segment/useSegmentEditor';
+import { SectionDefine } from '~melo/types';
+
+const props = defineProps<{
+  sectionDefines: Record<string, SectionDefine>;
+}>();
 
 const {
   isEditing,
@@ -32,18 +37,22 @@ const editComponent = computed(() => {
 
   if (isChapter.value) {
     return defineAsyncComponent(() => import('~melo/components/segment-edit/chapter/ChapterEdit.vue'));
-  } else {
-    switch (type.value) {
-      case SegmentType.VIDEO:
-        return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionVideoEdit.vue'));
-      case SegmentType.QUIZ:
-        return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionQuizEdit.vue'));
-      case SegmentType.HOMEWORK:
-        return defineAsyncComponent(() => import('~melo/components/segment-edit/section/SectionHomeworkEdit.vue'));
-      default:
-        return null;
-    }
+  } else if (type.value) {
+    const define = props.sectionDefines[type.value];
+
+    return resolveSectionEditComponent(define);
   }
+});
+
+// Focus
+const editContainer = ref<HTMLDivElement>();
+
+watch(editComponent, () => {
+  setTimeout(() => {
+    if (editComponent.value && editContainer.value) {
+      editContainer.value.querySelector<HTMLInputElement>('input[type=text]')?.focus();
+    }
+  }, 300);
 });
 
 </script>
@@ -88,7 +97,7 @@ const editComponent = computed(() => {
         <!--</button>-->
       </div>
     </div>
-    <div class="card-body" v-if="segment && editComponent">
+    <div ref="editContainer" class="card-body" v-if="segment && editComponent">
       <Component :is="editComponent" v-model="segment" />
     </div>
     <div v-else class="p-5 text-center">

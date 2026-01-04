@@ -1,5 +1,114 @@
-import { defineComponent, ref, createElementBlock, openBlock, withModifiers, createElementVNode, createTextVNode, createVNode, withCtx, mergeModels, useModel, computed, createBlock, createCommentVNode, toDisplayString } from "vue";
-import { g as getDefaultExportFromCjs, c as _sfc_main$2, d as _sfc_main$3, b as _export_sfc, _ as _sfc_main$4, a as _sfc_main$5 } from "./segment-editor.js";
+import { defineComponent, provide, toRef, createElementBlock, openBlock, unref, normalizeStyle, renderSlot, createVNode, inject, computed, normalizeClass, createTextVNode, toDisplayString, ref, watchEffect, readonly, toValue, withModifiers, createElementVNode, withCtx, useModel, createBlock, createCommentVNode, Transition } from "vue";
+import { useLoading } from "@lyrasoft/ts-toolkit/vue";
+import { data, useS3MultipartUploader, useHttpClient, simpleAlert, route, deleteConfirm } from "@windwalker-io/unicorn-next";
+import { u as useDefaults, p as progressInjectionKey, j as useColorVariantClasses, b as useToNumber, i as _export_sfc } from "./_plugin-vue_export-helper.js";
+import { b as createEventHook, i as isClient, h as hasOwn, _ as _sfc_main$3, a as _sfc_main$4 } from "./index.js";
+import { _ as _sfc_main$5, a as _sfc_main$6 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
+import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
+import { i as isObjectLike, b as baseGetTag, a as isArray, S as Symbol$1, c as isObject, r as root } from "./isObject.js";
+import { u as useSegmentController } from "./useSegmentController.js";
+const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
+  __name: "BProgressBar",
+  props: {
+    animated: { type: Boolean, default: false },
+    label: { default: void 0 },
+    max: { default: void 0 },
+    precision: { default: 0 },
+    showProgress: { type: Boolean, default: false },
+    showValue: { type: Boolean, default: false },
+    striped: { type: Boolean, default: false },
+    value: { default: 0 },
+    variant: { default: null },
+    bgVariant: { default: null },
+    textVariant: { default: null }
+  },
+  setup(__props) {
+    const _props = __props;
+    const props = useDefaults(_props, "BProgressBar");
+    const parentData = inject(progressInjectionKey, null);
+    const colorClasses = useColorVariantClasses(props);
+    const computedClasses = computed(() => [
+      colorClasses.value,
+      {
+        "progress-bar-animated": props.animated || parentData?.animated.value,
+        "progress-bar-striped": props.striped || parentData?.striped.value || props.animated || parentData?.animated.value
+      }
+    ]);
+    const numberPrecision = useToNumber(() => props.precision);
+    const numberValue = useToNumber(() => props.value);
+    const numberMax = useToNumber(() => props.max ?? Number.NaN);
+    const parentMaxNumber = useToNumber(() => parentData?.max.value ?? Number.NaN);
+    const computedLabel = computed(
+      () => props.showValue || parentData?.showValue.value ? numberValue.value.toFixed(numberPrecision.value) : props.showProgress || parentData?.showProgress.value ? (numberValue.value * 100 / (numberMax.value || 100)).toFixed(numberPrecision.value) : props.label !== void 0 ? props.label : ""
+    );
+    const computedWidth = computed(
+      () => parentMaxNumber.value ? `${numberValue.value * 100 / parentMaxNumber.value}%` : numberMax.value ? `${numberValue.value * 100 / numberMax.value}%` : typeof props.value === "string" ? props.value : `${props.value}%`
+    );
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        class: normalizeClass(["progress-bar", computedClasses.value]),
+        style: normalizeStyle({ width: computedWidth.value })
+      }, [
+        renderSlot(_ctx.$slots, "default", {}, () => [
+          createTextVNode(toDisplayString(computedLabel.value), 1)
+        ])
+      ], 6);
+    };
+  }
+});
+const _hoisted_1$2 = ["aria-valuenow", "aria-valuemax"];
+const _sfc_main$2 = /* @__PURE__ */ defineComponent({
+  __name: "BProgress",
+  props: {
+    height: { default: void 0 },
+    animated: { type: Boolean, default: void 0 },
+    max: { default: 100 },
+    precision: { default: void 0 },
+    showProgress: { type: Boolean, default: void 0 },
+    showValue: { type: Boolean, default: void 0 },
+    striped: { type: Boolean, default: void 0 },
+    value: { default: void 0 },
+    variant: { default: void 0 },
+    bgVariant: { default: void 0 },
+    textVariant: { default: void 0 }
+  },
+  setup(__props) {
+    const _props = __props;
+    const props = useDefaults(_props, "BProgress");
+    provide(progressInjectionKey, {
+      animated: toRef(() => props.animated),
+      max: toRef(() => props.max),
+      showProgress: toRef(() => props.showProgress),
+      showValue: toRef(() => props.showValue),
+      striped: toRef(() => props.striped)
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        class: "progress",
+        role: "progressbar",
+        style: normalizeStyle({ height: unref(props).height }),
+        "aria-valuenow": unref(props).value,
+        "aria-valuemin": "0",
+        "aria-valuemax": unref(props).max
+      }, [
+        renderSlot(_ctx.$slots, "default", {}, () => [
+          createVNode(_sfc_main$1$1, {
+            animated: unref(props).animated,
+            max: unref(props).max,
+            precision: unref(props).precision,
+            "show-progress": unref(props).showProgress,
+            "show-value": unref(props).showValue,
+            striped: unref(props).striped,
+            value: unref(props).value,
+            variant: unref(props).variant,
+            "text-variant": unref(props).textVariant,
+            "bg-variant": unref(props).bgVariant
+          }, null, 8, ["animated", "max", "precision", "show-progress", "show-value", "striped", "value", "variant", "text-variant", "bg-variant"])
+        ])
+      ], 12, _hoisted_1$2);
+    };
+  }
+});
 var jsVideoUrlParser$1 = { exports: {} };
 var jsVideoUrlParser = jsVideoUrlParser$1.exports;
 var hasRequiredJsVideoUrlParser;
@@ -1249,9 +1358,219 @@ function requireJsVideoUrlParser() {
 }
 var jsVideoUrlParserExports = requireJsVideoUrlParser();
 const urlParser = /* @__PURE__ */ getDefaultExportFromCjs(jsVideoUrlParserExports);
+const defaultDocument = isClient ? window.document : void 0;
+function unrefElement(elRef) {
+  var _$el;
+  const plain = toValue(elRef);
+  return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
+}
+const DEFAULT_OPTIONS = {
+  multiple: true,
+  accept: "*",
+  reset: false,
+  directory: false
+};
+function prepareInitialFiles(files) {
+  if (!files) return null;
+  if (files instanceof FileList) return files;
+  const dt = new DataTransfer();
+  for (const file of files) dt.items.add(file);
+  return dt.files;
+}
+function useFileDialog(options = {}) {
+  const { document: document$1 = defaultDocument } = options;
+  const files = ref(prepareInitialFiles(options.initialFiles));
+  const { on: onChange, trigger: changeTrigger } = createEventHook();
+  const { on: onCancel, trigger: cancelTrigger } = createEventHook();
+  const inputRef = computed(() => {
+    var _unrefElement;
+    const input = (_unrefElement = unrefElement(options.input)) !== null && _unrefElement !== void 0 ? _unrefElement : document$1 ? document$1.createElement("input") : void 0;
+    if (input) {
+      input.type = "file";
+      input.onchange = (event) => {
+        files.value = event.target.files;
+        changeTrigger(files.value);
+      };
+      input.oncancel = () => {
+        cancelTrigger();
+      };
+    }
+    return input;
+  });
+  const reset = () => {
+    files.value = null;
+    if (inputRef.value && inputRef.value.value) {
+      inputRef.value.value = "";
+      changeTrigger(null);
+    }
+  };
+  const applyOptions = (options$1) => {
+    const el = inputRef.value;
+    if (!el) return;
+    el.multiple = toValue(options$1.multiple);
+    el.accept = toValue(options$1.accept);
+    el.webkitdirectory = toValue(options$1.directory);
+    if (hasOwn(options$1, "capture")) el.capture = toValue(options$1.capture);
+  };
+  const open = (localOptions) => {
+    const el = inputRef.value;
+    if (!el) return;
+    const mergedOptions = {
+      ...DEFAULT_OPTIONS,
+      ...options,
+      ...localOptions
+    };
+    applyOptions(mergedOptions);
+    if (toValue(mergedOptions.reset)) reset();
+    el.click();
+  };
+  watchEffect(() => {
+    applyOptions(options);
+  });
+  return {
+    files: readonly(files),
+    open,
+    reset,
+    onCancel,
+    onChange
+  };
+}
+var symbolTag = "[object Symbol]";
+function isSymbol(value) {
+  return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
+}
+function arrayMap(array, iteratee) {
+  var index = -1, length = array == null ? 0 : array.length, result = Array(length);
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+var symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
+function baseToString(value) {
+  if (typeof value == "string") {
+    return value;
+  }
+  if (isArray(value)) {
+    return arrayMap(value, baseToString) + "";
+  }
+  if (isSymbol(value)) {
+    return symbolToString ? symbolToString.call(value) : "";
+  }
+  var result = value + "";
+  return result == "0" && 1 / value == -Infinity ? "-0" : result;
+}
+var reWhitespace = /\s/;
+function trimmedEndIndex(string) {
+  var index = string.length;
+  while (index-- && reWhitespace.test(string.charAt(index))) {
+  }
+  return index;
+}
+var reTrimStart = /^\s+/;
+function baseTrim(string) {
+  return string ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, "") : string;
+}
+var NAN = 0 / 0;
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+var reIsBinary = /^0b[01]+$/i;
+var reIsOctal = /^0o[0-7]+$/i;
+var freeParseInt = parseInt;
+function toNumber(value) {
+  if (typeof value == "number") {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == "function" ? value.valueOf() : value;
+    value = isObject(other) ? other + "" : other;
+  }
+  if (typeof value != "string") {
+    return value === 0 ? value : +value;
+  }
+  value = baseTrim(value);
+  var isBinary = reIsBinary.test(value);
+  return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
+}
+var INFINITY = 1 / 0, MAX_INTEGER = 17976931348623157e292;
+function toFinite(value) {
+  if (!value) {
+    return value === 0 ? value : 0;
+  }
+  value = toNumber(value);
+  if (value === INFINITY || value === -INFINITY) {
+    var sign = value < 0 ? -1 : 1;
+    return sign * MAX_INTEGER;
+  }
+  return value === value ? value : 0;
+}
+function toInteger(value) {
+  var result = toFinite(value), remainder = result % 1;
+  return result === result ? remainder ? result - remainder : result : 0;
+}
+function toString(value) {
+  return value == null ? "" : baseToString(value);
+}
+var nativeIsFinite = root.isFinite, nativeMin = Math.min;
+function createRound(methodName) {
+  var func = Math[methodName];
+  return function(number, precision) {
+    number = toNumber(number);
+    precision = precision == null ? 0 : nativeMin(toInteger(precision), 292);
+    if (precision && nativeIsFinite(number)) {
+      var pair = (toString(number) + "e").split("e"), value = func(pair[0] + "e" + (+pair[1] + precision));
+      pair = (toString(value) + "e").split("e");
+      return +(pair[0] + "e" + (+pair[1] - precision));
+    }
+    return func(number);
+  };
+}
+var round = createRound("round");
+function useFileUploader() {
+  async function classicUpload(uploadUrl, file, dest, options) {
+    const { post } = await useHttpClient();
+    const formData = new FormData();
+    formData.append("file", file);
+    if (dest) {
+      formData.append("path", dest);
+    }
+    const res = await post(uploadUrl, formData, {
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percentage = Math.round(progressEvent.loaded * 100 / progressEvent.total);
+          options?.onProgress?.(percentage);
+        }
+      }
+    });
+    return res.data.data.url;
+  }
+  async function s3MultiPartUpload(file, dest, options) {
+    const profile = data("video.upload.profile");
+    const s3 = await useS3MultipartUploader({
+      profile,
+      routes: (action) => {
+        return `@ajax_segment/${action}`;
+      },
+      onProgress: (e) => {
+        options?.onProgress?.(e.percentage);
+      }
+    });
+    const { url } = await s3.upload(file, dest);
+    return url.replace(/%2F/g, "/");
+  }
+  return {
+    classicUpload,
+    s3MultiPartUpload
+  };
+}
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "FileUploader",
   props: {
+    s3Multipart: { type: Boolean },
+    uploadUrl: {},
+    dest: { type: [Function, String] },
     accept: {}
   },
   emits: ["uploaded", "clear"],
@@ -1259,90 +1578,164 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     __expose();
     const props = __props;
     const emit = __emit;
-    const fileInput = ref();
-    const dragging = ref(false);
-    const loading = ref(false);
-    function openUpload() {
-      fileInput.value.click();
-    }
-    async function drop(event) {
-      if (dragging.value) {
-        const files = event.target.files || event.dataTransfer.files;
-        await uploadSingleFile(files[0]);
+    const { classicUpload, s3MultiPartUpload } = useFileUploader();
+    const acceptString = computed(() => {
+      if (Array.isArray(props.accept)) {
+        return props.accept.join(",");
       }
+      return props.accept;
+    });
+    const acceptList = computed(() => {
+      if (Array.isArray(props.accept)) {
+        return props.accept;
+      }
+      return props.accept.split(",").map((item) => item.trim());
+    });
+    const { files, open, reset, onChange, onCancel } = useFileDialog({
+      accept: acceptString
+    });
+    onChange(() => {
+      const file = files.value?.[0];
+      if (file) {
+        upload(file);
+      }
+      reset();
+    });
+    onCancel(reset);
+    function getDest() {
+      if (typeof props.dest === "function") {
+        return props.dest();
+      }
+      return props.dest;
     }
-    async function upload(e) {
-      loading.value = true;
-      await uploadSingleFile(e.target.files[0]);
-      loading.value = false;
-    }
-    async function uploadSingleFile(file) {
-      if (file === null) {
-        alert("沒有上傳檔案");
+    const progress = ref(0);
+    const { loading: uploading, run, wrap } = useLoading();
+    async function upload(file) {
+      const fileTypeValid = checkFileType(file);
+      if (!fileTypeValid) {
+        console.warn("不支援的檔案類型");
         return;
       }
-      loading.value = true;
-      let formData = new FormData();
-      formData.append("file", file, file.name);
-      formData.append(u.data("csrf-token"), "1");
-      const res = await u.$http.post(
-        u.route("video_file_upload"),
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+      const dest = getDest();
+      try {
+        return await run(async () => {
+          const url = await uploadWithAdapter(file, dest);
+          emit("uploaded", url);
+          return url;
+        });
+      } catch (e) {
+        if (e instanceof Error) {
+          simpleAlert(e.message);
+        } else {
+          simpleAlert("上傳失敗");
         }
-      );
-      emit("uploaded", res.data.data.url, file.name);
-      loading.value = false;
+      } finally {
+        progress.value = 0;
+      }
     }
-    const __returned__ = { props, emit, fileInput, dragging, loading, openUpload, drop, upload, uploadSingleFile, get BButton() {
-      return _sfc_main$3;
-    }, get BSpinner() {
+    async function uploadWithAdapter(file, dest) {
+      if (props.s3Multipart) {
+        if (!dest) {
+          throw new Error("S3 MultiPart Must have destination path.");
+        }
+        return s3MultiPartUpload(file, dest, {
+          onProgress: (percentage) => {
+            progress.value = percentage;
+          }
+        });
+      }
+      if (!props.uploadUrl) {
+        throw new Error("Upload URL is required for classic upload.");
+      }
+      return classicUpload(props.uploadUrl, file, dest, {
+        onProgress: (percentage) => {
+          progress.value = percentage;
+        }
+      });
+    }
+    function checkFileType(file) {
+      return acceptList.value.some((accept) => {
+        if (accept.startsWith(".")) {
+          return file.name.endsWith(accept);
+        } else {
+          const regex = new RegExp("^" + accept.replace("*", ".*") + "$");
+          return regex.test(file.type);
+        }
+      });
+    }
+    const dragging = ref(false);
+    async function drop(event) {
+      const files2 = event.target.files || event.dataTransfer?.files || [];
+      if (!files2[0]) {
+        return;
+      }
+      await upload(files2[0]);
+      dragging.value = false;
+    }
+    const __returned__ = { props, emit, classicUpload, s3MultiPartUpload, acceptString, acceptList, files, open, reset, onChange, onCancel, getDest, progress, uploading, run, wrap, upload, uploadWithAdapter, checkFileType, dragging, drop, get BButton() {
+      return _sfc_main$4;
+    }, get BProgress() {
       return _sfc_main$2;
+    }, get BSpinner() {
+      return _sfc_main$3;
+    }, get round() {
+      return round;
     } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
 });
-const _hoisted_1$1 = { class: "c-file-uploader__card card overflow-hidden position-relative" };
-const _hoisted_2$1 = { class: "c-file-uploader__card-body card-body" };
-const _hoisted_3$1 = { class: "c-file-uploader__inner" };
-const _hoisted_4$1 = {
+const _hoisted_1$1 = { class: "c-file-uploader__card-body card-body" };
+const _hoisted_2$1 = { class: "c-file-uploader__inner w-100" };
+const _hoisted_3$1 = {
   key: 0,
-  class: "text-center"
+  class: "text-center d-flex flex-column gap-3 w-75 mx-auto"
 };
-const _hoisted_5$1 = { key: 1 };
-const _hoisted_6$1 = { class: "text-center" };
-const _hoisted_7$1 = { class: "d-none" };
-const _hoisted_8$1 = ["accept"];
+const _hoisted_4$1 = { key: 1 };
+const _hoisted_5$1 = { class: "text-center" };
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: "c-file-uploader pb-3",
-    onDragover: _cache[0] || (_cache[0] = withModifiers(($event) => $setup.dragging = true, ["prevent"])),
-    onDragleave: _cache[1] || (_cache[1] = withModifiers(($event) => $setup.dragging = false, ["prevent"])),
-    onDrop: withModifiers($setup.drop, ["prevent"])
+    style: { "cursor": "pointer" },
+    onDragover: _cache[1] || (_cache[1] = withModifiers(($event) => $setup.dragging = true, ["prevent"])),
+    onDragleave: _cache[2] || (_cache[2] = withModifiers(($event) => $setup.dragging = false, ["prevent"])),
+    onDrop: withModifiers($setup.drop, ["prevent"]),
+    onClick: _cache[3] || (_cache[3] = withModifiers(($event) => $setup.open(), ["prevent"]))
   }, [
-    createElementVNode("div", _hoisted_1$1, [
-      createElementVNode("div", _hoisted_2$1, [
-        createElementVNode("div", _hoisted_3$1, [
-          $setup.loading ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
-            createVNode($setup["BSpinner"])
-          ])) : (openBlock(), createElementBlock("div", _hoisted_5$1, [
-            _cache[3] || (_cache[3] = createElementVNode("div", { class: "text-center mb-3" }, [
+    createElementVNode("div", {
+      class: normalizeClass(["c-file-uploader__card card border overflow-hidden position-relative", { "bg-light": $setup.dragging }])
+    }, [
+      createElementVNode("div", _hoisted_1$1, [
+        createElementVNode("div", _hoisted_2$1, [
+          $setup.uploading ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
+            createElementVNode("div", null, [
+              createVNode($setup["BSpinner"]),
+              _cache[4] || (_cache[4] = createTextVNode()),
+              createElementVNode("div", null, "上傳中 " + toDisplayString($setup.round($setup.progress, 2)) + "%", 1)
+            ]),
+            _cache[5] || (_cache[5] = createTextVNode()),
+            createVNode($setup["BProgress"], {
+              style: { "width": "100%" },
+              value: $setup.progress,
+              max: 100
+            }, null, 8, ["value"])
+          ])) : (openBlock(), createElementBlock("div", _hoisted_4$1, [
+            _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-center mb-3" }, [
               createElementVNode("i", { class: "far fa-upload fa-fw fa-2x" })
             ], -1)),
-            _cache[4] || (_cache[4] = createTextVNode()),
-            _cache[5] || (_cache[5] = createElementVNode("div", { class: "text-center mb-3" }, "\n              上傳: 拖拉檔案或按此瀏覽\n            ", -1)),
-            _cache[6] || (_cache[6] = createTextVNode()),
-            createElementVNode("div", _hoisted_6$1, [
+            _cache[8] || (_cache[8] = createTextVNode()),
+            _cache[9] || (_cache[9] = createElementVNode("div", { class: "text-center mb-3" }, "\n              上傳: 拖拉檔案或按此瀏覽\n            ", -1)),
+            _cache[10] || (_cache[10] = createTextVNode()),
+            createElementVNode("div", _hoisted_5$1, [
               createVNode($setup["BButton"], {
                 variant: "primary",
-                onClick: $setup.openUpload
+                size: "sm",
+                onClick: _cache[0] || (_cache[0] = withModifiers(($event) => $setup.open(), ["stop"])),
+                style: { "min-width": "100px" }
               }, {
-                default: withCtx(() => [..._cache[2] || (_cache[2] = [
-                  createTextVNode("\n                上傳\n              ", -1)
+                default: withCtx(() => [..._cache[6] || (_cache[6] = [
+                  createElementVNode("i", { class: "far fa-plus-circle" }, null, -1),
+                  createTextVNode("\n                瀏覽檔案\n              ", -1)
                 ])]),
                 _: 1
               })
@@ -1350,38 +1743,29 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
           ]))
         ])
       ])
-    ]),
-    _cache[7] || (_cache[7] = createTextVNode()),
-    createElementVNode("div", _hoisted_7$1, [
-      createElementVNode("input", {
-        ref: "fileInput",
-        type: "file",
-        onChange: $setup.upload,
-        accept: $setup.props.accept
-      }, null, 40, _hoisted_8$1)
-    ])
+    ], 2)
   ], 32);
 }
-const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-5c3fc1e6"], ["__file", "FileUploader.vue"]]);
+const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-da919be7"], ["__file", "FileUploader.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionVideoEdit",
-  props: /* @__PURE__ */ mergeModels({
-    item: {}
-  }, {
+  props: {
     "modelValue": {
       required: true
     },
     "modelModifiers": {}
-  }),
+  },
   emits: ["update:modelValue"],
   setup(__props, { expose: __expose, emit: __emit }) {
     __expose();
+    const { deleteFile } = useSegmentController();
+    const { loading, run } = useLoading();
     const props = __props;
     const emit = __emit;
     const item = useModel(__props, "modelValue");
     const videoName = computed(() => isFile.value ? item.value.filename : item.value.src);
     const isFile = computed(() => item.value.src !== "" && videoInfo.value === null);
-    const isCloudVideo = computed(() => item.value.src !== "" && videoInfo.value !== null);
+    const isCloudVideo = computed(() => item.value.src !== "" && videoInfo.value != null);
     const itemSrcVal = ref("");
     const videoInfo = computed(() => {
       if (item.value.src !== "") {
@@ -1400,17 +1784,27 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       }
       return void 0;
     });
+    const previewSrc = computed(() => {
+      if (isCloudVideo.value) {
+        return item.value.src;
+      }
+      return route("@lesson_file/previewFile", { url: item.value.src });
+    });
+    const previewCaptionSrc = computed(() => {
+      return route("@lesson_file/previewFile", { url: item.value.captionSrc });
+    });
     async function clear(field) {
-      const v = await swal({
-        title: "確定要刪除嗎？此動作無法重置",
-        buttons: [
-          "取消",
-          "確認"
-        ]
-      });
+      const v = await deleteConfirm(
+        "確定要刪除嗎？",
+        "此動作無法重置"
+      );
       if (v) {
-        props.item[field] = "";
-        emit("save", item.value);
+        await run(async () => {
+          if (!isCloudVideo.value) {
+            await deleteFile(item.value[field], item.value.id, field);
+          }
+          item.value[field] = "";
+        });
       }
     }
     function setItemSrc() {
@@ -1425,44 +1819,43 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       item.value.captionSrc = src;
       emit("save", item.value);
     }
-    const __returned__ = { props, emit, item, videoName, isFile, isCloudVideo, itemSrcVal, videoInfo, videoEmbedUrl, clear, setItemSrc, uploadVideo, uploadCaption, get BButton() {
-      return _sfc_main$3;
-    }, get BFormGroup() {
-      return _sfc_main$5;
-    }, get BFormInput() {
+    const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, itemSrcVal, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, setItemSrc, uploadVideo, uploadCaption, get route() {
+      return route;
+    }, get BButton() {
       return _sfc_main$4;
+    }, get BFormGroup() {
+      return _sfc_main$6;
+    }, get BFormInput() {
+      return _sfc_main$5;
     }, FileUploader };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
 });
-const _hoisted_1 = { class: "l-section-video-edit" };
-const _hoisted_2 = { class: "d-flex" };
-const _hoisted_3 = { key: 0 };
-const _hoisted_4 = {
+const _hoisted_1 = { class: "l-section-video-edit d-flex flex-column gap-4" };
+const _hoisted_2 = { class: "input-group" };
+const _hoisted_3 = {
   key: 1,
-  class: "mb-3 d-flex justify-content-between align-items-center"
+  class: "d-flex flex-column gap-4"
 };
-const _hoisted_5 = { class: "m-0" };
-const _hoisted_6 = { class: "ml-auto" };
-const _hoisted_7 = { key: 0 };
-const _hoisted_8 = {
-  key: 1,
-  class: "mb-3 d-flex"
-};
-const _hoisted_9 = { class: "m-0" };
-const _hoisted_10 = { class: "ml-auto" };
-const _hoisted_11 = {
-  key: 2,
-  class: "mt-4"
-};
-const _hoisted_12 = {
+const _hoisted_4 = { class: "input-group" };
+const _hoisted_5 = ["value"];
+const _hoisted_6 = {
   key: 0,
   class: "rwd-video"
 };
-const _hoisted_13 = ["src"];
-const _hoisted_14 = { key: 1 };
-const _hoisted_15 = ["src"];
+const _hoisted_7 = ["src"];
+const _hoisted_8 = { key: 1 };
+const _hoisted_9 = {
+  controls: "",
+  class: "w-100",
+  style: { "aspect-ratio": "16 / 9", "background-color": "black" },
+  crossorigin: "anonymous"
+};
+const _hoisted_10 = ["src"];
+const _hoisted_11 = ["src"];
+const _hoisted_12 = { class: "input-group" };
+const _hoisted_13 = ["value"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createVNode($setup["BFormGroup"], {
@@ -1481,7 +1874,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     }),
-    _cache[27] || (_cache[27] = createTextVNode()),
+    _cache[22] || (_cache[22] = createTextVNode()),
     $setup.item.src === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
       key: 0,
       label: "影片連結",
@@ -1502,10 +1895,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           _cache[6] || (_cache[6] = createTextVNode()),
           createVNode($setup["BButton"], {
             variant: "primary",
-            class: "text-nowrap c-video-submit",
+            class: "text-nowrap c-video-submit px-3",
             onClick: $setup.setItemSrc
           }, {
             default: withCtx(() => [..._cache[5] || (_cache[5] = [
+              createElementVNode("i", { class: "far fa-check" }, null, -1),
               createTextVNode("\n          送出\n        ", -1)
             ])]),
             _: 1
@@ -1514,120 +1908,166 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     })) : createCommentVNode("", true),
-    _cache[28] || (_cache[28] = createTextVNode()),
-    createVNode($setup["BFormGroup"], { class: "mb-3" }, {
-      default: withCtx(() => [
-        $setup.item.src === "" ? (openBlock(), createElementBlock("div", _hoisted_3, [
-          _cache[7] || (_cache[7] = createElementVNode("label", { class: "mb-2" }, "\n          上傳影片\n        ", -1)),
-          _cache[8] || (_cache[8] = createTextVNode()),
-          _cache[9] || (_cache[9] = createElementVNode("br", null, null, -1)),
-          _cache[10] || (_cache[10] = createTextVNode()),
-          _cache[11] || (_cache[11] = createElementVNode("div", { class: "text-muted mb-2" }, [
-            createElementVNode("small", null, "\n            請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件\n          ")
-          ], -1)),
-          _cache[12] || (_cache[12] = createTextVNode()),
-          createVNode($setup["FileUploader"], {
-            accept: "video/mp4",
-            onUploaded: $setup.uploadVideo
-          })
-        ])) : createCommentVNode("", true),
-        _cache[16] || (_cache[16] = createTextVNode()),
-        $setup.item.src ? (openBlock(), createElementBlock("div", _hoisted_4, [
-          createElementVNode("h6", _hoisted_5, [
-            _cache[13] || (_cache[13] = createElementVNode("span", { class: "fal fa-video me-2" }, null, -1)),
-            createTextVNode(" " + toDisplayString($setup.videoName), 1)
-          ]),
-          _cache[15] || (_cache[15] = createTextVNode()),
-          createElementVNode("div", _hoisted_6, [
-            createVNode($setup["BButton"], {
-              variant: "danger",
-              onClick: _cache[2] || (_cache[2] = ($event) => $setup.clear("src"))
-            }, {
-              default: withCtx(() => [..._cache[14] || (_cache[14] = [
-                createElementVNode("span", { class: "fal fa-trash" }, null, -1)
-              ])]),
-              _: 1
-            })
-          ])
-        ])) : createCommentVNode("", true)
-      ]),
-      _: 1
-    }),
-    _cache[29] || (_cache[29] = createTextVNode()),
-    createVNode($setup["BFormGroup"], null, {
-      default: withCtx(() => [
-        $setup.item.captionSrc === "" ? (openBlock(), createElementBlock("div", _hoisted_7, [
-          _cache[17] || (_cache[17] = createElementVNode("label", { class: "mb-2" }, "\n          上傳字幕\n        ", -1)),
-          _cache[18] || (_cache[18] = createTextVNode()),
-          _cache[19] || (_cache[19] = createElementVNode("br", null, null, -1)),
-          _cache[20] || (_cache[20] = createTextVNode()),
-          _cache[21] || (_cache[21] = createElementVNode("div", { class: "text-muted mb-2" }, [
-            createElementVNode("small", null, "\n            僅支援格式為.vtt的文件\n          ")
-          ], -1)),
-          _cache[22] || (_cache[22] = createTextVNode()),
-          createVNode($setup["FileUploader"], {
-            accept: ".vtt",
-            onUploaded: $setup.uploadCaption
-          })
-        ])) : createCommentVNode("", true),
-        _cache[26] || (_cache[26] = createTextVNode()),
-        $setup.item.captionSrc ? (openBlock(), createElementBlock("div", _hoisted_8, [
-          createElementVNode("h6", _hoisted_9, [
-            _cache[23] || (_cache[23] = createElementVNode("span", { class: "fal fa-closed-captioning" }, null, -1)),
-            createTextVNode(" " + toDisplayString($setup.item.captionSrc), 1)
-          ]),
-          _cache[25] || (_cache[25] = createTextVNode()),
-          createElementVNode("div", _hoisted_10, [
-            createVNode($setup["BButton"], {
-              variant: "danger",
-              onClick: _cache[3] || (_cache[3] = ($event) => $setup.clear("captionSrc"))
-            }, {
-              default: withCtx(() => [..._cache[24] || (_cache[24] = [
-                createElementVNode("span", { class: "fal fa-trash" }, null, -1)
-              ])]),
-              _: 1
-            })
-          ])
-        ])) : createCommentVNode("", true)
-      ]),
-      _: 1
-    }),
-    _cache[30] || (_cache[30] = createTextVNode()),
-    $setup.isCloudVideo ? (openBlock(), createBlock($setup["BFormGroup"], {
-      key: 1,
-      label: "影片時數 (秒)",
-      "label-for": "input-section-duration",
-      "label-class": "mb-2"
+    _cache[23] || (_cache[23] = createTextVNode()),
+    createVNode(Transition, {
+      name: "fade",
+      mode: "out-in"
     }, {
       default: withCtx(() => [
-        createVNode($setup["BFormInput"], {
-          id: "input-section-duration",
-          modelValue: $setup.item.duration,
-          "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $setup.item.duration = $event),
-          trim: ""
-        }, null, 8, ["modelValue"])
+        $setup.item.src === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
+          key: 0,
+          label: "上傳影片"
+        }, {
+          default: withCtx(() => [
+            _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted mb-2" }, [
+              createElementVNode("small", null, "\n              請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件\n            ")
+            ], -1)),
+            _cache[8] || (_cache[8] = createTextVNode()),
+            createVNode($setup["FileUploader"], {
+              accept: "video/mp4",
+              "s3-multipart": "",
+              onUploaded: $setup.uploadVideo,
+              dest: () => `segments/${$setup.item.id}/video.{ext}`
+            }, null, 8, ["dest"])
+          ]),
+          _: 1
+        })) : (openBlock(), createElementBlock("div", _hoisted_3, [
+          createVNode($setup["BFormGroup"], { label: "影片" }, {
+            default: withCtx(() => [
+              createElementVNode("div", _hoisted_4, [
+                _cache[10] || (_cache[10] = createElementVNode("div", { class: "input-group-text" }, [
+                  createElementVNode("span", { class: "fal fa-fw fa-video me-2" })
+                ], -1)),
+                _cache[11] || (_cache[11] = createTextVNode()),
+                createElementVNode("input", {
+                  type: "text",
+                  class: "form-control",
+                  disabled: "",
+                  value: $setup.videoName
+                }, null, 8, _hoisted_5),
+                _cache[12] || (_cache[12] = createTextVNode()),
+                createVNode($setup["BButton"], {
+                  variant: "danger",
+                  onClick: _cache[2] || (_cache[2] = ($event) => $setup.clear("src")),
+                  disabled: $setup.loading
+                }, {
+                  default: withCtx(() => [..._cache[9] || (_cache[9] = [
+                    createElementVNode("span", { class: "fal fa-trash" }, null, -1),
+                    createTextVNode("\n              移除\n            ", -1)
+                  ])]),
+                  _: 1
+                }, 8, ["disabled"])
+              ])
+            ]),
+            _: 1
+          }),
+          _cache[14] || (_cache[14] = createTextVNode()),
+          $setup.item.src !== "" ? (openBlock(), createBlock($setup["BFormGroup"], {
+            key: 0,
+            class: "",
+            label: "預覽"
+          }, {
+            default: withCtx(() => [
+              $setup.videoEmbedUrl ? (openBlock(), createElementBlock("div", _hoisted_6, [
+                createElementVNode("iframe", {
+                  src: $setup.videoEmbedUrl,
+                  frameborder: "0",
+                  style: { "width": "100%" }
+                }, null, 8, _hoisted_7)
+              ])) : (openBlock(), createElementBlock("div", _hoisted_8, [
+                createElementVNode("video", _hoisted_9, [
+                  createElementVNode("source", {
+                    src: $setup.previewSrc,
+                    type: "video/mp4"
+                  }, null, 8, _hoisted_10),
+                  _cache[13] || (_cache[13] = createTextVNode()),
+                  createElementVNode("track", {
+                    default: "",
+                    kind: "captions",
+                    src: $setup.previewCaptionSrc,
+                    srclang: "zh",
+                    label: "中文"
+                  }, null, 8, _hoisted_11)
+                ])
+              ]))
+            ]),
+            _: 1
+          })) : createCommentVNode("", true),
+          _cache[15] || (_cache[15] = createTextVNode()),
+          $setup.isCloudVideo ? (openBlock(), createBlock($setup["BFormGroup"], {
+            key: 1,
+            label: "影片時數 (秒)",
+            "label-for": "input-section-duration",
+            "label-class": "mb-2",
+            description: "雲端影片需要手動輸入時數"
+          }, {
+            default: withCtx(() => [
+              createVNode($setup["BFormInput"], {
+                id: "input-section-duration",
+                modelValue: $setup.item.duration,
+                "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.item.duration = $event),
+                trim: ""
+              }, null, 8, ["modelValue"])
+            ]),
+            _: 1
+          })) : createCommentVNode("", true)
+        ]))
       ]),
       _: 1
-    })) : createCommentVNode("", true),
-    _cache[31] || (_cache[31] = createTextVNode()),
-    $setup.item.src !== "" ? (openBlock(), createElementBlock("div", _hoisted_11, [
-      $setup.videoEmbedUrl ? (openBlock(), createElementBlock("div", _hoisted_12, [
-        createElementVNode("iframe", {
-          src: $setup.videoEmbedUrl,
-          frameborder: "0",
-          style: { "width": "100%" }
-        }, null, 8, _hoisted_13)
-      ])) : (openBlock(), createElementBlock("div", _hoisted_14, [
-        createElementVNode("video", {
-          controls: "",
-          class: "w-100",
-          src: $setup.item.src
-        }, null, 8, _hoisted_15)
-      ]))
-    ])) : createCommentVNode("", true)
+    }),
+    _cache[24] || (_cache[24] = createTextVNode()),
+    $setup.item.captionSrc === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
+      key: 1,
+      label: "上傳字幕"
+    }, {
+      default: withCtx(() => [
+        _cache[16] || (_cache[16] = createElementVNode("div", { class: "text-muted mb-2" }, [
+          createElementVNode("small", null, "\n            僅支援格式為 .vtt .srt 的文件\n          ")
+        ], -1)),
+        _cache[17] || (_cache[17] = createTextVNode()),
+        createVNode($setup["FileUploader"], {
+          accept: ".vtt,.srt",
+          onUploaded: $setup.uploadCaption,
+          "upload-url": $setup.route("@file_upload"),
+          dest: () => `segments/${$setup.item.id}/caption.{ext}`
+        }, null, 8, ["upload-url", "dest"])
+      ]),
+      _: 1
+    })) : (openBlock(), createBlock($setup["BFormGroup"], {
+      key: 2,
+      label: "字幕"
+    }, {
+      default: withCtx(() => [
+        createElementVNode("div", _hoisted_12, [
+          _cache[19] || (_cache[19] = createElementVNode("div", { class: "input-group-text" }, [
+            createElementVNode("span", { class: "fal fa-fw fa-closed-captioning me-2" })
+          ], -1)),
+          _cache[20] || (_cache[20] = createTextVNode()),
+          createElementVNode("input", {
+            type: "text",
+            class: "form-control",
+            disabled: "",
+            value: $setup.item.captionSrc
+          }, null, 8, _hoisted_13),
+          _cache[21] || (_cache[21] = createTextVNode()),
+          createVNode($setup["BButton"], {
+            variant: "danger",
+            onClick: _cache[4] || (_cache[4] = ($event) => $setup.clear("captionSrc")),
+            disabled: $setup.loading
+          }, {
+            default: withCtx(() => [..._cache[18] || (_cache[18] = [
+              createElementVNode("span", { class: "fal fa-trash" }, null, -1),
+              createTextVNode("\n            移除\n          ", -1)
+            ])]),
+            _: 1
+          }, 8, ["disabled"])
+        ])
+      ]),
+      _: 1
+    }))
   ]);
 }
-const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-8c4c78d4"], ["__file", "SectionVideoEdit.vue"]]);
+const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6d0d1b37"], ["__file", "SectionVideoEdit.vue"]]);
 export {
   SectionVideoEdit as default
 };

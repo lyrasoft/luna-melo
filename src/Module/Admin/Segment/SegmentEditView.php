@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Segment;
 
-use Lyrasoft\Melo\Entity\Segment;
+use Lyrasoft\Melo\Features\Section\AbstractSectionDefine;
+use Lyrasoft\Melo\Features\Section\SectionComposer;
+use Lyrasoft\Melo\Features\Segment\SegmentFinder;
+use Lyrasoft\Melo\MeloPackage;
 use Lyrasoft\Melo\Repository\SegmentRepository;
 use Unicorn\Image\ImagePlaceholder;
 use Unicorn\Script\UnicornScript;
@@ -38,7 +41,11 @@ class SegmentEditView implements ViewModelInterface
         protected FormFactory $formFactory,
         protected Navigator $nav,
         #[Autowire] protected SegmentRepository $repository,
+        protected AssetService $asset,
         protected UnicornScript $uniScript,
+        protected SectionComposer $sectionComposer,
+        protected MeloPackage $meloPackage,
+        protected SegmentFinder $segmentFinder,
         #[Service]
         protected ImagePlaceholder $imageHelper,
     ) {
@@ -54,14 +61,35 @@ class SegmentEditView implements ViewModelInterface
      */
     public function prepare(AppContext $app, View $view): mixed
     {
-        $lessonId = $app->input('lesson_id');
+        $lessonId = (int) $app->input('lesson_id');
+
+        $segments = $this->segmentFinder->getSegmentsTree((int) $lessonId);
+
+        $sectionDefines = $this->sectionComposer->getSectionDefines();
+        $sectionDefines = array_map(
+            function (string $sectionClass) {
+                /** @var class-string<AbstractSectionDefine> $sectionClass */
+
+                return [
+                    'id' => $sectionClass::id(),
+                    'icon' => $sectionClass::icon(),
+                    'title' => $sectionClass::title($this->lang),
+                    'description' => $sectionClass::description($this->lang),
+                    'vueComponentUrl' => $sectionClass::adminVueComponentUrl($this->asset),
+                    'vueComponentName' => $sectionClass::adminVueComponentName(),
+                ];
+            },
+            $sectionDefines
+        );
 
         $this->uniScript->data(
             'segment.edit.props',
-            [
-                'lessonId' => (int) $lessonId
-            ]
+            compact('segments', 'lessonId', 'sectionDefines')
         );
+
+        $this->uniScript->addRoute('@ajax_segment');
+        $this->uniScript->addRoute('@ajax_question');
+        $this->uniScript->addRoute('@ajax_option');
 
         $this->uniScript->addRoute(
             'prepare_segments',
@@ -128,22 +156,32 @@ class SegmentEditView implements ViewModelInterface
             $this->nav->to('ajax_option')->var('task', 'delete')
         );
 
+        $this->uniScript->addRoute('@lesson_file');
+
         $this->uniScript->addRoute(
             'file_upload',
-            $this->nav->to('file_upload')
+            $this->nav->to('file_upload', ['profile' => $uploadProfiles['file'] ?? null])
         );
+
+        $uploadProfiles = $this->meloPackage->config('upload_profiles');
 
         $this->uniScript->addRoute(
             'image_upload',
-            $this->nav->to('file_upload', ['profile' => 'image'])
+            $this->nav->to('file_upload', ['profile' => $uploadProfiles['image'] ?? 'image'])
         );
 
-        $this->uniScript->addRoute(
-            'video_file_upload',
-            $this->nav->to('file_upload', ['profile' => 'video'])
-        );
+        $s3Profile = $uploadProfiles['s3_multipart_storage'] ?? 's3';
+
+        // $this->uniScript->addRoute(
+        //     'video_file_upload',
+        //     $this->nav->to('file_upload', ['profile' => $s3Profile])
+        // );
 
         $this->uniScript->data('defaultImage', $this->imageHelper->placeholder4x3());
+        $this->uniScript->data(
+            'video.upload.profile',
+            $s3Profile
+        );
 
         return compact('lessonId');
     }

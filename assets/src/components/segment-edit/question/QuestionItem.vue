@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core';
 import { toRefs } from 'vue';
-import type { Question } from '../../../types/question.type';
 import { QuestionType, scoreLimit } from '~melo/features/quiz/question-service';
+import { Question } from '~melo/types';
 
 const props = defineProps<{
   item: Question;
@@ -20,7 +21,7 @@ function deleteQuestion() {
   emit('delete', item.value.id);
 }
 
-const changeScore = u.debounce(() => {
+const changeScore = useDebounceFn(() => {
   item.value.score = scoreLimit(item.value.score);
   emit('save', item.value);
 }, 300);

@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Module\Admin\Segment;
 
 use Lyrasoft\Melo\Entity\Segment;
+use Lyrasoft\Melo\Features\Segment\SegmentFileManager;
 use Lyrasoft\Melo\Repository\SegmentRepository;
 use Unicorn\Attributes\Ajax;
+use Unicorn\Aws\S3MultipartUploadControllerTrait;
+use Unicorn\Aws\S3MultipartUploader;
+use Unicorn\Aws\S3Service;
 use Unicorn\Controller\AjaxControllerTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
@@ -23,6 +27,7 @@ use Windwalker\ORM\ORM;
 class SegmentController
 {
     use AjaxControllerTrait;
+    use S3MultipartUploadControllerTrait;
 
     #[Ajax]
     #[Method('POST')]
@@ -30,7 +35,18 @@ class SegmentController
         ORM $orm,
         #[Input] array $item,
     ): object {
-        return $orm->saveOne(Segment::class, $item);
+        $segment = $orm->toEntity(Segment::class, $item);
+
+        $maxOrdering = (int) $orm->select()
+            ->selectRaw('MAX(ordering) AS max_ordering')
+            ->from(Segment::class)
+            ->where('parent_id', $segment->parentId)
+            ->where('lesson_id', $segment->lessonId)
+            ->result();
+
+        $segment->ordering = $maxOrdering + 1;
+
+        return $orm->saveOne(Segment::class, $segment);
     }
 
     #[Ajax]
@@ -44,27 +60,34 @@ class SegmentController
     }
 
     #[Ajax]
-    #[Method('GET')]
-    public function prepareSegments(
-        #[Autowire] SegmentRepository $repository,
-        #[Input, Filter('int')] int $lessonId,
-        #[Input, Filter('int')] int $parentId = 0,
-    ): Collection {
-        return $repository->getListSelector()
-            ->where('lesson_id', $lessonId)
-            ->where('parent_id', $parentId)
-            ->order('ordering', 'ASC')
-            ->all(Segment::class);
-    }
-
-    #[Ajax]
     #[Method('POST')]
     public function reorder(
         AppContext $app,
         #[Autowire] SegmentRepository $repository,
+        #[Input] array $orders,
     ): void {
-        $orders = $app->input('orders');
-
         $repository->createReorderAction()->reorder($orders);
+    }
+
+    #[Ajax]
+    #[Method('DELETE')]
+    public function deleteFile(
+        SegmentFileManager $segmentFileManager,
+        #[Input, Filter('int')] int $id,
+        #[Input] string $field,
+        #[Input] string $url,
+    ): bool {
+        if (!$url) {
+            return false;
+        }
+
+        $segmentFileManager->deleteS3IfNoDuplicated($url, $id, $field);
+
+        return true;
+    }
+
+    protected function configureUploader(S3MultipartUploader $uploader): void
+    {
+        $uploader->acl = S3MultipartUploader::ACL_AUTHENTICATED_READ;
     }
 }
