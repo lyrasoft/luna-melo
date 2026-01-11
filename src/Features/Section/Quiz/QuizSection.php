@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Section\Quiz;
 
-use Lyrasoft\Melo\Features\Section\AbstractSectionDefine;
+use Lyrasoft\Melo\Features\Section\AbstractSection;
 use Lyrasoft\Melo\Features\Section\LanguageInterface;
 use Windwalker\Language\Language;
 
-class QuizSection extends AbstractSectionDefine
+class QuizSection extends AbstractSection
 {
     public static function id(): string
     {

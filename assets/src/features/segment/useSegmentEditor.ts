@@ -3,6 +3,7 @@ import { route, sleep, useHttpClient } from '@windwalker-io/unicorn-next';
 import { computed, ref, watch } from 'vue';
 import { useLoading } from '@lyrasoft/ts-toolkit/vue';
 import { useSegmentController } from '~melo/features/segment/useSegmentController';
+import { sleepMax } from '~melo/shared/timing';
 import { Segment } from '~melo/types';
 
 export const useSegmentEditor = createGlobalState(() => {
@@ -70,12 +71,7 @@ export const useSegmentEditor = createGlobalState(() => {
     // Save
     await saveSegment(segment.value, !segment.value.id);
 
-    // At least run 500ms
-    const elapsed = Date.now() - start;
-
-    if (elapsed < 500) {
-      await sleep(500 - elapsed);
-    }
+    await sleepMax(start, 500);
   });
 
   const saveDebounced = useDebounceFn(save, 500);

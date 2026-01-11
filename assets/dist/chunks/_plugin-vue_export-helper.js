@@ -1,4 +1,4 @@
-import { getCurrentScope, onScopeDispose, effectScope, computed, toValue, watch, isRef, toRef as toRef$1, readonly, ref, customRef, shallowRef, defineComponent, unref, getCurrentInstance as getCurrentInstance$1, onMounted, h, Teleport, inject, watchEffect, provide, useId as useId$1 } from "vue";
+import { effectScope, getCurrentScope, onScopeDispose, computed, toValue, watch, isRef, toRef as toRef$1, readonly, ref, customRef, shallowRef, defineComponent, unref, getCurrentInstance as getCurrentInstance$1, onMounted, h, Teleport, inject, watchEffect, provide, useId as useId$1 } from "vue";
 const genericBvnPrefix = "BootstrapVueNext__";
 const withBvnPrefix = (value, suffix = "") => {
   const suffixWithTrail = `${suffix}___`;
@@ -8,6 +8,7 @@ const createBvnInjectionKey = (name) => withBvnPrefix(name);
 const createBvnRegistryInjectionKey = (name) => withBvnPrefix(`${name}__registry`);
 const tabsInjectionKey = createBvnInjectionKey("tabs");
 const progressInjectionKey = createBvnInjectionKey("progress");
+const checkboxGroupKey = createBvnInjectionKey("checkboxGroup");
 const radioGroupKey = createBvnInjectionKey("radioGroup");
 const collapseInjectionKey = createBvnInjectionKey("collapse");
 const showHideRegistryKey = createBvnRegistryInjectionKey("showHide");
@@ -1146,47 +1147,48 @@ const _export_sfc = (sfc, props) => {
   return target;
 };
 export {
-  unrefElement as A,
-  notNullish as B,
-  tryOnScopeDispose as C,
-  useScrollLock as D,
-  useEventListener as E,
-  useThrottleFn as F,
-  onKeyStroke as G,
-  getModalZIndex as H,
-  getSSRHandler as I,
-  collapseInjectionKey as J,
-  navbarInjectionKey as K,
-  toPascalCase as L,
-  formGroupKey as M,
-  upperFirst as N,
-  attemptFocus as O,
-  _sfc_main$1 as _,
-  useId as a,
-  useToNumber as b,
-  createSharedComposable as c,
-  useMouse as d,
-  defaultsKey as e,
-  breadcrumbGlobalIndexKey as f,
-  breadcrumbRegistryKey as g,
-  orchestratorRegistryKey as h,
-  _export_sfc as i,
-  useColorVariantClasses as j,
-  sortSlotElementsByPosition as k,
-  createReusableTemplate as l,
+  tryOnScopeDispose as A,
+  useScrollLock as B,
+  useEventListener as C,
+  useThrottleFn as D,
+  onKeyStroke as E,
+  getModalZIndex as F,
+  _sfc_main$1 as G,
+  getSSRHandler as H,
+  onClickOutside as I,
+  useMouse as J,
+  collapseInjectionKey as K,
+  navbarInjectionKey as L,
+  toPascalCase as M,
+  formGroupKey as N,
+  upperFirst as O,
+  attemptFocus as P,
+  _export_sfc as _,
+  breadcrumbRegistryKey as a,
+  breadcrumbGlobalIndexKey as b,
+  useColorVariantClasses as c,
+  defaultsKey as d,
+  useToNumber as e,
+  sortSlotElementsByPosition as f,
+  createReusableTemplate as g,
+  useId as h,
+  checkboxGroupKey as i,
+  useFocus as j,
+  isEmptySlot as k,
+  _sfc_main as l,
   modalManagerKey as m,
-  useFocus as n,
-  onClickOutside as o,
+  radioGroupKey as n,
+  orchestratorRegistryKey as o,
   progressInjectionKey as p,
-  radioGroupKey as q,
+  isVisible as q,
   rtlRegistryKey as r,
   showHideRegistryKey as s,
   tabsInjectionKey as t,
   useDefaults as u,
-  isEmptySlot as v,
-  _sfc_main as w,
-  isVisible as x,
-  useMutationObserver as y,
-  toArray as z
+  useMutationObserver as v,
+  createSharedComposable as w,
+  toArray as x,
+  unrefElement as y,
+  notNullish as z
 };
 //# sourceMappingURL=_plugin-vue_export-helper.js.map

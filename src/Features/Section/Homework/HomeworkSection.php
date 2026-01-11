@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Section\Homework;
 
-use Lyrasoft\Melo\Features\Section\AbstractSectionDefine;
+use Lyrasoft\Melo\Features\Section\AbstractSection;
 use Windwalker\Language\Language;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
-class HomeworkSection extends AbstractSectionDefine
+class HomeworkSection extends AbstractSection
 {
     public static function id(): string
     {

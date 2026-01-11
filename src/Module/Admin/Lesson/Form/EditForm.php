@@ -7,6 +7,7 @@ namespace Lyrasoft\Melo\Module\Admin\Lesson\Form;
 use Lyrasoft\Luna\Field\CategoryListField;
 use Lyrasoft\Luna\Field\TagListField;
 use Lyrasoft\Luna\Field\UserModalField;
+use Unicorn\Field\ButtonRadioField;
 use Unicorn\Field\CalendarField;
 use Unicorn\Field\SingleImageDragField;
 use Unicorn\Field\SwitcherField;
@@ -128,17 +129,17 @@ class EditForm
             ->circle(true)
             ->color('success');
 
-        $form->add('is_step_by_step', RadioField::class)
+        $form->add('is_step_by_step', ButtonRadioField::class)
             ->label('學生需要依照章節順序上課嗎？')
             ->option('是', '1')
             ->option('否', '0')
             ->required(true);
 
-        $form->add('has_certificate', RadioField::class)
+        $form->add('has_certificate', ButtonRadioField::class)
             ->label('課程證書')
             ->defaultValue('0')
-            ->option('無證書', '0')
-            ->option('有證書', '1');
+            ->option('有證書', '1')
+            ->option('無證書', '0');
 
         $form->add('pass_average_score', NumberField::class)
             ->label('所有測驗平均分數')

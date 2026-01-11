@@ -28,7 +28,7 @@ import { DraggableEvent, VueDraggable } from 'vue-draggable-plus';
 import { useSegmentController } from '~melo/features/segment/useSegmentController';
 import { useSegmentEditor } from '~melo/features/segment/useSegmentEditor';
 import SectionItem from './SectionItem.vue';
-import TypeSelector from '../TypeSelector.vue';
+import TypeSelector from '../SectionTypeSelector.vue';
 import type { Component } from 'vue';
 import { Segment } from '~melo/types';
 

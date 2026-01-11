@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core';
+import { deleteConfirm } from '@windwalker-io/unicorn-next';
 import { toRefs } from 'vue';
-import { QuestionType, scoreLimit } from '~melo/features/quiz/question-service';
+import { useQuestionController } from '~melo/features/question/useQuestionController';
+import { useQuestionPresenter } from '~melo/features/question/useQuestionPresenter';
 import { Question } from '~melo/types';
 
 const props = defineProps<{
@@ -9,7 +11,16 @@ const props = defineProps<{
   index: number;
 }>();
 
-const emit = defineEmits(['edit', 'delete', 'save']);
+const emit = defineEmits<{
+  'edit': [item: Question];
+  'delete': [itemId: number];
+  'save': [item: Question];
+  'saving': [];
+  'saved': [];
+}>();
+
+const { save, remove } = useQuestionController();
+const { typeToTitle, scoreLimit } = useQuestionPresenter();
 
 const { item } = toRefs(props);
 
@@ -17,54 +28,70 @@ function editQuestion() {
   emit('edit', item.value);
 }
 
-function deleteQuestion() {
-  emit('delete', item.value.id);
+async function deleteQuestion() {
+  const v = await deleteConfirm(
+    "確定要刪除這個問題嗎？",
+    '',
+  );
+
+  if (v) {
+    await remove(item.value.id!);
+
+    emit('delete', item.value.id!);
+  }
 }
 
-const changeScore = useDebounceFn(() => {
+const changeScore = useDebounceFn(async () => {
   item.value.score = scoreLimit(item.value.score);
-  emit('save', item.value);
+
+  emit('saving');
+
+  await save(item.value, 0);
+
+  emit('saved');
 }, 300);
 </script>
 
 <template>
-  <div>
+  <div class="c-question-item-outside" :data-qn-id="item.id">
     <!-- Bar -->
-    <div class="c-question-item">
-      <div class="c-question-item__wrapper d-flex border rounded-1 my-2">
-        <div class="c-question-item__handle handle">
+    <div class="c-question-item card border">
+      <div class="c-question-item__content card-body p-1 d-flex align-items-center gap-2" style="min-width: 1px">
+        <div class="c-question-item__handle handle px-2"
+          style="cursor: move; z-index: 3;">
           <span class="fal fa-bars"></span>
-          <span class="sr-only">Drag</span>
         </div>
 
-        <div class="c-question-item__content d-flex align-items-center ms-2" style="min-width: 1px">
-          <div class="me-1 text-nowrap text-muted">
-            {{ props.index + 1 }}.
+        <div class="text-nowrap text-muted" style="min-width: 2em;">
+          {{ props.index + 1 }}.
+        </div>
+
+        <div class="text-nowrap me-3">
+          {{ typeToTitle(item.type) }}
+        </div>
+
+        <a href="#" class="c-question-item__title text-truncate text-decoration-none"
+          @click.prevent="editQuestion">
+          {{ item.content || '題目內容未填寫' }}
+        </a>
+
+        <div class="d-flex align-items-center gap-3 text-nowrap ms-auto">
+          <div class="text-nowrap me-1 d-flex align-items-center">
+            <div class="me-1">
+              分數
+            </div>
+            <div>
+              <input v-model="item.score" type="number" id="input-score"
+                class="form-control form-control-sm"
+                style="width: 5em;"
+                @input="changeScore" />
+            </div>
           </div>
 
-          <div class="text-nowrap me-1">
-            {{ QuestionType[item.type.replace('-', '_')] }}
-          </div>
-
-          <a class="c-question-item__title text-truncate pe-1 me-2" @click="editQuestion">
-            {{ item.content || '題目內容未填寫' }}
-          </a>
-
-          <div class="d-flex align-items-center text-nowrap ms-auto">
-            <div class="text-nowrap me-1 d-flex align-items-center">
-              <div class="me-1">
-                分數
-              </div>
-              <div>
-                <input v-model="item.score" type="number" id="input-score" @input="changeScore" />
-              </div>
-            </div>
-
-            <div class="c-question-item__delete">
-              <a href="javascript://" class="btn c-delete-btn" @click="deleteQuestion">
-                <i class="fal fa-trash"></i>
-              </a>
-            </div>
+          <div class="c-question-item__delete">
+            <a href="javascript://" class="link-danger" @click="deleteQuestion">
+              <i class="fal fa-trash"></i>
+            </a>
           </div>
         </div>
       </div>
@@ -73,41 +100,5 @@ const changeScore = useDebounceFn(() => {
 </template>
 
 <style scoped lang="scss">
-.c-question-item {
 
-  &__wrapper {
-    background: white;
-    padding: 0 10px 0 15px;
-  }
-
-  &__handle {
-    padding: 10px 15px 10px 0;
-    border-right: 1px solid var(--bs-border-color);
-
-    > .fa-bars {
-      line-height: 24px;
-    }
-  }
-
-  &__content {
-    flex-grow: 1;
-  }
-
-  &__title {
-    font-weight: 700;
-  }
-
-  &__delete {
-    margin-left: auto;
-  }
-
-  #input-score {
-    border-width: 0 0 1px 0;
-    border-color: #dee2e6;
-    border-style: solid;
-    text-align: center;
-    width: 60px;
-    background: transparent;
-  }
-}
 </style>

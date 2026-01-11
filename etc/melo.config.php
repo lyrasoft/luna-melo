@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Config;
 
 use Lyrasoft\Melo\Enum\OrderNoMode;
+use Lyrasoft\Melo\Features\Question\Boolean\BooleanQuestion;
+use Lyrasoft\Melo\Features\Question\MultiSelect\MultiSelectQuestion;
+use Lyrasoft\Melo\Features\Question\Select\SelectQuestion;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
 use Lyrasoft\Melo\Features\Section\Quiz\QuizSection;
 use Lyrasoft\Melo\Features\Section\Video\VideoSection;
@@ -47,6 +50,14 @@ static fn() => [
             VideoSection::class,
             HomeworkSection::class,
             QuizSection::class,
+        ]
+    ],
+
+    'questions' => [
+        'defines' => [
+            BooleanQuestion::class,
+            SelectQuestion::class,
+            MultiSelectQuestion::class,
         ]
     ]
 ];

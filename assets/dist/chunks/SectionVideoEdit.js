@@ -1,12 +1,11 @@
-import { defineComponent, provide, toRef, createElementBlock, openBlock, unref, normalizeStyle, renderSlot, createVNode, inject, computed, normalizeClass, createTextVNode, toDisplayString, Fragment, toValue, mergeModels, useSlots, useModel, ref, watch, nextTick, onMounted, createBlock, resolveDynamicComponent, withCtx, createCommentVNode, createElementVNode, renderList, mergeProps, withModifiers, withKeys, useAttrs, useTemplateRef, onUnmounted, watchEffect, readonly, Transition } from "vue";
+import { defineComponent, provide, toRef, createElementBlock, openBlock, unref, normalizeStyle, renderSlot, createVNode, inject, computed, normalizeClass, createTextVNode, toDisplayString, Fragment, toValue, mergeModels, useSlots, useModel, ref, watch, nextTick, onMounted, createBlock, resolveDynamicComponent, withCtx, createCommentVNode, createElementVNode, renderList, mergeProps, withModifiers, withKeys, useAttrs, useTemplateRef, onUnmounted, Transition } from "vue";
 import { useLoading } from "@lyrasoft/ts-toolkit/vue";
-import { data, useS3MultipartUploader, useHttpClient, simpleAlert, route, deleteConfirm } from "@windwalker-io/unicorn-next";
-import { u as useDefaults, p as progressInjectionKey, j as useColorVariantClasses, b as useToNumber, k as sortSlotElementsByPosition, t as tabsInjectionKey, l as createReusableTemplate, a as useId, i as _export_sfc } from "./_plugin-vue_export-helper.js";
-import { B as BvEvent, b as createEventHook, i as isClient, h as hasOwn, _ as _sfc_main$4, a as _sfc_main$5 } from "./index.js";
+import { simpleAlert, route, deleteConfirm } from "@windwalker-io/unicorn-next";
+import { u as useDefaults, p as progressInjectionKey, c as useColorVariantClasses, e as useToNumber, f as sortSlotElementsByPosition, t as tabsInjectionKey, g as createReusableTemplate, h as useId, _ as _export_sfc } from "./_plugin-vue_export-helper.js";
+import { B as BvEvent, _ as _sfc_main$4, a as _sfc_main$5, u as useSegmentController } from "./useSegmentController.js";
 import { _ as _sfc_main$6, a as _sfc_main$7 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
-import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
+import { u as useFileUploader, a as useFileDialog } from "./useFileUploader.js";
 import { i as isObjectLike, b as baseGetTag, a as isArray, S as Symbol$1, c as isObject, r as root } from "./isObject.js";
-import { u as useSegmentController } from "./useSegmentController.js";
 const _sfc_main$1$2 = /* @__PURE__ */ defineComponent({
   __name: "BProgressBar",
   props: {
@@ -690,6 +689,9 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     };
   }
 });
+function getDefaultExportFromCjs(x) {
+  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
+}
 var jsVideoUrlParser$1 = { exports: {} };
 var jsVideoUrlParser = jsVideoUrlParser$1.exports;
 var hasRequiredJsVideoUrlParser;
@@ -1939,83 +1941,6 @@ function requireJsVideoUrlParser() {
 }
 var jsVideoUrlParserExports = requireJsVideoUrlParser();
 const urlParser = /* @__PURE__ */ getDefaultExportFromCjs(jsVideoUrlParserExports);
-const defaultDocument = isClient ? window.document : void 0;
-function unrefElement(elRef) {
-  var _$el;
-  const plain = toValue(elRef);
-  return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
-}
-const DEFAULT_OPTIONS = {
-  multiple: true,
-  accept: "*",
-  reset: false,
-  directory: false
-};
-function prepareInitialFiles(files) {
-  if (!files) return null;
-  if (files instanceof FileList) return files;
-  const dt = new DataTransfer();
-  for (const file of files) dt.items.add(file);
-  return dt.files;
-}
-function useFileDialog(options = {}) {
-  const { document: document$1 = defaultDocument } = options;
-  const files = ref(prepareInitialFiles(options.initialFiles));
-  const { on: onChange, trigger: changeTrigger } = createEventHook();
-  const { on: onCancel, trigger: cancelTrigger } = createEventHook();
-  const inputRef = computed(() => {
-    var _unrefElement;
-    const input = (_unrefElement = unrefElement(options.input)) !== null && _unrefElement !== void 0 ? _unrefElement : document$1 ? document$1.createElement("input") : void 0;
-    if (input) {
-      input.type = "file";
-      input.onchange = (event) => {
-        files.value = event.target.files;
-        changeTrigger(files.value);
-      };
-      input.oncancel = () => {
-        cancelTrigger();
-      };
-    }
-    return input;
-  });
-  const reset = () => {
-    files.value = null;
-    if (inputRef.value && inputRef.value.value) {
-      inputRef.value.value = "";
-      changeTrigger(null);
-    }
-  };
-  const applyOptions = (options$1) => {
-    const el = inputRef.value;
-    if (!el) return;
-    el.multiple = toValue(options$1.multiple);
-    el.accept = toValue(options$1.accept);
-    el.webkitdirectory = toValue(options$1.directory);
-    if (hasOwn(options$1, "capture")) el.capture = toValue(options$1.capture);
-  };
-  const open = (localOptions) => {
-    const el = inputRef.value;
-    if (!el) return;
-    const mergedOptions = {
-      ...DEFAULT_OPTIONS,
-      ...options,
-      ...localOptions
-    };
-    applyOptions(mergedOptions);
-    if (toValue(mergedOptions.reset)) reset();
-    el.click();
-  };
-  watchEffect(() => {
-    applyOptions(options);
-  });
-  return {
-    files: readonly(files),
-    open,
-    reset,
-    onCancel,
-    onChange
-  };
-}
 var symbolTag = "[object Symbol]";
 function isSymbol(value) {
   return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
@@ -2109,43 +2034,6 @@ function createRound(methodName) {
   };
 }
 var round = createRound("round");
-function useFileUploader() {
-  async function classicUpload(uploadUrl, file, dest, options) {
-    const { post } = await useHttpClient();
-    const formData = new FormData();
-    formData.append("file", file);
-    if (dest) {
-      formData.append("path", dest);
-    }
-    const res = await post(uploadUrl, formData, {
-      onUploadProgress: (progressEvent) => {
-        if (progressEvent.total) {
-          const percentage = Math.round(progressEvent.loaded * 100 / progressEvent.total);
-          options?.onProgress?.(percentage);
-        }
-      }
-    });
-    return res.data.data.url;
-  }
-  async function s3MultiPartUpload(file, dest, options) {
-    const profile = data("video.upload.profile");
-    const s3 = await useS3MultipartUploader({
-      profile,
-      routes: (action) => {
-        return `@ajax_segment/${action}`;
-      },
-      onProgress: (e) => {
-        options?.onProgress?.(e.percentage);
-      }
-    });
-    const { url } = await s3.upload(file, dest);
-    return url.replace(/%2F/g, "/");
-  }
-  return {
-    classicUpload,
-    s3MultiPartUpload
-  };
-}
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "FileUploader",
   props: {
@@ -2159,21 +2047,11 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     __expose();
     const props = __props;
     const emit = __emit;
-    const { classicUpload, s3MultiPartUpload } = useFileUploader();
-    const acceptString = computed(() => {
-      if (Array.isArray(props.accept)) {
-        return props.accept.join(",");
-      }
-      return props.accept;
-    });
-    const acceptList = computed(() => {
-      if (Array.isArray(props.accept)) {
-        return props.accept;
-      }
-      return props.accept.split(",").map((item) => item.trim());
+    const { classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType } = useFileUploader({
+      accept: () => props.accept
     });
     const { files, open, reset, onChange, onCancel } = useFileDialog({
-      accept: acceptString
+      accept: acceptString.value
     });
     onChange(() => {
       const file = files.value?.[0];
@@ -2237,16 +2115,6 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         }
       });
     }
-    function checkFileType(file) {
-      return acceptList.value.some((accept) => {
-        if (accept.startsWith(".")) {
-          return file.name.endsWith(accept);
-        } else {
-          const regex = new RegExp("^" + accept.replace("*", ".*") + "$");
-          return regex.test(file.type);
-        }
-      });
-    }
     const dragging = ref(false);
     async function drop(event) {
       const files2 = event.target.files || event.dataTransfer?.files || [];
@@ -2256,7 +2124,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       await upload(files2[0]);
       dragging.value = false;
     }
-    const __returned__ = { props, emit, classicUpload, s3MultiPartUpload, acceptString, acceptList, files, open, reset, onChange, onCancel, getDest, progress, uploading, run, wrap, upload, uploadWithAdapter, checkFileType, dragging, drop, get BButton() {
+    const __returned__ = { props, emit, classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType, files, open, reset, onChange, onCancel, getDest, progress, uploading, run, wrap, upload, uploadWithAdapter, dragging, drop, get BButton() {
       return _sfc_main$5;
     }, get BProgress() {
       return _sfc_main$3;
@@ -2330,7 +2198,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32);
 }
-const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-45532586"], ["__file", "FileUploader.vue"]]);
+const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-3d4fffba"], ["__file", "FileUploader.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionVideoEdit",
   props: {

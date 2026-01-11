@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Features\Section\Video;
+namespace Lyrasoft\Melo\Features\Question\Boolean;
 
-use Lyrasoft\Melo\Features\Section\AbstractSection;
+use Lyrasoft\Melo\Features\Question\AbstractQuestion;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
-class VideoSection extends AbstractSection
+class BooleanQuestion extends AbstractQuestion
 {
     public static function id(): string
     {
-        return 'video';
+        return 'boolean';
     }
 
     public static function icon(): string
     {
-        return 'fas fa-video';
+        return 'fas fa-check-square';
     }
 
     public static function title(LanguageInterface $lang): string
     {
-        return '影片';
+        return '是非題';
     }
 
     public static function description(LanguageInterface $lang): string
     {
-        return '嵌入影片內容，讓學生可以觀看教學影片。';
+        return '提供是或否的選項。';
     }
 }

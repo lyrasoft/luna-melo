@@ -65,9 +65,9 @@ function segmentTypeIcon(type: string) {
 </script>
 
 <template>
-  <div class="c-chapter-item-outside">
+  <div class="c-section-item-outside" :data-id="section.id">
     <!-- Keep outside div to make animation work, since tabler card will break animation -->
-    <div class="card border bg-white" :data-id="section.id">
+    <div class="card border bg-white">
       <!-- Bar -->
       <div class="c-section-item card-body p-2"
         :class="{ 'bg-primary-subtle': isActive(section) }">

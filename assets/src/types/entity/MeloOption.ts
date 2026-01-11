@@ -1,5 +1,5 @@
 export interface MeloOption {
-  id: number;
+  id?: number;
   questionId: number;
   title: string;
   isAnswer: boolean;

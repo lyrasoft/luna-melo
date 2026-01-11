@@ -6,12 +6,16 @@ namespace Lyrasoft\Melo\Module\Admin\Question;
 
 use Lyrasoft\Melo\Entity\Question;
 use Lyrasoft\Melo\Repository\QuestionRepository;
+use Unicorn\Attributes\Ajax;
+use Unicorn\Controller\AjaxControllerTrait;
 use Unicorn\Upload\FileUploadManager;
 use Unicorn\Upload\FileUploadService;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Attributes\JsonApi;
 use Windwalker\Core\Attributes\Method;
+use Windwalker\Core\Attributes\Request\Input;
+use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
@@ -19,21 +23,15 @@ use Windwalker\ORM\ORM;
 #[Controller()]
 class QuestionController
 {
-    #[JsonApi]
-    public function ajax(AppContext $app): mixed
-    {
-        $task = $app->input('task');
+    use AjaxControllerTrait;
 
-        return $app->call([$this, $task]);
-    }
-
+    #[Ajax]
     #[Method('GET')]
     public function prepare(
         AppContext $app,
         #[Autowire] QuestionRepository $repository,
-    ): \Windwalker\Data\Collection {
-        $segmentId = $app->input('segment_id');
-
+        #[Input] string $segmentId,
+    ): Collection {
         return $repository->getListSelector()
             ->where('segment_id', (int) $segmentId)
             ->order('ordering', 'ASC')
@@ -41,6 +39,7 @@ class QuestionController
             ->all(Question::class);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function reorder(
         AppContext $app,
@@ -51,6 +50,7 @@ class QuestionController
         $repository->createReorderAction()->reorder($orders);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function save(
         AppContext $app,
@@ -66,6 +66,7 @@ class QuestionController
         return $orm->saveOne(Question::class, $data);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function delete(
         AppContext $app,

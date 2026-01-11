@@ -37,14 +37,16 @@ class SegmentController
     ): object {
         $segment = $orm->toEntity(Segment::class, $item);
 
-        $maxOrdering = (int) $orm->select()
-            ->selectRaw('MAX(ordering) AS max_ordering')
-            ->from(Segment::class)
-            ->where('parent_id', $segment->parentId)
-            ->where('lesson_id', $segment->lessonId)
-            ->result();
+        if (!$segment->id) {
+            $maxOrdering = (int) $orm->select()
+                ->selectRaw('MAX(ordering) AS max_ordering')
+                ->from(Segment::class)
+                ->where('parent_id', $segment->parentId)
+                ->where('lesson_id', $segment->lessonId)
+                ->result();
 
-        $segment->ordering = $maxOrdering + 1;
+            $segment->ordering = $maxOrdering + 1;
+        }
 
         return $orm->saveOne(Segment::class, $segment);
     }

@@ -1,27 +1,33 @@
 <script setup lang="ts">
 import { uniqueItemList } from '@lyrasoft/ts-toolkit/vue';
-import { deleteConfirm, injectCssToDocument, useUnicorn } from '@windwalker-io/unicorn-next';
+import { deleteConfirm, injectCssToDocument, simpleAlert, useUnicorn } from '@windwalker-io/unicorn-next';
 import { BButton, BModal } from 'bootstrap-vue-next';
-import { onMounted, provide, ref } from 'vue';
+import { onErrorCaptured, onMounted, provide, ref } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import ChapterItem from '~melo/components/segment-edit/item/ChapterItem.vue';
 import SegmentEditBox from '~melo/components/segment-edit/SegmentEditBox.vue';
-import TypeSelector from '~melo/components/segment-edit/TypeSelector.vue';
+import TypeSelector from '~melo/components/segment-edit/SectionTypeSelector.vue';
 import { useSegmentController } from '~melo/features/segment/useSegmentController';
 import { useSegmentEditor } from '~melo/features/segment/useSegmentEditor';
-import { SectionDefine, Segment } from '~melo/types';
+import { QuestionDefine, SectionDefine, Segment } from '~melo/types';
 
 import('@asika32764/vue-animate/dist/vue-animate.min.css?inline').then(({ default: css }) => {
   injectCssToDocument(css);
 });
 
+onErrorCaptured((e) => {
+  simpleAlert('發生錯誤', e.message, 'warning');
+});
+
 const props = defineProps<{
   lessonId: number;
   sectionDefines: Record<string, SectionDefine>;
+  questionDefines: Record<string, QuestionDefine>;
   segments: Segment[];
 }>();
 
 provide('section.defines', props.sectionDefines);
+provide('question.defines', props.questionDefines);
 
 const { reorder: reorderSegments, save: saveChapter, remove, createEmptyChapterItem } = useSegmentController();
 const { edit, editById } = useSegmentEditor();
@@ -31,7 +37,7 @@ const items = ref<(Segment & { __open?: boolean; })[]>(prepareSegments(props.seg
 
 onMounted(() => {
   // Test
-  editById(20, items.value);
+  editById(244, items.value);
 });
 
 function prepareSegments(items: Segment[]) {

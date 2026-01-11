@@ -4,14 +4,14 @@ import { useFileDialog } from '@vueuse/core';
 import { simpleAlert } from '@windwalker-io/unicorn-next';
 import { BButton, BProgress, BSpinner } from 'bootstrap-vue-next';
 import { round } from 'lodash-es';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useFileUploader } from '~melo/features/file/useFileUploader';
 
 const props = defineProps<{
   s3Multipart?: boolean;
   uploadUrl?: string;
   dest?: (() => string) | string;
-  accept: string|string[];
+  accept?: string|string[];
 }>();
 
 const emit = defineEmits<{
@@ -22,27 +22,14 @@ const emit = defineEmits<{
   error: [error: unknown];
 }>();
 
-const { classicUpload, s3MultiPartUpload } = useFileUploader();
-
-const acceptString = computed(() => {
-  if (Array.isArray(props.accept)) {
-    return props.accept.join(',');
-  }
-
-  return props.accept;
+const { classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType } = useFileUploader({
+  accept: () => props.accept
 });
 
-const acceptList = computed(() => {
-  if (Array.isArray(props.accept)) {
-    return props.accept;
-  }
-
-  return props.accept.split(',').map(item => item.trim());
-});
 
 // Handle Button
 const { files, open, reset, onChange, onCancel } = useFileDialog({
-  accept: acceptString,
+  accept: acceptString.value,
 });
 
 onChange(() => {
@@ -125,17 +112,6 @@ async function uploadWithAdapter(file: File, dest?: string): Promise<string> {
   return classicUpload(props.uploadUrl, file, dest, {
     onProgress: (percentage: number) => {
       progress.value = percentage;
-    }
-  });
-}
-
-function checkFileType(file: File) {
-  return acceptList.value.some((accept) => {
-    if (accept.startsWith('.')) {
-      return file.name.endsWith(accept);
-    } else {
-      const regex = new RegExp('^' + accept.replace('*', '.*') + '$');
-      return regex.test(file.type);
     }
   });
 }

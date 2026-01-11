@@ -1,5 +1,5 @@
 export interface Question {
-  id: number;
+  id?: number;
   lessonId: number;
   segmentId: number;
   type: string;

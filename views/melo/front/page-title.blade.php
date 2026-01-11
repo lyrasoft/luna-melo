@@ -25,7 +25,7 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
-$breadcrumbService = $app->service(Breadcrumb::class);
+$breadcrumb = $app->service(Breadcrumb::class);
 $menuHelper = $app->service(MenuHelper::class);
 ?>
 
@@ -37,22 +37,13 @@ $menuHelper = $app->service(MenuHelper::class);
     </style>
 @endpush
 
-<div class="l-lesson-page-title bg-primary text-white">
+<div class="l-lesson-page-title bg-light">
     <div class="container">
         <div class="row">
             <div class="col py-5">
                 <h1 class="h2">{{ $title }}</h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        @foreach($breadcrumbService->getIterator() as $breadcrumb)
-                            <li class="breadcrumb-item">
-                                <a @attr('href', $breadcrumb['link'] === '' ? null : $breadcrumb['link'])>
-                                    {{ $breadcrumb['title'] }}
-                                </a>
-                            </li>
-                        @endforeach
-                    </ol>
-                </nav>
+
+                <x-breadcrumb :breadcrumb="$breadcrumb" />
             </div>
         </div>
     </div>

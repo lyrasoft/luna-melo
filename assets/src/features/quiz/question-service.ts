@@ -11,6 +11,10 @@ export enum QuestionType {
   select = '單選題',
 }
 
+/**
+ *
+ * @deprecated
+ */
 export function scoreLimit(score: number) {
   if (score > 100) {
     return 100;

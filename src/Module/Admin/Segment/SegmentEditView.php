@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Segment;
 
-use Lyrasoft\Melo\Features\Section\AbstractSectionDefine;
+use Lyrasoft\Melo\Features\Question\QuestionComposer;
+use Lyrasoft\Melo\Features\Section\AbstractSection;
 use Lyrasoft\Melo\Features\Section\SectionComposer;
 use Lyrasoft\Melo\Features\Segment\SegmentFinder;
 use Lyrasoft\Melo\MeloPackage;
@@ -44,6 +45,7 @@ class SegmentEditView implements ViewModelInterface
         protected AssetService $asset,
         protected UnicornScript $uniScript,
         protected SectionComposer $sectionComposer,
+        protected QuestionComposer $questionComposer,
         protected MeloPackage $meloPackage,
         protected SegmentFinder $segmentFinder,
         #[Service]
@@ -65,26 +67,12 @@ class SegmentEditView implements ViewModelInterface
 
         $segments = $this->segmentFinder->getSegmentsTree((int) $lessonId);
 
-        $sectionDefines = $this->sectionComposer->getSectionDefines();
-        $sectionDefines = array_map(
-            function (string $sectionClass) {
-                /** @var class-string<AbstractSectionDefine> $sectionClass */
-
-                return [
-                    'id' => $sectionClass::id(),
-                    'icon' => $sectionClass::icon(),
-                    'title' => $sectionClass::title($this->lang),
-                    'description' => $sectionClass::description($this->lang),
-                    'vueComponentUrl' => $sectionClass::adminVueComponentUrl($this->asset),
-                    'vueComponentName' => $sectionClass::adminVueComponentName(),
-                ];
-            },
-            $sectionDefines
-        );
+        $sectionDefines = $this->getSectionDefines();
+        $questionDefines = $this->getQuestionDefines();
 
         $this->uniScript->data(
             'segment.edit.props',
-            compact('segments', 'lessonId', 'sectionDefines')
+            compact('segments', 'lessonId', 'sectionDefines', 'questionDefines')
         );
 
         $this->uniScript->addRoute('@ajax_segment');
@@ -191,6 +179,54 @@ class SegmentEditView implements ViewModelInterface
     {
         $htmlFrame->setTitle(
             $this->trans('unicorn.title.edit', title: '課程章節')
+        );
+    }
+
+    /**
+     * @return  array|array[]
+     */
+    public function getSectionDefines(): array
+    {
+        $sectionDefines = $this->sectionComposer->getDefines();
+
+        return array_map(
+            function (string $sectionClass) {
+                /** @var class-string<AbstractSection> $sectionClass */
+
+                return [
+                    'id' => $sectionClass::id(),
+                    'icon' => $sectionClass::icon(),
+                    'title' => $sectionClass::title($this->lang),
+                    'description' => $sectionClass::description($this->lang),
+                    'vueComponentUrl' => $sectionClass::adminVueComponentUrl($this->asset),
+                    'vueComponentName' => $sectionClass::adminVueComponentName(),
+                ];
+            },
+            $sectionDefines
+        );
+    }
+
+    /**
+     * @return  array|array[]
+     */
+    public function getQuestionDefines(): array
+    {
+        $defines = $this->questionComposer->getDefines();
+
+        return array_map(
+            function (string $className) {
+                /** @var class-string<AbstractSection> $className */
+
+                return [
+                    'id' => $className::id(),
+                    'icon' => $className::icon(),
+                    'title' => $className::title($this->lang),
+                    'description' => $className::description($this->lang),
+                    'vueComponentUrl' => $className::adminVueComponentUrl($this->asset),
+                    'vueComponentName' => $className::adminVueComponentName(),
+                ];
+            },
+            $defines
         );
     }
 }

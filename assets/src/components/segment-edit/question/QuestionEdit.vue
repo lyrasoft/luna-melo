@@ -1,215 +1,170 @@
 <script setup lang="ts">
-import { uniqueItemList } from '@lyrasoft/ts-toolkit/vue';
-import { useDebounceFn } from '@vueuse/core';
-import { route, useHttpClient } from '@windwalker-io/unicorn-next';
-import { BButton, BFormGroup, BFormInput, BFormRadioGroup, BFormTextarea } from 'bootstrap-vue-next';
-import swal from 'sweetalert';
-import { onMounted, ref, toRefs, watch } from 'vue';
-import { VueDraggable } from 'vue-draggable-plus';
-import { scoreLimit } from '~melo/features/quiz/question-service';
+import { useCurrentElement, useDebounceFn } from '@vueuse/core';
+import { sleep } from '@windwalker-io/unicorn-next';
+import { BFormGroup, BFormInput, BFormRadio, BFormRadioGroup, BFormTextarea } from 'bootstrap-vue-next';
+import { computed, onMounted, ref, toRefs, watch } from 'vue';
+import OptionList from '~melo/components/segment-edit/question/OptionList.vue';
+import { useQuestionController } from '~melo/features/question/useQuestionController';
+import { useQuestionPresenter } from '~melo/features/question/useQuestionPresenter';
+import { sleepMax } from '~melo/shared/timing';
 import { MeloOption, Question } from '~melo/types';
-import OptionEdit from './OptionEdit.vue';
 import ImageUploader from '../../uploader/ImageUploader.vue';
 
 const props = defineProps<{
-  question: Question;
 }>();
 
-const emit = defineEmits(['save']);
+const question = defineModel<Question>({
+  required: true
+});
 
-const { question } = toRefs(props);
-const image = ref<null|File>(null)
+const emit = defineEmits<{
+  saving: [];
+  saved: [];
+}>();
+
+const { scoreLimit } = useQuestionPresenter();
+
 const options = ref<MeloOption[]>([]);
+const hasOptions = computed(() => question.value.type === 'select' || question.value.type === 'multiple');
 
-const typeOptions = [
-  { text: '是非題', value: 'boolean' },
-  { text: '單選題', value: 'select' },
-  { text: '多選題', value: 'multiple' },
-];
+const el = useCurrentElement<HTMLDivElement>();
 
-const booleanOptions = [
-  { text: '是', value: '1' },
-  { text: '否', value: '0' },
-];
-
-const hasOptionsType = ['select', 'multiple'];
-
+// Prepare
 onMounted(async () => {
-  if (hasOptionsType.indexOf(question.value.type) !== -1) {
-    await prepareOptions();
-  }
-})
+  await sleep(300);
+
+  const input = el.value.querySelector<HTMLTextAreaElement | HTMLInputElement>('input, textarea');
+  input?.focus();
+
+  input?.dispatchEvent(new CustomEvent('input'))
+});
 
 const changeScore = useDebounceFn(async () => {
   question.value.score = scoreLimit(question.value.score);
-  emit('save', question.value);
 }, 300);
-
-async function prepareOptions() {
-  const { get } = await useHttpClient();
-
-  const res = await get(
-    route('prepare_options'),
-    {
-      params: {
-        question_id: question.value.id
-      }
-    }
-  );
-
-  options.value = uniqueItemList(res.data.data);
-}
-
-async function reorder() {
-  const orders: Record<number, number> = {};
-
-  options.value.forEach((item, i) => {
-    orders[item.id!] = i + 1;
-  });
-
-  const { post } = await useHttpClient();
-
-  await post(
-    route('reorder_options'),
-    {
-      orders: orders,
-    }
-  );
-}
-
-async function createOption() {
-  const option = {
-    id: null,
-    question_id: question.value.id,
-    title: '',
-    is_answer: 0,
-    state: 1,
-    ordering: options.value.length + 1,
-  };
-
-  await save(option, 1);
-  await prepareOptions();
-}
-
-async function save(
-  data: Object,
-  isNew: number = 0
-) {
-  const { post } = await useHttpClient();
-
-  await post(
-    route('save_option'),
-    {
-      data: data,
-      is_new: isNew,
-    }
-  );
-}
-
-async function deleteOption(id: number) {
-  const v = await swal(
-    {
-      title: "確定要刪除這個選項嗎？",
-      icon: "warning",
-      buttons: {
-        cancel: {
-          visible: true,
-          text: '取消',
-        },
-        confirm: {
-          visible: true,
-          text: '確認',
-        },
-      }
-    }
-  );
-
-  if (v) {
-    const { post } = await useHttpClient();
-
-    await post(
-      route('delete_option'),
-      {
-        id: id
-      }
-    );
-
-    await prepareOptions();
-  }
-}
-
-async function setAnswer(index: number, currentAnswer: boolean) {
-  if (question.value.type === 'select') {
-    options.value.forEach((item: MeloOption) => {
-      item.isAnswer = false;
-    })
-
-    options.value[index].isAnswer = true;
-  }
-
-  if (question.value.type === 'multiple') {
-    options.value[index].isAnswer = currentAnswer;
-  }
-
-  if (currentAnswer === options.value[index].isAnswer) {
-    const { post } = await useHttpClient();
-
-    await post(
-      route('save_options'),
-      {
-        data: options.value,
-      }
-    );
-  }
-}
-
-function imageUploaded(src: string) {
-  question.value.image = src;
-  emit('save', question.value);
-}
 
 function clearImage() {
   question.value.image = '';
-  emit('save', question.value);
 }
 
-watch(question.value, (newValue) => {
-  question.value.isMultiple = newValue.type === 'multiple';
+// Save
+const { save } = useQuestionController();
+const saving = ref(false);
+let autoSave = true;
+
+watch(question, () => {
+  if (autoSave) {
+    saveDebounced();
+  }
+}, { deep: true });
+
+const saveDebounced = useDebounceFn(async () => {
+  saving.value = true;
+  const now = Date.now();
+
+  emit('saving');
+
+  try {
+    const saved = await save(question.value, 0);
+    question.value.id = saved.id;
+  } finally {
+    await sleepMax(now, 500);
+
+    emit('saved');
+    saving.value = false;
+  }
+}, 500);
+
+watch(() => question.value.type, (type) => {
+  if (type === 'select') {
+    let hasAnswer = false;
+
+    for (const option of options.value) {
+      if (hasAnswer) {
+        option.isAnswer = false;
+        continue;
+      }
+
+      if (option.isAnswer) {
+        hasAnswer = true;
+      }
+    }
+  }
+}, { deep: true });
+
+// Set first answer for select question
+const answersCount = computed(() => {
+  return options.value.filter(item => item.isAnswer).length;
+});
+
+watch(() => options, () => {
+  if (answersCount.value === 0) {
+    if (
+      question.value.type === 'select'
+      && options.value.length > 0
+    ) {
+      options.value[0].isAnswer = true;
+    }
+  }
 }, { deep: true });
 </script>
 
 <template>
-  <div>
+  <div class="pb-5">
     <BFormGroup
-      label="題目內容編輯"
+      label="題目內容"
       label-for="input-question-content"
       label-class="mb-2"
       class="mb-3"
     >
-      <BFormTextarea id="input-question-content" v-model="question.content" rows="5" />
+      <BFormTextarea id="input-question-content" v-model="question.content"
+        placeholder="請輸入題目內容"
+        rows="7"
+        max-rows="15"
+      />
     </BFormGroup>
 
+    <!--<BFormGroup-->
+    <!--  label="題型"-->
+    <!--  label-for="input-question-type"-->
+    <!--  label-class="mb-2"-->
+    <!--  class="mb-3"-->
+    <!--&gt;-->
+    <!--  <BFormRadioGroup-->
+    <!--    v-model="question.type"-->
+    <!--    button-variant="outline-primary"-->
+    <!--    name="input-question-type"-->
+    <!--    buttons-->
+    <!--    class="w-100"-->
+    <!--  >-->
+    <!--    <BFormRadio value="boolean">-->
+    <!--      <i :class="typeToIcon('boolean')"></i>-->
+    <!--      {{ typeToTitle('boolean') }}-->
+    <!--    </BFormRadio>-->
+
+    <!--    <BFormRadio value="select">-->
+    <!--      <i :class="typeToIcon('select')"></i>-->
+    <!--      {{ typeToTitle('select') }}-->
+    <!--    </BFormRadio>-->
+
+    <!--    <BFormRadio value="multiple">-->
+    <!--      <i :class="typeToIcon('multiple')"></i>-->
+    <!--      {{ typeToTitle('multiple') }}-->
+    <!--    </BFormRadio>-->
+    <!--  </BFormRadioGroup>-->
+    <!--</BFormGroup>-->
+
     <BFormGroup
-      label="題型"
+      label="圖片(選填)"
       label-for="input-question-type"
       label-class="mb-2"
       class="mb-3"
     >
-      <BFormRadioGroup
-        v-model="question.type"
-        :options="typeOptions"
-        button-variant="outline-primary"
-        name="input-question-type"
-        buttons
-      />
+      <ImageUploader
+        v-model="question.image"
+        @clear="clearImage"
+      ></ImageUploader>
     </BFormGroup>
-
-    <ImageUploader
-      :image="question.image"
-      label="上傳圖片(選填)"
-      @uploaded="imageUploaded"
-      @clear="clearImage"
-    ></ImageUploader>
 
     <BFormGroup v-if="question.type === 'boolean'"
       label="答案"
@@ -219,69 +174,50 @@ watch(question.value, (newValue) => {
     >
       <BFormRadioGroup
         v-model="question.answer"
-        :options="booleanOptions"
         button-variant="outline-primary"
         name="input-question-answer"
         buttons
-      />
-    </BFormGroup>
-
-    <BFormGroup v-if="question.type === 'cloze'"
-      label="答案"
-      label-for="input-question-answer"
-      label-class="mb-2"
-      class="mb-3"
-    >
-      <BFormInput
-        id="input-question-answer"
-        v-model="question.answer"
-        type="text"
-        trim
-      />
-    </BFormGroup>
-
-    <div class="c-option-list mt-5"
-      v-if="hasOptionsType.indexOf(question.type) !== -1"
-    >
-      <div class="d-flex">
-        <div style="width: 45px;"></div>
-        <div class="text-center" style="width: 300px;">
-          選項內容
-        </div>
-
-        <div class="ms-3">
-          正確答案
-        </div>
-      </div>
-      <VueDraggable
-        v-model="options"
-        item-key="uid"
-        handle=".handle"
-        @change="reorder"
+        class="w-100"
       >
-        <OptionEdit
-          v-for="(element, index) in options"
-          :item="element"
-          :key="element.id"
-          :index="index"
-          @delete="deleteOption"
-          @edit="save"
-          @setAnswer="setAnswer"
-        ></OptionEdit>
-      </VueDraggable>
+        <BFormRadio value="1">
+          <i class="fas fa-check"></i>
+          是
+        </BFormRadio>
+        <BFormRadio value="0">
+          <i class="fas fa-xmark"></i>
+          否
+        </BFormRadio>
+      </BFormRadioGroup>
+    </BFormGroup>
 
-      <div class="text-center mb-2 mt-3">
-        <BButton @click="createOption">
-          新增選項
-        </BButton>
-      </div>
+    <!--<BFormGroup v-if="question.type === 'cloze'"-->
+    <!--  label="答案"-->
+    <!--  label-for="input-question-answer"-->
+    <!--  label-class="mb-2"-->
+    <!--  class="mb-3"-->
+    <!--&gt;-->
+    <!--  <BFormInput-->
+    <!--    id="input-question-answer"-->
+    <!--    v-model="question.answer"-->
+    <!--    type="text"-->
+    <!--    trim-->
+    <!--  />-->
+    <!--</BFormGroup>-->
+
+    <div class="c-option-list my-5 py-4"
+      v-if="hasOptions"
+    >
+      <h4>選項 ({{ options.length }})</h4>
+
+      <OptionList :question v-model="options"
+        @saving="emit('saving')"
+        @saved="emit('saved')"
+      />
     </div>
 
     <BFormGroup
       label="配分"
       label-for="input-question-score"
-      label-class="mb-2"
-      class="mb-3"
       description="限填 1~100，測驗滿分為 100"
     >
       <BFormInput

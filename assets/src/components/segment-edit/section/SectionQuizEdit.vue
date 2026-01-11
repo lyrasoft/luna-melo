@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { uniqueItemList } from '@lyrasoft/ts-toolkit/vue';
-import { route, useHttpClient } from '@windwalker-io/unicorn-next';
-import { BButton, BFormGroup, BFormInput, BFormRadioGroup, BModal, BSpinner, useModal } from 'bootstrap-vue-next';
-import swal from 'sweetalert';
-import { onMounted, ref } from 'vue';
+import { deleteConfirm, route, useHttpClient } from '@windwalker-io/unicorn-next';
+import {
+  BButton,
+  BFormGroup,
+  BFormInput,
+  BFormRadio,
+  BFormRadioGroup,
+  BModal,
+  BSpinner,
+  useModal
+} from 'bootstrap-vue-next';
+import { computed, inject, onMounted, ref } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
+import QuestionTypeSelector from '~melo/components/segment-edit/question/QuestionTypeSelector.vue';
+import { useQuestionController } from '~melo/features/question/useQuestionController';
+import { useSegmentEditor } from '~melo/features/segment/useSegmentEditor';
 import { Question, Segment } from '~melo/types';
 import QuestionItem from '../question/QuestionItem.vue';
 import QuestionEdit from '../question/QuestionEdit.vue';
@@ -13,138 +24,77 @@ const item = defineModel<Segment>({
   required: true
 });
 
-const skipOptions = [
-  { text: '可以', value: true },
-  { text: '不可以', value: false },
-];
-
 const questions = ref<Question[]>([]);
-const currentQuestion = ref<Question>();
-const { show, hide } = useModal();
 const loading = ref<boolean>(false);
 
 onMounted(async () => {
   await prepareQuestions();
 });
 
+const { saving } = useSegmentEditor();
+const { getQuestions, createEmptyQuestion, save, reorder: reorderQuestions, remove } = useQuestionController();
+
 async function prepareQuestions() {
   loading.value = true;
 
-  const { get } = await useHttpClient();
+  const items = await getQuestions(item.value.id!);
 
-  const res = await get(
-    route('@ajax_question/prepare'),
-    {
-      params: {
-        segment_id: item.value.id
-      }
-    }
-  );
-
-  questions.value = uniqueItemList(res.data.data);
+  questions.value = uniqueItemList(items);
 
   loading.value = false;
-}
-
-async function createQuestion() {
-  const question = {
-    id: null,
-    lesson_id: item.value.lessonId,
-    segment_id: item.value.id,
-    type: 'select',
-    is_multiple: '0',
-    title: '',
-    content: '',
-    image: '',
-    score: 0,
-    state: 1,
-    ordering: questions.value.length + 1,
-  };
-
-  await save(question, 1);
-  await prepareQuestions();
 }
 
 async function reorder() {
   const orders: Record<number, number> = {};
 
   questions.value.forEach((item, i) => {
-    orders[item.id] = i + 1;
+    orders[item.id!] = i + 1;
   });
 
-  const { post } = await useHttpClient();
-
-  await post(
-    route('@ajax_question/reorder'),
-    {
-      orders: orders,
-    }
-  );
-}
-
-function editQuestion(question: Question) {
-  currentQuestion.value = question;
-  show();
+  await reorderQuestions(orders);
 }
 
 async function deleteQuestion(id: number) {
-  const v = await swal(
-    {
-      title: "確定要刪除這個問題嗎？",
-      icon: "warning",
-      buttons: {
-        cancel: {
-          visible: true,
-          text: '取消',
-        },
-        confirm: {
-          visible: true,
-          text: '確認',
-        },
-      }
-    }
-  );
-
-  if (v) {
-    const { post } = await useHttpClient();
-
-    await post(
-      route('@ajax_question/delete'),
-      {
-        id: id
-      }
-    );
-
-    await prepareQuestions();
-  }
+  questions.value = questions.value.filter(item => item.id !== id);
 }
 
-async function saveAndCloseModal() {
-  await save(currentQuestion.value, 0);
-  hide();
+// New Question
+const questionTypeSelectorModalOpen = ref(false);
+
+function newQuestion() {
+  questionTypeSelectorModalOpen.value = true;
 }
 
-async function save(data: any, isNew: number = 0) {
-  const { post } = await useHttpClient();
+async function newQuestionSelected(type: string) {
+  const question = createEmptyQuestion(item.value.lessonId, item.value.id!);
+  question.type = type;
+  question.ordering = questions.value.length + 1;
 
-  await post(
-    route('@ajax_question/save'),
-    {
-      data: data,
-      isNew: isNew
-    }
-  );
+  const newItem = await save(question, 1);
+
+  questions.value.push(newItem);
+
+  editQuestion(newItem);
 }
 
-async function saveQuestion(data: Question) {
-  await save(data, 0);
+// Edit Question
+const questionEditModalOpen = ref(false);
+const currentEditQuestion = ref<Question>();
+const questionsSaving = ref(false);
+const questionSaved = ref(false);
+
+function editQuestion(question: Question) {
+  currentEditQuestion.value = question;
+  questionEditModalOpen.value = true;
+  questionsSaving.value = false;
+  questionSaved.value = false;
 }
 </script>
 
 <template>
   <div>
     <BFormGroup
-      label="小節名稱編輯"
+      label="小節名稱"
       label-for="input-section-title"
       label-class="mb-2"
       class="mb-5"
@@ -160,25 +110,18 @@ async function saveQuestion(data: Question) {
     >
       <BFormRadioGroup
         v-model="item.canSkip"
-        :options="skipOptions"
         button-variant="outline-primary"
         name="input-section-skip"
         buttons
-      />
+      >
+        <BFormRadio :value="true">可以</BFormRadio>
+        <BFormRadio :value="false">不可以</BFormRadio>
+      </BFormRadioGroup>
     </BFormGroup>
 
-    <div class="c-quiz-edit">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="h6 c-quiz-edit__title">
-          測驗內容
-        </div>
-
-        <div>
-          <button type="button" class="btn btn-info text-nowrap"
-            @click="createQuestion">
-            新增題目
-          </button>
-        </div>
+    <div class="c-quiz-edit d-flex flex-column gap-4">
+      <div class="h6 c-quiz-edit__title">
+        測驗內容
       </div>
 
       <div v-if="loading" class="text-center">
@@ -188,42 +131,82 @@ async function saveQuestion(data: Question) {
       <div v-else class="c-quiz-list">
         <VueDraggable
           v-model="questions"
+          class="d-flex flex-column gap-2"
           item-key="uid"
           handle=".handle"
-          @change="reorder"
+          :animation="300"
+          :on-update="reorder"
         >
-          <QuestionItem
-            v-for="(element, index) in questions"
-            :item="element"
-            :key="element.id"
-            :index="index"
-            @edit="editQuestion"
-            @delete="deleteQuestion"
-            @save="saveQuestion"
-          ></QuestionItem>
+          <TransitionGroup name="fade">
+            <QuestionItem
+              v-for="(element, index) in questions"
+              :item="element"
+              :key="element.id"
+              :index="index"
+              @edit="editQuestion"
+              @delete="deleteQuestion"
+              @saving="saving = true"
+              @saved="saving = false;"
+              style="animation-duration: 300ms;"
+            ></QuestionItem>
+          </TransitionGroup>
         </VueDraggable>
+      </div>
+
+      <div class="text-center">
+        <button type="button" class="btn btn-primary btn-sm text-nowrap"
+          style="width: 150px;"
+          @click="newQuestion">
+          <i class="fas fa-plus"></i>
+          新增題目
+        </button>
       </div>
     </div>
 
     <!-- Section Edit -->
     <BModal
       id="question-edit-modal"
-      ok-only
+      title="題目編輯"
+      v-model="questionEditModalOpen"
+      no-footer
+      lazy
+      unmount-lazy
+      size="lg"
       bodyBgVariant="light"
       contentClass="bg-white"
-      hideFooter="true"
-      :lazy="true"
-      dialog-class="mb-6"
-      :scrollable="true"
-      @hidden="saveQuestion(currentQuestion)"
     >
       <template #title>
-        <BButton variant="primary" size="sm" @click="saveAndCloseModal">
-          儲存
-        </BButton>
+        <div class="d-flex align-items-center gap-3">
+          <div>
+            題目編輯
+          </div>
+
+          <div v-if="questionsSaving" class="text-muted small">
+            <BSpinner small type="border" class="me-1" />
+            儲存中...
+          </div>
+          <div v-else-if="questionSaved" class="small text-muted">
+            <i class="fas fa-check text-success"></i>
+            已儲存
+          </div>
+        </div>
       </template>
 
-      <QuestionEdit :question="currentQuestion" @save="saveQuestion"></QuestionEdit>
+      <QuestionEdit v-if="currentEditQuestion" v-model="currentEditQuestion"
+        @saving="questionsSaving = true"
+        @saved="questionSaved = true; questionsSaving = false"
+      ></QuestionEdit>
+    </BModal>
+
+    <BModal
+      id="question-type-selector-modal"
+      title="選擇題目類型"
+      v-model="questionTypeSelectorModalOpen"
+      no-footer
+      lazy
+      unmount-lazy
+    >
+      <QuestionTypeSelector @selected="newQuestionSelected" />
     </BModal>
   </div>
 </template>

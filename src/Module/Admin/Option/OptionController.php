@@ -6,31 +6,29 @@ namespace Lyrasoft\Melo\Module\Admin\Option;
 
 use Lyrasoft\Melo\Entity\MeloOption;
 use Lyrasoft\Melo\Repository\OptionRepository;
+use Unicorn\Attributes\Ajax;
+use Unicorn\Controller\AjaxControllerTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Attributes\JsonApi;
 use Windwalker\Core\Attributes\Method;
+use Windwalker\Core\Attributes\Request\Input;
+use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\ORM\ORM;
 
 #[Controller()]
 class OptionController
 {
-    #[JsonApi]
-    public function ajax(AppContext $app): mixed
-    {
-        $task = $app->input('task');
+    use AjaxControllerTrait;
 
-        return $app->call([$this, $task]);
-    }
-
+    #[Ajax]
     #[Method('GET')]
-    public function prepareOptions(
+    public function prepare(
         AppContext $app,
         #[Autowire] OptionRepository $repository,
-    ): \Windwalker\Data\Collection {
-        $questionId = $app->input('question_id');
-
+        #[Input] string $questionId,
+    ): Collection {
         return $repository->getListSelector()
             ->where('question_id', (int) $questionId)
             ->order('ordering', 'ASC')
@@ -38,6 +36,7 @@ class OptionController
             ->all(MeloOption::class);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function save(
         AppContext $app,
@@ -53,6 +52,7 @@ class OptionController
         return $orm->saveOne(MeloOption::class, $data);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function reorder(
         AppContext $app,
@@ -63,6 +63,7 @@ class OptionController
         $repository->createReorderAction()->reorder($orders);
     }
 
+    #[Ajax]
     #[Method('POST')]
     public function delete(
         AppContext $app,
@@ -73,13 +74,17 @@ class OptionController
         $orm->deleteWhere(MeloOption::class, ['id' => $id]);
     }
 
+    #[Ajax]
     #[Method('POST')]
-    public function saveOptions(
-        AppContext $app,
+    public function saveMultiple(
         ORM $orm,
+        #[Input] array $options = [],
     ): iterable {
-        $data = $app->input('data');
+        $options = array_map(
+            fn ($option) => $orm->toEntity(MeloOption::class, $option),
+            $options
+        );
 
-        return $orm->saveMultiple(MeloOption::class, $data);
+        return $orm->saveMultiple(MeloOption::class, $options);
     }
 }
