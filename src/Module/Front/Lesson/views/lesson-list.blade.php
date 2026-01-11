@@ -34,41 +34,55 @@ $breadcrumb->push($lang->trans('melo.lesson.search.page.title'));
 @section('content')
     @include('melo.front.page-title', ['title' => $lang->trans('melo.lesson.search.page.title')])
 
-    <div class="c-filter-bar">
-        <div class="container">
-            <form action="{{ $nav->to('lesson_list') }}" class="c-filter-bar__form rounded-pill">
-                <div class="row">
-                    <div class="col-4 border-end">
-                        <select id="input-item-category" name="category"
-                            class="form-select border-0" aria-label="lesson category"
-                        >
-                            <option {{ $categoryId === 0 ? 'selected' : '' }} value="">
-                                - 選擇課程分類 -
-                            </option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->getId() }}" {{ $categoryId === $category->getId() ? 'selected' : '' }}>
-                                    {{ $category->getTitle() }}
+    <div class="container">
+        <div class="c-filter-bar card">
+            <form action="{{ $nav->to('lesson_list') }}" class="c-filter-bar__form card-body" method="get">
+                <div class="d-flex gap-4">
+                    {{-- Search Inputs --}}
+                    <div class="row row-cols-3 flex-grow-1">
+                        <div class="col">
+                            <select id="input-item-category" name="category"
+                                class="form-select" aria-label="lesson category"
+                            >
+                                <option {{ $categoryId === 0 ? 'selected' : '' }} value="">
+                                    - 選擇課程分類 -
                                 </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-4 border-end">
-                        <select name="teacher" class="form-select border-0" aria-label="teachers">
-                            <option selected value="">
-                                - 選擇講師 -
-                            </option>
-                            @foreach($teachers as $teacher)
-                                <option
-                                    value="{{ $teacher->getId() }}" {{ $teacherId === $teacher->getId() ? 'selected' : '' }}>
-                                    {{ $teacher->getName() }}
+                                @foreach($categories as $category)
+                                    <option
+                                        value="{{ $category->getId() }}" {{ $categoryId === $category->getId() ? 'selected' : '' }}>
+                                        {{ $category->getTitle() }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select name="teacher" class="form-select" aria-label="teachers">
+                                <option selected value="">
+                                    - 選擇講師 -
                                 </option>
-                            @endforeach
-                        </select>
+                                @foreach($teachers as $teacher)
+                                    <option
+                                        value="{{ $teacher->getId() }}" {{ $teacherId === $teacher->getId() ? 'selected' : '' }}>
+                                        {{ $teacher->getName() }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex gap-4">
+                                <input type="text" name="search" class="form-control" id="lesson-filter"
+                                    placeholder="課程關鍵字" value="{{ $search }}">
+
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-4 d-flex gap-4">
-                        <input type="text" name="search" class="form-control rounded-pill" id="lesson-filter"
-                            placeholder="課程關鍵字" value="{{ $search }}">
-                        <button type="submit" class="c-filter-bar__btn btn btn-primary rounded-pill p-0">GO</button>
+
+                    {{-- Actions --}}
+                    <div>
+                        <button type="submit" class="c-filter-bar__btn btn btn-primary text-nowrap"
+                            style="min-width: 100px">
+                            搜尋
+                        </button>
                     </div>
                 </div>
             </form>
