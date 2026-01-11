@@ -1,6 +1,6 @@
 import { delegate, route, simpleAlert, useHttpClient } from '@windwalker-io/unicorn-next';
 
-export function useLessonPage() {
+export function useLessonCartButtons() {
   delegate(document.body, '[data-task=buy]', 'click', (e) => {
     buy(e.currentTarget as HTMLElement);
   });

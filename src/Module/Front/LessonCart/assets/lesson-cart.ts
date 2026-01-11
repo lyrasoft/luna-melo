@@ -1,4 +1,5 @@
-import '@main';
+
+console.log('SDGDFGG');
 
 await u.domready();
 

@@ -41,10 +41,7 @@ class UserAnswer implements EntityInterface
     public int $questionId = 0;
 
     #[Column('question_type')]
-    #[Cast(QuestionType::class)]
-    public QuestionType $questionType {
-        set(QuestionType|string $value) => $this->questionType = QuestionType::wrap($value);
-    }
+    public string $questionType = '';
 
     #[Column('score')]
     public int $score = 0;

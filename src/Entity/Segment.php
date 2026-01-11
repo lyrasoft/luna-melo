@@ -43,10 +43,7 @@ class Segment implements EntityInterface
     public int $parentId = 0;
 
     #[Column('type')]
-    #[Cast(SegmentType::class)]
-    public SegmentType $type {
-        set(SegmentType|string $value) => $this->type = SegmentType::wrap($value);
-    }
+    public string $type = '';
 
     #[Column('title')]
     public string $title = '';

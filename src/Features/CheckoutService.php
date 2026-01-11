@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Service;
+namespace Lyrasoft\Melo\Features;
 
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Entity\UserRoleMap;
@@ -22,7 +22,6 @@ use Windwalker\Core\Mailer\MailerInterface;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
-
 use Windwalker\Query\Query;
 
 use function Windwalker\collect;

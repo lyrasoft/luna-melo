@@ -37,7 +37,7 @@ $menuHelper = $app->service(MenuHelper::class);
     </style>
 @endpush
 
-<div class="l-lesson-page-title bg-light">
+<div class="l-lesson-page-title" style="background-color: var(--bs-gray-400)">
     <div class="container">
         <div class="row">
             <div class="col py-5">

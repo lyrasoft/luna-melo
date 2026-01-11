@@ -4,14 +4,14 @@
   .l-lesson-item {
 
     &__main {
-      margin-bottom: 60px;
+      //margin-bottom: 60px;
     }
 
     &__content {
-      border-radius: 20px;
-      margin-bottom: 32px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
+      //border-radius: 20px;
+      //margin-bottom: 32px;
+      //overflow: hidden;
+      //box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
     }
 
     &__section {
@@ -68,21 +68,7 @@
     }
 
     &__navbar {
-      padding-bottom: 32px;
-
-      .c-lesson-nav {
-
-        &__link {
-          padding: 12px;
-          font-size: 20px;
-          line-height: 120%;
-          border-radius: 99rem;
-
-          &:not(.active) {
-            color: $gray-600;
-          }
-        }
-      }
+      //
     }
 
     &__detail {
@@ -90,38 +76,38 @@
     }
 
     &__card {
-      border-radius: 20px;
-      background: white;
-      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
-      border: none;
+      //border-radius: 20px;
+      //background: white;
+      //box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
+      //border: none;
 
-      > .card-body {
-        padding: 0;
-      }
+      //> .card-body {
+      //  padding: 0;
+      //}
     }
 
     .c-lesson-detail-card {
-      overflow: hidden;
+      //overflow: hidden;
+      //
+      //&__title {
+      //  padding: 20px 30px 16px;
+      //}
+      //
+      //&__content {
+      //  border-top: 1px solid $gray-200;
+      //  padding: 20px;
+      //}
 
-      &__title {
-        padding: 20px 30px 16px;
-      }
-
-      &__content {
-        border-top: 1px solid $gray-200;
-        padding: 20px;
-      }
-
-      .c-lesson-detail-chapter {
-        border-top: 1px solid $gray-200;
-        background-color: $gray-100;
-        padding: 16px 32px;
-      }
-
-      .c-lesson-detail-section {
-        border-top: 1px solid $gray-300;
-        padding: 16px 32px 16px 40px;
-      }
+      //.c-lesson-detail-chapter {
+      //  border-top: 1px solid $gray-200;
+      //  background-color: $gray-100;
+      //  padding: 16px 32px;
+      //}
+      //
+      //.c-lesson-detail-section {
+      //  border-top: 1px solid $gray-300;
+      //  padding: 16px 32px 16px 40px;
+      //}
 
       .c-homework-item {
         border-top: 1px solid $gray-200;
@@ -172,14 +158,14 @@
     }
 
     .c-lesson-progress-card {
-      border-radius: 20px;
-      background: white;
-      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
-      border: none;
-
-      > .card-body {
-        padding: 20px;
-      }
+      //border-radius: 20px;
+      //background: white;
+      //box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
+      //border: none;
+      //
+      //> .card-body {
+      //  padding: 20px;
+      //}
     }
   }
 

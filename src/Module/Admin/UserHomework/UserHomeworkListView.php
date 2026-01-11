@@ -6,6 +6,7 @@ namespace Lyrasoft\Melo\Module\Admin\UserHomework;
 
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\SegmentType;
+use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
 use Lyrasoft\Melo\Module\Admin\UserHomework\Form\GridForm;
 use Lyrasoft\Melo\Repository\UserSegmentMapRepository;
 use Windwalker\Core\Application\AppContext;
@@ -67,7 +68,7 @@ class UserHomeworkListView implements ViewModelInterface, FilterAwareViewModelIn
 
         $items = $this->repository->getListSelector()
             ->where('segment.lesson_id', $lessonId)
-            ->where('segment.type', SegmentType::HOMEWORK)
+            ->where('segment.type', HomeworkSection::id())
             ->setFilters($filter)
             ->searchTextFor(
                 $search['*'] ?? '',

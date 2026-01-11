@@ -29,6 +29,6 @@ enum UserLessonStatus: string implements EnumTranslatableInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('melo.user.lesson.status.' . $this->getValue());
+        return $lang->trans('melo.user.lesson.status.' . $this->value);
     }
 }

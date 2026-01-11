@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Front\Cart\Form;
+namespace Lyrasoft\Melo\Module\Front\LessonCart\Form;
 
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\Payment;

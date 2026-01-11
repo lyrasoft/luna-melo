@@ -7,6 +7,7 @@ namespace Lyrasoft\Melo\Module\Admin\UserQuiz;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\SegmentType;
+use Lyrasoft\Melo\Features\Section\Quiz\QuizSection;
 use Lyrasoft\Melo\Module\Admin\UserQuiz\Form\GridForm;
 use Lyrasoft\Melo\Repository\SegmentRepository;
 use Lyrasoft\Melo\Repository\UserSegmentMapRepository;
@@ -69,7 +70,7 @@ class UserQuizListView implements ViewModelInterface, FilterAwareViewModelInterf
 
         $items = $this->repository->getListSelector()
             ->where('segment.lesson_id', $lessonId)
-            ->where('segment.type', SegmentType::QUIZ)
+            ->where('segment.type', QuizSection::id())
             ->setFilters($filter)
             ->searchTextFor(
                 $search['*'] ?? '',

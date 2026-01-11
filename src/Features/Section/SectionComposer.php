@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Section;
 
+use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\MeloPackage;
 use Windwalker\Core\Database\ORMAwareTrait;
 use Windwalker\DI\Attributes\Service;
@@ -47,5 +48,27 @@ class SectionComposer
                 return $defines;
             }
         );
+    }
+
+    /**
+     * @param  string|Segment  $section
+     *
+     * @return  class-string<AbstractSection>|null
+     */
+    public function getDefine(string|Segment $section): ?string
+    {
+        $type = $section instanceof Segment ? $section->type : $section;
+
+        return $this->getDefines()[$type] ?? null;
+    }
+
+    /**
+     * @param  string|Segment  $section
+     *
+     * @return  class-string<AbstractSection>
+     */
+    public function mustGetDefine(string|Segment $section): string
+    {
+        return $this->getDefine($section);
     }
 }

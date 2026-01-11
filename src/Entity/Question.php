@@ -42,11 +42,11 @@ class Question implements EntityInterface
     public int $segmentId = 0;
 
     #[Column('type')]
-    #[Cast(QuestionType::class)]
-    public QuestionType $type {
-        set(QuestionType|string $value) => $this->type = QuestionType::wrap($value);
-    }
+    public string $type = '';
 
+    /**
+     * @deprecated  Use type check instead
+     */
     #[Column('is_multiple')]
     #[Cast('bool', 'int')]
     public bool $isMultiple = false;

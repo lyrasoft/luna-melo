@@ -4,7 +4,7 @@ export declare function createSegmentEditorApp(props: Record<string, any>): Prom
 
 declare type ModuleImportCallback = () => Promise<any>;
 
-export declare function useLessonPage(): {
+export declare function useLessonCartButtons(): {
     buy: (el: HTMLElement) => Promise<void>;
     toCartPage: () => void;
     sendAddAction: (el: HTMLElement) => Promise<any>;

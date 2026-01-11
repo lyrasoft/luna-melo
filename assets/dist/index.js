@@ -50,7 +50,7 @@
   }
 })();
 import { delegate, useHttpClient, simpleAlert, route } from "@windwalker-io/unicorn-next";
-function useLessonPage() {
+function useLessonCartButtons() {
   delegate(document.body, "[data-task=buy]", "click", (e) => {
     buy(e.currentTarget);
   });
@@ -113,7 +113,7 @@ async function createSegmentEditorApp(props) {
 }
 export {
   createSegmentEditorApp,
-  useLessonPage,
+  useLessonCartButtons,
   useSectionEditComponents
 };
 //# sourceMappingURL=index.js.map

@@ -8,7 +8,7 @@ namespace App\View;
  * Global variables
  * --------------------------------------------------------------
  * @var  $app       AppContext      Application context.
- * @var  $vm        CartView  The view model object.
+ * @var  $vm        LessonCartView  The view model object.
  * @var  $uri       SystemUri       System Uri information.
  * @var  $chronos   ChronosService  The chronos datetime service.
  * @var  $nav       Navigator       Navigator object to build route.
@@ -16,7 +16,7 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
-use Lyrasoft\Melo\Module\Front\Cart\CartView;
+use Lyrasoft\Melo\Module\Front\LessonCart\LessonCartView;
 use Lyrasoft\Luna\User\UserService;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
@@ -37,8 +37,8 @@ $uniScript->data('cart.props', [
     'user' => $userService->isLogin() ? $userService->getUser() : null,
 ]);
 
-$uniScript->addRoute('@cart_ajax');
-$uniScript->addRoute('checkoutLink', $nav->to('checkout'));
+$uniScript->addRoute('@cart_ajax', $nav->to('melo_cart_ajax'));
+$uniScript->addRoute('checkoutLink', $nav->to('melo_checkout'));
 $uniScript->addRoute('search', $nav->to('lesson_list'));
 ?>
 

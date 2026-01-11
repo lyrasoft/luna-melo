@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Service;
+namespace Lyrasoft\Melo\Features;
 
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Entity\MeloOrder;

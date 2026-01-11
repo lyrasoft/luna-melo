@@ -8,6 +8,7 @@ use Lyrasoft\Luna\Entity\Category;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Entity\UserRoleMap;
 use Lyrasoft\Melo\Entity\Lesson;
+use Lyrasoft\Melo\Features\TeacherService;
 use Lyrasoft\Melo\Repository\LessonRepository;
 use Unicorn\Html\Breadcrumb;
 use Unicorn\Selector\ListSelector;
@@ -22,6 +23,7 @@ use Windwalker\DI\Attributes\Autowire;
 use Windwalker\ORM\ORM;
 use Windwalker\Query\Query;
 
+use function Windwalker\collect;
 use function Windwalker\Query\qn;
 
 #[ViewModel(
@@ -37,6 +39,7 @@ class LessonListView implements ViewModelInterface
         #[Autowire]
         protected LessonRepository $lessonRepository,
         protected PaginationFactory $paginationFactory,
+        protected TeacherService $teacherService,
         protected ORM $orm,
     ) {
         //
@@ -102,14 +105,18 @@ class LessonListView implements ViewModelInterface
             ]
         );
 
-        $teachers = $this->orm->from(User::class)
-            ->whereExists(
-                fn(Query $query) => $query->from(UserRoleMap::class)
-                    ->where('role_id', 'teacher')
-                    ->where('user_id', qn('user.id'))
-            )
-            ->where('user.enabled', 1)
-            ->getIterator(User::class);
+        $teachers = collect();
+
+        if ($roles = $this->teacherService->getRoleStrings()) {
+            $teachers = $this->orm->from(User::class)
+                ->whereExists(
+                    fn(Query $query) => $query->from(UserRoleMap::class)
+                        ->where('role_id', $roles)
+                        ->where('user_id', qn('user.id'))
+                )
+                ->where('user.enabled', 1)
+                ->getIterator(User::class);
+        }
 
         return compact(
             'items',

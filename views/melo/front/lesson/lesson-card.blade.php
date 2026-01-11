@@ -18,7 +18,7 @@ namespace App\View;
 
 use Lyrasoft\Favorite\Entity\Favorite;
 use Lyrasoft\Melo\Entity\Lesson;
-use Lyrasoft\Melo\Service\LessonService;
+use Lyrasoft\Melo\Features\LessonService;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -101,7 +101,7 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->id);
 
             @if(!$ownedLesson)
                 <button type="button"
-                    class="btn btn-primary position-relative z-3 rounded-pill"
+                    class="btn btn-primary position-relative z-3"
                     data-task="buy"
                     data-id="{{ $item->id }}"
                 >

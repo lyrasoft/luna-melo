@@ -11,17 +11,17 @@ use Windwalker\Core\Router\RouteCreator;
 
 /** @var  RouteCreator $router */
 
-$router->group('order')
-    ->extra('menu', ['sidemenu' => 'order_list'])
+$router->group('melo_order')
+    ->extra('menu', ['sidemenu' => 'melo_order_list'])
     ->register(function (RouteCreator $router) {
-        $router->any('order_list', '/order/list')
+        $router->any('melo_order_list', '/lesson/order/list')
             ->controller(OrderController::class)
             ->view(OrderListView::class)
             ->postHandler('copy')
             ->putHandler('filter')
             ->patchHandler('batch');
 
-        $router->any('order_item', '/order[/{id}]')
+        $router->any('melo_order_item', '/lesson/order[/{id}]')
             ->controller(OrderController::class)
             ->view(OrderItemView::class);
     });

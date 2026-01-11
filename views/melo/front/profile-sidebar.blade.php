@@ -16,7 +16,7 @@ namespace App\View;
  * @var $lang      LangService     The language translation service.
  */
 
-use Lyrasoft\Melo\Service\LessonService;
+use Lyrasoft\Melo\Features\LessonService;
 use Unicorn\Legacy\Html\MenuHelper;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;

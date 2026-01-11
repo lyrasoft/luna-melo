@@ -10,13 +10,14 @@ use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\SegmentType;
+use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
 use Lyrasoft\Melo\Repository\LessonRepository;
 use Lyrasoft\Attachment\Entity\Attachment;
 use Lyrasoft\Luna\Entity\Tag;
 use Lyrasoft\Luna\Entity\TagMap;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
-use Lyrasoft\Melo\Service\LessonService;
+use Lyrasoft\Melo\Features\LessonService;
 use Psr\Cache\InvalidArgumentException;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
@@ -168,7 +169,7 @@ class LessonItemView implements ViewModelInterface
 
         $totalAssignment = $this->orm->from(UserSegmentMap::class)
             ->where('lesson_id', $item->id)
-            ->where('segment_type', SegmentType::HOMEWORK)
+            ->where('segment_type', HomeworkSection::id())
             ->where('assignment', '!=', '')
             ->where('front_show', 1)
             ->count();

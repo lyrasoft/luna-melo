@@ -19,6 +19,9 @@ namespace App\view;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Luna\User\UserService;
+use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
+use Lyrasoft\Melo\Features\Section\Quiz\QuizSection;
+use Lyrasoft\Melo\Features\Section\Video\VideoSection;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -44,7 +47,7 @@ if (!$app->service(UserService::class)->isLogin()) {
     $link = $nav->to('login')->withReturn();
 }
 
-if ($item->type === SegmentType::VIDEO) {
+if ($item->type === VideoSection::id()) {
     $link = $nav->to(
         'lesson_item',
         [
@@ -61,8 +64,8 @@ if ($item->duration >= 3600) {
 }
 ?>
 
-<a class="link-dark {{ $item->type !== SegmentType::VIDEO ? 'j-section-modal' : '' }}"
-    data-type="{{ $item->type->getValue() }}" data-section-id="{{ $item->id }}"
+<a class="link-dark {{ $item->type !== VideoSection::id() ? 'j-section-modal' : '' }}"
+    data-type="{{ $item->type }}" data-section-id="{{ $item->id }}"
     data-section-title="{{ $item->title }}" data-section-index="第{{ $chapterIndex }}章 第{{ $index }}節"
     data-section-content="{{ $item->content }}"
     href="{{ $link ?: 'javascript://' }}">
@@ -70,26 +73,26 @@ if ($item->duration >= 3600) {
         <div class="c-section-item__inner">
             <div class="d-flex gap-2">
                 <div>
-                    @if($item->type === SegmentType::VIDEO)
+                    @if($item->type === VideoSection::id())
                         <i class="fa-solid fa-circle-play"></i>
                     @else
                         <i class="fa-regular fa-circle-check"></i>
                     @endif
                 </div>
-                @if(count($sectionOrderName[$item->type->getValue()]) > 0)
+                @if(count($sectionOrderName[$item->type]) > 0)
                     <div class="text-nowrap">
                         @switch($item->type)
-                            @case(SegmentType::VIDEO)
+                            @case(VideoSection::id())
                                 單元
                                 @break
-                            @case(SegmentType::HOMEWORK)
+                            @case(HomeworkSection::id())
                                 作業
                                 @break
-                            @case(SegmentType::QUIZ)
+                            @case(QuizSection::id())
                                 測驗
                                 @break
                         @endswitch
-                        {{ count($sectionOrderName[$item->type->getValue()]) }}
+                        {{ count($sectionOrderName[$item->type]) }}
                     </div>
                 @endif
                 <div>
@@ -98,7 +101,7 @@ if ($item->duration >= 3600) {
             </div>
 
             <div class="text-nowrap">
-                @if ($item->type === SegmentType::VIDEO)
+                @if ($item->type === VideoSection::id())
                     {{ $chronos::toFormat((string) $item->duration, $format) }}
                 @endif
             </div>

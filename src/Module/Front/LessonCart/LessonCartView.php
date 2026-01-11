@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Front\Cart;
+namespace Lyrasoft\Melo\Module\Front\LessonCart;
 
 use Lyrasoft\Melo\Cart\CartStorage;
 use Lyrasoft\Luna\User\UserService;
-use Lyrasoft\Melo\Module\Front\Cart\Form\InvoiceForm;
+use Lyrasoft\Melo\Module\Front\LessonCart\Form\InvoiceForm;
 use Psr\Cache\InvalidArgumentException;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
@@ -21,9 +21,9 @@ use Windwalker\ORM\ORM;
 
 #[ViewModel(
     layout: 'cart',
-    js: 'cart.js'
+    js: 'lesson-cart.js'
 )]
-class CartView implements ViewModelInterface
+class LessonCartView implements ViewModelInterface
 {
     public function __construct(
         protected ORM $orm,

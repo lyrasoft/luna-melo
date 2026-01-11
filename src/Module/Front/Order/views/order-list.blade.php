@@ -86,7 +86,7 @@ $breadcrumb->push($lang->trans('melo.order.list.page.title'));
                                         @foreach($items as $item)
                                             <tr>
                                                 <td class="align-middle text-center">
-                                                    <a href="{{ $nav->to('order_item', ['id' => $item->id]) }}">
+                                                    <a href="{{ $nav->to('melo_order_item', ['id' => $item->id]) }}">
                                                         <i class="fal fa-file-alt fa-2x"></i>
                                                     </a>
                                                 </td>

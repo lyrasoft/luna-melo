@@ -43,10 +43,7 @@ class UserSegmentMap implements EntityInterface
     public int $segmentId = 0;
 
     #[Column('segment_type')]
-    #[Cast(SegmentType::class)]
-    public SegmentType $segmentType {
-        set(SegmentType|string $value) => $this->segmentType = SegmentType::wrap($value);
-    }
+    public string $segmentType = '';
 
     #[Column('status')]
     #[Cast(UserSegmentStatus::class)]

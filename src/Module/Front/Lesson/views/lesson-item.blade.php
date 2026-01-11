@@ -17,8 +17,9 @@ namespace App\View;
  */
 
 use Lyrasoft\Melo\Entity\Segment;
-use Lyrasoft\Melo\Enum\SegmentType;
-use Lyrasoft\Melo\Service\VideoService;
+use Lyrasoft\Melo\Features\Section\SectionComposer;
+use Lyrasoft\Melo\Features\Section\Video\VideoSection;
+use Lyrasoft\Melo\Features\VideoService;
 use Lyrasoft\Luna\Entity\Tag;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
@@ -53,6 +54,7 @@ $breadcrumb->push($item->title);
 
 $videoService = $app->service(VideoService::class);
 $userService = $app->service(UserService::class);
+$sectionComposer = $app->service(SectionComposer::class);
 
 $format = 'i分鐘s秒';
 
@@ -64,7 +66,7 @@ $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
 
 $uniScript = $app->service(UnicornScript::class);
 $uniScript->addRoute('@cart_ajax');
-$uniScript->addRoute('cart');
+$uniScript->addRoute('cart', $nav->to('melo_cart'));
 $asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
 ?>
 
@@ -79,28 +81,27 @@ $asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
 @section('content')
     @include('melo.front.page-title', ['title' => $item->title])
 
-    <div class="l-lesson-item">
-        <div class="l-lesson-item__main">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-end mb-3">
-                            <div class="d-flex flex-wrap gap-3">
-                                @foreach($tags as $tag)
-                                    <div class="c-tag">
-                                        # {{ $tag->title }}
-                                    </div>
-                                @endforeach
-                            </div>
+    <div class="container">
+        <div class="l-lesson-item d-flex flex-column gap-4">
+            {{-- Tags --}}
+            <div class="l-lesson-item__tags d-flex justify-content-between align-items-end">
+                <div class="d-flex flex-wrap gap-3">
+                    @foreach($tags as $tag)
+                        <div class="c-tag">
+                            #{{ $tag->title }}
                         </div>
-                    </div>
+                    @endforeach
                 </div>
+            </div>
+
+            {{-- Top Sections --}}
+            <div class="l-lesson-item__main">
 
                 <div class="l-lesson-item__content">
                     <div class="row g-0">
                         <div class="col-lg-8">
                             <div class="l-lesson-item__section">
-                                @if($currentSegment->type === SegmentType::VIDEO)
+                                @if($currentSegment->type === VideoSection::id())
                                     <div class="film" id="attend-video">
                                         @if($videoService->isCloudVideo($currentSegment->src))
                                             <div id="section-player" data-plyr-provider="youtube"
@@ -163,9 +164,9 @@ $asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
                                                 ?>
 
                                             @foreach($chapter->sections as $j => $section)
-                                                <?php
-                                                    $typeSections[$section->type->getValue()][] = $section->id;
-                                                ?>
+                                                    <?php
+                                                    $typeSections[$section->type][] = $section->id;
+                                                    ?>
 
                                                 @include(
                                                     'melo.front.lesson.section-item',
@@ -183,59 +184,61 @@ $asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
                                 </div>
                             </div>
                         </div>
+                        {{--  End row   --}}
                     </div>
                 </div>
-
-                <div class="l-lesson-item__navbar">
-                    <ul class="nav nav-pills nav-fill c-lesson-nav" role="tablist">
-                        <li class="nav-item c-lesson-nav__item" role="presentation">
-                            <button class="nav-link c-lesson-nav__link active" type="button"
-                                id="lesson-detail-tab" data-bs-toggle="pill" data-bs-target="#lesson-detail"
-                                role="tab" aria-controls="lesson-detail" aria-selected="true"
-                            >
-                                課程介紹
-                            </button>
-                        </li>
-                        <li class="nav-item c-lesson-nav__item" role="presentation">
-                            <button class="nav-link c-lesson-nav__link" type="button"
-                                id="lesson-chapter-tab" data-bs-toggle="pill" data-bs-target="#lesson-chapter"
-                                role="tab" aria-controls="lesson-chapter" aria-selected="false"
-                            >
-                                課程章節
-                            </button>
-                        </li>
-                        <li class="nav-item c-lesson-nav__item" role="presentation">
-                            <button class="nav-link c-lesson-nav__link" type="button"
-                                id="lesson-homework-tab" data-bs-toggle="pill" data-bs-target="#lesson-homework"
-                                role="tab" aria-controls="lesson-homework" aria-selected="false"
-                            >
-                                作業瀏覽
-                            </button>
-                        </li>
-                        <li class="nav-item c-lesson-nav__item" role="presentation">
-                            <a class="nav-link c-lesson-nav__link" type="button"
-                                id="lesson-files-tab" data-bs-toggle="pill" data-bs-target="#lesson-files"
-                                role="tab" aria-controls="lesson-files" aria-selected="false"
-                            >
-                                檔案下載
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </div>
-        </div>
 
-        <div class="l-lesson-item__detail">
-            <div class="container">
+            {{-- Tabs --}}
+            <div class="l-lesson-item__navbar">
+                <ul class="nav nav-pills nav-fill c-lesson-nav" role="tablist">
+                    <li class="nav-item c-lesson-nav__item" role="presentation">
+                        <button class="nav-link c-lesson-nav__link active" type="button"
+                            id="lesson-detail-tab" data-bs-toggle="pill" data-bs-target="#lesson-detail"
+                            role="tab" aria-controls="lesson-detail" aria-selected="true"
+                        >
+                            課程介紹
+                        </button>
+                    </li>
+                    <li class="nav-item c-lesson-nav__item" role="presentation">
+                        <button class="nav-link c-lesson-nav__link" type="button"
+                            id="lesson-chapter-tab" data-bs-toggle="pill" data-bs-target="#lesson-chapter"
+                            role="tab" aria-controls="lesson-chapter" aria-selected="false"
+                        >
+                            課程章節
+                        </button>
+                    </li>
+                    <li class="nav-item c-lesson-nav__item" role="presentation">
+                        <button class="nav-link c-lesson-nav__link" type="button"
+                            id="lesson-homework-tab" data-bs-toggle="pill" data-bs-target="#lesson-homework"
+                            role="tab" aria-controls="lesson-homework" aria-selected="false"
+                        >
+                            作業瀏覽
+                        </button>
+                    </li>
+                    <li class="nav-item c-lesson-nav__item" role="presentation">
+                        <a class="nav-link c-lesson-nav__link" type="button"
+                            id="lesson-files-tab" data-bs-toggle="pill" data-bs-target="#lesson-files"
+                            role="tab" aria-controls="lesson-files" aria-selected="false"
+                        >
+                            檔案下載
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="l-lesson-item__detail">
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="tab-content mb-4" id="pills-tabContent">
+
+                            {{-- Introduction --}}
                             <div class="tab-pane fade show active card l-lesson-item__card c-lesson-detail-card"
                                 id="lesson-detail" role="tabpanel" aria-labelledby="lesson-detail-tab">
                                 <div class="card-body c-lesson-detail-card__body">
-                                    <div class="h4 c-lesson-detail-card__title">
+                                    <h4 class="card-title c-lesson-detail-card__title">
                                         課程簡介
-                                    </div>
+                                    </h4>
 
                                     <div class="c-lesson-detail-card__content">
                                         <div class="d-flex mb-3">
@@ -256,46 +259,49 @@ $asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
                                 </div>
                             </div>
 
+                            {{-- Chapter & Sections --}}
                             <div class="tab-pane fade card l-lesson-item__card c-lesson-detail-card"
                                 id="lesson-chapter" role="tabpanel" aria-labelledby="lesson-chapter-tab"
                             >
-                                <div class="card-body c-lesson-detail-card__body p-0">
-                                    <div class="h4 c-lesson-detail-card__title">
+                                <div class="card-body c-lesson-detail-card__title">
+                                    <h4 class="card-title m-0">
                                         課程章節
-                                    </div>
+                                    </h4>
+                                </div>
 
-                                    <div>
-                                        @foreach($chapters as $k => $chapter)
-                                            <div class="c-lesson-detail-chapter">
-                                                第 {{ $k + 1 }} 章：{{ $chapter->title }}
-                                            </div>
+                                <div class="list-group list-group-flush">
+                                    @foreach($chapters as $k => $chapter)
+                                        <div class="c-lesson-detail-chapter list-group-item bg-light">
+                                            第 {{ $k + 1 }} 章：{{ $chapter->title }}
+                                        </div>
 
-                                            <div>
-                                                @foreach($chapter->sections as $l => $section)
-                                                    <div class="c-lesson-detail-section d-flex justify-content-between">
-                                                        <div>
-                                                            <i class="fa-regular fa-fw {{ $section->type->getIcon() }} me-2"></i>
-                                                            第 {{ $l + 1 }} 節 - {{ $section->title }}
-                                                        </div>
-                                                        <div>
-                                                            {{ $chronos::toFormat((string) $section->duration, 'H:i:s') }}
-                                                            <i class="fa-regular fa-circle-check ms-2"></i>
-                                                        </div>
+                                        <div>
+                                            @foreach($chapter->sections as $l => $section)
+                                                <div
+                                                    class="c-lesson-detail-section list-group-item d-flex justify-content-between">
+                                                    <div class="ps-4">
+                                                        <i class="fa-fw {{ $sectionComposer->mustGetDefine($section)::icon() }} me-2"></i>
+                                                        第 {{ $l + 1 }} 節 - {{ $section->title }}
                                                     </div>
-                                                @endforeach
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                                    <div>
+                                                        {{ $chronos::toFormat((string) $section->duration, 'H:i:s') }}
+                                                        <i class="fa-regular fa-circle-check ms-2"></i>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
 
+                            {{-- Homeworks --}}
                             <div class="tab-pane fade card l-lesson-item__card c-lesson-detail-card"
                                 id="lesson-homework" role="tabpanel" aria-labelledby="lesson-homework-tab"
                             >
                                 <div class="card-body c-lesson-detail-card__body">
-                                    <div class="h4 c-lesson-detail-card__title">
+                                    <h4 class="card-title c-lesson-detail-card__title">
                                         作業上傳
-                                    </div>
+                                    </h4>
 
                                     <div class="c-homework-list"></div>
 
@@ -335,6 +341,7 @@ $asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
                         </div>
                     </div>
 
+                    {{-- Right Sidebar --}}
                     <div class="col-lg-4">
                         <div class="card c-lesson-progress-card mb-4">
                             <div class="card-body c-lesson-progress-card__body">

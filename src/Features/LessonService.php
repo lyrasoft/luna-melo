@@ -1,15 +1,8 @@
 <?php
 
-/**
- * Part of melo project.
- *
- * @copyright  Copyright (C) 2024 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Service;
+namespace Lyrasoft\Melo\Features;
 
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\MeloOrder;

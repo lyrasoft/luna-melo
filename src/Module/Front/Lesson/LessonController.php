@@ -21,6 +21,10 @@ use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Melo\Enum\UserSegmentStatus;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
+use Lyrasoft\Melo\Features\Question\Boolean\BooleanQuestion;
+use Lyrasoft\Melo\Features\Question\MultiSelect\MultiSelectQuestion;
+use Lyrasoft\Melo\Features\Question\Select\SelectQuestion;
+use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
 use Psr\Cache\InvalidArgumentException;
 use Unicorn\Attributes\Ajax;
 use Unicorn\Controller\AjaxControllerTrait;
@@ -55,7 +59,7 @@ class LessonController
         return $orm->from(UserSegmentMap::class, 'map')
             ->leftJoin(User::class, 'user', 'map.user_id', 'user.id')
             ->where('map.lesson_id', $lessonId)
-            ->where('map.segment_type', SegmentType::HOMEWORK)
+            ->where('map.segment_type', HomeworkSection::id())
             ->where('map.assignment', '!=', '')
             ->where('map.front_show', 1)
             ->order('map.id', 'ASC')
@@ -180,7 +184,7 @@ class LessonController
             ->where('question_id', $ids ?: [0])
             ->order('ordering', 'ASC')
             ->all(MeloOption::class)
-            ->groupBy(fn(MeloOption $option) => $option->question_id ?? 0);
+            ->groupBy(fn(MeloOption $option) => $option->questionId ?? 0);
 
         $userAnswers = [];
         $segmentScore = 0;
@@ -191,12 +195,21 @@ class LessonController
             $isCorrect = false;
             $value = [];
 
-            if ($question->type === QuestionType::BOOLEAN) {
+            if (!array_key_exists($question->id, $userQuizzes)) {
+                throw new \RuntimeException(
+                    sprintf(
+                        '題目 %s 尚未填答',
+                        $question->ordering
+                    )
+                );
+            }
+
+            if ($question->type === BooleanQuestion::id()) {
                 $isCorrect = (int) $userQuizzes[$question->id] === (int) $question->answer;
                 $value = [$userQuizzes[$question->id]];
             }
 
-            if ($question->type === QuestionType::SELECT) {
+            if ($question->type === SelectQuestion::id()) {
                 foreach ($optionGroup[$question->id] as $option) {
                     if ($option->isAnswer) {
                         $isCorrect = (int) $userQuizzes[$question->id][0] === $option->getId();
@@ -205,19 +218,20 @@ class LessonController
                 $value = $userQuizzes[$question->id];
             }
 
-            if ($question->type === QuestionType::MULTIPLE) {
+            if ($question->type === MultiSelectQuestion::id()) {
                 $corrects = [];
 
+                /** @var MeloOption $option */
                 foreach ($optionGroup[$question->id] as $option) {
                     if ($option->isAnswer) {
-                        $corrects[] = in_array($option->getId(), $userQuizzes[$question->id], false);
+                        $corrects[] = in_array($option->id, $userQuizzes[$question->id] ?? [], false);
                     } else {
-                        $corrects[] = !in_array($option->getId(), $userQuizzes[$question->id], false);
+                        $corrects[] = !in_array($option->id, $userQuizzes[$question->id] ?? [], false);
                     }
                 }
 
                 $isCorrect = !in_array(false, $corrects, true);
-                $value = $userQuizzes[$question->id];
+                $value = $userQuizzes[$question->id] ?? [];
             }
 
             $userAnswer->userId = $user->id;

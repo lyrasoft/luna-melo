@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Front\Cart;
+namespace Lyrasoft\Melo\Module\Front\LessonCart;
 
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Cart\CartService;
 use Lyrasoft\Melo\Cart\CartStorage;
 use Lyrasoft\Melo\Entity\MeloOrder;
-use Lyrasoft\Melo\Service\CheckoutService;
+use Lyrasoft\Melo\Features\CheckoutService;
 use Psr\Container\ContainerExceptionInterface;
+use Unicorn\Attributes\Ajax;
+use Unicorn\Controller\AjaxControllerTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Router\Navigator;
@@ -18,22 +20,11 @@ use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
 
 #[Controller]
-class CartController
+class LessonCartController
 {
-    public function ajax(AppContext $app): mixed
-    {
-        $task = $app->input('task');
+    use AjaxControllerTrait;
 
-        return $app->call([$this, $task]);
-    }
-
-    /**
-     * @param  AppContext  $app
-     *
-     * @return  bool
-     *
-     * @throws ContainerExceptionInterface
-     */
+    #[Ajax]
     public function deleteItem(
         AppContext $app
     ): bool {
@@ -46,12 +37,7 @@ class CartController
         return true;
     }
 
-    /**
-     * @param  AppContext  $app
-     *
-     * @return  array
-     * @throws ContainerExceptionInterface
-     */
+    #[Ajax]
     public function addToCart(
         AppContext $app,
     ): array {
@@ -64,12 +50,7 @@ class CartController
         return array_values($cartStorage->getItems());
     }
 
-    /**
-     * @param  AppContext  $app
-     *
-     * @return  array
-     * @throws ContainerExceptionInterface
-     */
+    #[Ajax]
     public function getData(
         AppContext $app,
     ): array {
@@ -98,7 +79,7 @@ class CartController
         $user = $userService->getUser();
 
         if (!$user->isLogin()) {
-            return $nav->to('cart');
+            return $nav->to('melo_cart');
         }
 
         /**
@@ -139,6 +120,6 @@ class CartController
 
         $cartStorage->clear();
 
-        return $nav->to('order_list')->full();
+        return $nav->to('melo_order_list')->full();
     }
 }
