@@ -1,9 +1,11 @@
 import { delegate, route, simpleAlert, useHttpClient } from '@windwalker-io/unicorn-next';
 
 export function useLessonCartButtons() {
-  delegate(document.body, '[data-task=buy]', 'click', (e) => {
-    buy(e.currentTarget as HTMLElement);
-  });
+  function listen(selector = '[data-task=buy]') {
+    delegate(document.body, selector, 'click', (e) => {
+      buy(e.currentTarget as HTMLElement);
+    });
+  }
 
   async function sendAddAction(el: HTMLElement) {
     const lessonId = el.dataset.id;
@@ -16,7 +18,7 @@ export function useLessonCartButtons() {
 
     try {
       const res = await post(
-        '@cart_ajax/addToCart',
+        '@melo_cart_ajax/addToCart',
         {
           id: lessonId,
         }
@@ -45,10 +47,11 @@ export function useLessonCartButtons() {
   }
 
   function toCartPage() {
-    location.href = route('cart');
+    location.href = route('melo_cart');
   }
 
   return {
+    listen,
     buy,
     toCartPage,
     sendAddAction,

@@ -1,12 +1,13 @@
-import { data, useHttpClient, domready, uid } from '@windwalker-io/unicorn-next';
+import { MeloOption, Question, useLessonCartButtons, UserSegmentMap } from '@lyrasoft/melo';
+import { data, domready, uid, useHttpClient } from '@windwalker-io/unicorn-next';
 import { Modal } from 'bootstrap';
-import { useLessonCartButtons } from '../../../../../assets/dist';
-import { MeloOption, Question, UserSegmentMap } from '../../../../../assets/src/types';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import tz from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
-useLessonCartButtons();
+const { listen } = useLessonCartButtons();
+
+listen();
 
 dayjs.extend(utc);
 dayjs.extend(tz);
@@ -62,7 +63,7 @@ await domready(async () => {
     appendStudentAssignmentList(res.data.data);
 
     toggleMoreButton();
-  })
+  });
 
   function appendStudentAssignmentList(assignments: UserSegmentMap[]) {
     if (totalAssignment <= 0) {
@@ -215,14 +216,14 @@ await domready(async () => {
 
               quizItemHtml += `
                 <div class="form-check mb-2">
-                    <input id="input-option-${optionUid}-${option.id}" class="form-check-input" type="${question.type === 'multiple' ? 'checkbox' : 'radio' }"
+                    <input id="input-option-${optionUid}-${option.id}" class="form-check-input" type="${question.type === 'multiple' ? 'checkbox' : 'radio'}"
                         name="item[quiz][${question.id}][]" value="${option.id}">
                     <label class="form-check-label" for="input-option-${optionUid}-${option.id}">
                         ${option.title}
                     </label>
                 </div>
-              `
-            })
+              `;
+            });
           } else if (question.type === 'boolean') {
             quizItemHtml += `
               <div class="form-check mb-2">
@@ -237,7 +238,7 @@ await domready(async () => {
                       否
                   </label>
               </div>
-            `
+            `;
           }
 
           quizItemHtml += `</div></div></div>`;
@@ -249,8 +250,8 @@ await domready(async () => {
 
         quizModal.show();
       }
-    })
-  })
+    });
+  });
 
   // homework submit
   const homeworkSubmitButton = document.querySelector<HTMLButtonElement>('.j-homework-submit');
@@ -288,7 +289,7 @@ await domready(async () => {
         dangerMode: true,
       });
     }
-  })
+  });
 
   // quiz submit
   const quizSubmitButton = document.querySelector<HTMLButtonElement>('.j-quiz-submit');
@@ -327,8 +328,8 @@ await domready(async () => {
         dangerMode: true,
       });
     }
-  })
-})
+  });
+});
 
 function getSectionName(array: any, value: number) {
   for (let i = 0; i < array.length; i++) {

@@ -20,7 +20,7 @@ use Windwalker\DI\Attributes\Autowire;
 use Windwalker\ORM\ORM;
 
 #[ViewModel(
-    layout: 'cart',
+    layout: 'lesson-cart',
     js: 'lesson-cart.js'
 )]
 class LessonCartView implements ViewModelInterface

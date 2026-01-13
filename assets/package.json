@@ -2,6 +2,8 @@
     "name": "@lyrasoft/melo",
     "private": true,
     "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "scripts": {
         "dev": "vite build --mode development --watch",
         "build": "vite build --mode development",
@@ -13,22 +15,27 @@
         "@asika32764/vue-animate": "^3.0.2",
         "@microsoft/api-extractor": "7.55.2",
         "@tinymce/tinymce-vue": "^6.3.0",
+        "@types/add": "^2",
         "@types/sortablejs": "^1",
         "@vitejs/plugin-vue": "^6.0.3",
         "@vue/tsconfig": "^0.7.0",
         "@vueuse/core": "^14.1.0",
         "@windwalker-io/unicorn-next": "^0.1.11",
+        "add": "^2.0.6",
         "bootstrap-vue-next": "^0.42.0",
         "js-video-url-parser": "^0.5.1",
         "sortablejs": "^1.15.6",
+        "tw-city-selector": "^2.1.2",
         "typescript": "^5.7.3",
         "unplugin-dts": "^1.0.0-beta.6",
         "vite": "^7.3.0",
         "vite-plugin-css-injected-by-js": "^3.5.2",
         "vue": "^3.5.26",
-        "vue-draggable-plus": "^0.6.0"
+        "vue-draggable-plus": "^0.6.0",
+        "yarn": "^1.22.22"
     },
     "dependencies": {
-        "dayjs": "^1.11.19"
+        "dayjs": "^1.11.19",
+        "plyr": "^3.8.4"
     }
 }

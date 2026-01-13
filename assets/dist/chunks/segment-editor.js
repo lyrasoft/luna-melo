@@ -1,10 +1,13 @@
 import { ref, readonly, computed, defineComponent, inject, toRefs, createElementBlock, openBlock, createElementVNode, normalizeClass, createTextVNode, withDirectives, toDisplayString, withModifiers, mergeModels, useModel, useTemplateRef, watch, nextTick, normalizeStyle, createVNode, withCtx, TransitionGroup, Fragment, renderList, createBlock, defineAsyncComponent, createCommentVNode, resolveDynamicComponent, onErrorCaptured, provide, onMounted, createApp } from "vue";
 import { uniqueItemList, uniqueItem } from "@lyrasoft/ts-toolkit/vue";
 import { deleteConfirm, slideDown, slideUp, useUnicorn, injectCssToDocument, simpleAlert } from "@windwalker-io/unicorn-next";
-import { r as rtlRegistryKey, s as showHideRegistryKey, b as breadcrumbGlobalIndexKey, a as breadcrumbRegistryKey, m as modalManagerKey, o as orchestratorRegistryKey, d as defaultsKey, _ as _export_sfc } from "./_plugin-vue_export-helper.js";
-import { u as useSegmentEditor, v as vBTooltip, _ as _sfc_main$6 } from "./useSegmentEditor.js";
-import { u as useSegmentController, _ as _sfc_main$5, a as _sfc_main$7 } from "./useSegmentController.js";
+import { r as rtlRegistryKey, s as showHideRegistryKey, b as breadcrumbGlobalIndexKey, a as breadcrumbRegistryKey, m as modalManagerKey, o as orchestratorRegistryKey, d as defaultsKey } from "./index-BSgsF2PB.js";
+import { u as useSegmentEditor, _ as _sfc_main$6 } from "./useSegmentEditor.js";
+import { _ as _sfc_main$5, a as _sfc_main$7 } from "./classes-BW_GpXTu.js";
 import { VueDraggable } from "vue-draggable-plus";
+import { v as vBTooltip } from "./timing.js";
+import { u as useSegmentController } from "./useSegmentController.js";
+import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
 import { useSectionEditComponents } from "../index.js";
 const _newOrchestratorRegistry = () => ({
   store: ref([]),
@@ -892,7 +895,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SegmentEditorApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-059e55e9"], ["__file", "SegmentEditorApp.vue"]]);
-function createSegmentEditorApp(props) {
+function createSegmentEditorApp(props = {}) {
   const app = createApp(
     SegmentEditorApp,
     props

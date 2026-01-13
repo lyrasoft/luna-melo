@@ -44,9 +44,6 @@ use Windwalker\Core\Router\SystemUri;
  * @var User    $teacher
  */
 
-$asset->js('vendor/plyr/dist/plyr.min.js');
-$asset->css('vendor/plyr/dist/plyr.css');
-
 $breadcrumb = $app->service(Breadcrumb::class);
 
 $breadcrumb->push($lang->trans('melo.lesson.search.page.title'), $nav->to('lesson_list'));
@@ -65,16 +62,20 @@ if ($totalDuration >= 3600) {
 $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
 
 $uniScript = $app->service(UnicornScript::class);
-$uniScript->addRoute('@cart_ajax');
-$uniScript->addRoute('cart', $nav->to('melo_cart'));
-$asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
+$uniScript->addRoute('@melo_cart_ajax');
+$uniScript->addRoute('melo_cart', $nav->to('melo_cart'));
 ?>
 
 @extends('global.body')
 
-@push('script')
-    <script>
+@push('macro')
+    <script data-macro="front.lesson.item" lang="ts" type="module">
+        import { injectCssToDocument } from '@windwalker-io/unicorn-next';
+        import Plyr from 'plyr';
+        import css from 'plyr/dist/plyr.css?inline';
+
         const player = new Plyr('#section-player');
+        injectCssToDocument(css);
     </script>
 @endpush
 

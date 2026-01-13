@@ -51,9 +51,11 @@
 })();
 import { delegate, useHttpClient, simpleAlert, route } from "@windwalker-io/unicorn-next";
 function useLessonCartButtons() {
-  delegate(document.body, "[data-task=buy]", "click", (e) => {
-    buy(e.currentTarget);
-  });
+  function listen(selector = "[data-task=buy]") {
+    delegate(document.body, selector, "click", (e) => {
+      buy(e.currentTarget);
+    });
+  }
   async function sendAddAction(el) {
     const lessonId = el.dataset.id;
     if (!lessonId) {
@@ -62,7 +64,7 @@ function useLessonCartButtons() {
     const { post } = await useHttpClient();
     try {
       const res = await post(
-        "@cart_ajax/addToCart",
+        "@melo_cart_ajax/addToCart",
         {
           id: lessonId
         }
@@ -86,9 +88,10 @@ function useLessonCartButtons() {
     toCartPage();
   }
   function toCartPage() {
-    location.href = route("cart");
+    location.href = route("melo_cart");
   }
   return {
+    listen,
     buy,
     toCartPage,
     sendAddAction
@@ -107,13 +110,32 @@ function useSectionEditComponents(id, component) {
   }
   return sectionEditComponents;
 }
+const questionEditComponents = {
+  boolean: () => import("./chunks/QuestionEdit.js").then((n) => n.c),
+  select: () => import("./chunks/QuestionEdit.js").then((n) => n.c),
+  multiple: () => import("./chunks/QuestionEdit.js").then((n) => n.c)
+};
+function useQuestionEditComponents(id, component) {
+  if (typeof id === "object") {
+    Object.assign(questionEditComponents, id);
+  } else if (component && typeof id === "string") {
+    questionEditComponents[id] = component;
+  }
+  return questionEditComponents;
+}
 async function createSegmentEditorApp(props) {
   const { createSegmentEditorApp: createSegmentEditorApp2 } = await import("./chunks/segment-editor.js");
   return createSegmentEditorApp2(props);
 }
+async function createMeloCartApp(props) {
+  const { createMeloCartApp: createMeloCartApp2 } = await import("./chunks/melo-cart.js");
+  return createMeloCartApp2(props);
+}
 export {
+  createMeloCartApp,
   createSegmentEditorApp,
   useLessonCartButtons,
+  useQuestionEditComponents,
   useSectionEditComponents
 };
 //# sourceMappingURL=index.js.map
