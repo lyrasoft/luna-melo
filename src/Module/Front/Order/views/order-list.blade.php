@@ -39,11 +39,15 @@ $breadcrumb->push($lang->trans('melo.order.list.page.title'));
 
 @extends('global.body')
 
+@section('message', '')
+
 @section('content')
     @include('melo.front.page-title', ['title' => $lang->trans('melo.order.list.page.title')])
 
     <div class="l-my-order-list">
         <div class="container">
+            @include('@messages')
+
             <div class="row">
                 <div class="col-lg-3 d-none d-lg-block">
                     @include('melo.front.profile-sidebar', ['info' => $userInfo])

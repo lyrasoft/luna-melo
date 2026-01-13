@@ -29,13 +29,15 @@ $breadcrumb = $app->service(Breadcrumb::class);
 $menuHelper = $app->service(MenuHelper::class);
 ?>
 
-@push('style')
-    <style>
-        .l-lesson-page-title {
-            margin-bottom: 60px;
-        }
-    </style>
-@endpush
+@once
+    @push('style')
+        <style>
+            .l-lesson-page-title {
+                margin-bottom: 60px;
+            }
+        </style>
+    @endpush
+@endonce
 
 <div class="l-lesson-page-title" style="background-color: var(--bs-gray-400)">
     <div class="container">

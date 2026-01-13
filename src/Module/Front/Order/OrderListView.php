@@ -14,6 +14,7 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Html\HtmlFrame;
+use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\DI\Attributes\Autowire;
@@ -28,6 +29,7 @@ class OrderListView implements ViewModelInterface
     use ORMAwareViewModelTrait;
 
     public function __construct(
+        protected Navigator $nav,
         #[Autowire]
         protected OrderRepository $repository,
         #[Service]
@@ -46,10 +48,10 @@ class OrderListView implements ViewModelInterface
      *
      * @return  mixed
      */
-    public function prepare(AppContext $app, View $view): array
+    public function prepare(AppContext $app, View $view): mixed
     {
         if (!$this->userService->isLogin()) {
-            throw new AccessDeniedException('請先登入', 403);
+            return $this->nav->to('login')->withReturn();
         }
 
         $page = $app->input('page');

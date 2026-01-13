@@ -31,10 +31,14 @@ $breadcrumb->push($lang->trans('melo.lesson.search.page.title'));
 
 @extends('global.body')
 
+@section('message', '')
+
 @section('content')
     @include('melo.front.page-title', ['title' => $lang->trans('melo.lesson.search.page.title')])
 
     <div class="container">
+        @include('@messages')
+
         <div class="c-filter-bar card">
             <form action="{{ $nav->to('lesson_list') }}" class="c-filter-bar__form card-body" method="get">
                 <div class="d-flex gap-4">

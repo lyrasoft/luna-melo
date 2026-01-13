@@ -78,10 +78,14 @@ $asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
     </script>
 @endpush
 
+@section('message', '')
+
 @section('content')
     @include('melo.front.page-title', ['title' => $item->title])
 
     <div class="container">
+        @include('@messages')
+
         <div class="l-lesson-item d-flex flex-column gap-4">
             {{-- Tags --}}
             <div class="l-lesson-item__tags d-flex justify-content-between align-items-end">

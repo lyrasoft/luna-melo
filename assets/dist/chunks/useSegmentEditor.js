@@ -1,6 +1,6 @@
 import { readonly, toRef, ref, onMounted, watch, useId, computed, toValue as toValue$1, onUnmounted, shallowRef, defineComponent, createElementBlock, openBlock, unref, nextTick, inject, getCurrentInstance, onBeforeUnmount, mergeModels, useSlots, useModel, useTemplateRef, createBlock, withCtx, createCommentVNode, renderSlot, Transition, mergeProps, withDirectives, createElementVNode, withModifiers, normalizeClass, normalizeProps, guardReactiveProps, resolveDynamicComponent, createTextVNode, toDisplayString, Fragment, createVNode, vShow, normalizeStyle, render, h, useAttrs, getCurrentScope, onScopeDispose, shallowReadonly } from "vue";
-import { v as useMutationObserver, w as createSharedComposable, x as toArray, y as unrefElement, z as notNullish, A as tryOnScopeDispose, B as useScrollLock$1, u as useDefaults, C as useEventListener, s as showHideRegistryKey, D as useThrottleFn, h as useId$1, E as onKeyStroke, k as isEmptySlot, c as useColorVariantClasses, F as getModalZIndex, G as _sfc_main$2, m as modalManagerKey, H as getSSRHandler, e as useToNumber, I as onClickOutside, J as useMouse$1, d as defaultsKey } from "./_plugin-vue_export-helper.js";
-import { c as BvTriggerableEvent, a as _sfc_main$3, d as createGlobalState, u as useSegmentController, b as useDebounceFn } from "./useSegmentController.js";
+import { v as useMutationObserver, w as createSharedComposable, x as toArray, y as unrefElement, z as notNullish, A as tryOnScopeDispose, B as useScrollLock$1, u as useDefaults, C as useEventListener, s as showHideRegistryKey, D as useThrottleFn, h as useId$1, E as onKeyStroke, k as isEmptySlot, c as useColorVariantClasses, F as getModalZIndex, G as _sfc_main$3, m as modalManagerKey, H as getSSRHandler, e as useToNumber, I as onClickOutside, J as useMouse$1, d as defaultsKey } from "./_plugin-vue_export-helper.js";
+import { c as BvTriggerableEvent, a as _sfc_main$4, d as createGlobalState, u as useSegmentController, b as useDebounceFn } from "./useSegmentController.js";
 import { sleep, useHttpClient } from "@windwalker-io/unicorn-next";
 var candidateSelectors = ["input:not([inert])", "select:not([inert])", "textarea:not([inert])", "a[href]:not([inert])", "button:not([inert])", "[tabindex]:not(slot):not([inert])", "audio[controls]:not([inert])", "video[controls]:not([inert])", '[contenteditable]:not([contenteditable="false"]):not([inert])', "details>summary:first-of-type:not([inert])", "details:not([inert])"];
 var candidateSelector = /* @__PURE__ */ candidateSelectors.join(",");
@@ -1215,8 +1215,8 @@ const useSafeScrollLock = (isOpen, bodyScroll) => {
     }
   });
 };
-const _hoisted_1$1 = ["type", "disabled", "aria-label"];
-const _sfc_main$1 = /* @__PURE__ */ defineComponent({
+const _hoisted_1$2 = ["type", "disabled", "aria-label"];
+const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "BCloseButton",
   props: {
     ariaLabel: { default: "Close" },
@@ -1235,7 +1235,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         disabled: unref(props).disabled,
         "aria-label": unref(props).ariaLabel,
         onClick: _cache[0] || (_cache[0] = ($event) => emit("click", $event))
-      }, null, 8, _hoisted_1$1);
+      }, null, 8, _hoisted_1$2);
     };
   }
 });
@@ -1760,10 +1760,10 @@ const useModalManager = (modalOpen, initialValue) => {
     )
   };
 };
-const _hoisted_1 = ["id", "aria-labelledby", "aria-describedby"];
-const _hoisted_2 = ["id"];
+const _hoisted_1$1 = ["id", "aria-labelledby", "aria-describedby"];
+const _hoisted_2$1 = ["id"];
 const fallbackClassSelector = "modal-fallback-focus";
-const _sfc_main = /* @__PURE__ */ defineComponent({
+const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   ...{
     inheritAttrs: false
   },
@@ -2046,7 +2046,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       visible: showRef
     });
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(_sfc_main$2, {
+      return openBlock(), createBlock(_sfc_main$3, {
         to: unref(props).teleportTo,
         disabled: unref(props).teleportDisabled
       }, {
@@ -2098,7 +2098,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                           _: 3
                         }, 8, ["id", "class"])),
                         !unref(props).noHeaderClose ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-                          hasHeaderCloseSlot.value ? (openBlock(), createBlock(_sfc_main$3, mergeProps({
+                          hasHeaderCloseSlot.value ? (openBlock(), createBlock(_sfc_main$4, mergeProps({
                             key: 0,
                             ref: "_closeButton"
                           }, headerCloseAttrs.value, {
@@ -2108,7 +2108,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                               renderSlot(_ctx.$slots, "header-close", normalizeProps(guardReactiveProps(sharedSlots.value)))
                             ]),
                             _: 3
-                          }, 16)) : (openBlock(), createBlock(_sfc_main$1, mergeProps({
+                          }, 16)) : (openBlock(), createBlock(_sfc_main$2, mergeProps({
                             key: 1,
                             ref: "_closeButton",
                             "aria-label": unref(props).headerCloseLabel
@@ -2125,14 +2125,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       renderSlot(_ctx.$slots, "default", normalizeProps(guardReactiveProps(sharedSlots.value)), () => [
                         createTextVNode(toDisplayString(unref(props).body), 1)
                       ])
-                    ], 16, _hoisted_2),
+                    ], 16, _hoisted_2$1),
                     !unref(props).noFooter ? (openBlock(), createElementBlock("div", {
                       key: 1,
                       class: normalizeClass(["modal-footer", footerClasses.value])
                     }, [
                       renderSlot(_ctx.$slots, "footer", normalizeProps(guardReactiveProps(sharedSlots.value)), () => [
                         renderSlot(_ctx.$slots, "cancel", normalizeProps(guardReactiveProps(sharedSlots.value)), () => [
-                          !unref(props).okOnly ? (openBlock(), createBlock(_sfc_main$3, {
+                          !unref(props).okOnly ? (openBlock(), createBlock(_sfc_main$4, {
                             key: 0,
                             ref: "_cancelButton",
                             disabled: disableCancel.value,
@@ -2148,7 +2148,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                           }, 8, ["disabled", "size", "variant", "class"])) : createCommentVNode("", true)
                         ]),
                         renderSlot(_ctx.$slots, "ok", normalizeProps(guardReactiveProps(sharedSlots.value)), () => [
-                          createVNode(_sfc_main$3, {
+                          createVNode(_sfc_main$4, {
                             ref: "_okButton",
                             disabled: disableOk.value,
                             size: unref(props).buttonSize,
@@ -2173,7 +2173,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   tabindex: "0",
                   style: { "width": "0", "height": "0", "overflow": "hidden" }
                 }, null, 512)) : createCommentVNode("", true)
-              ], 16, _hoisted_1), [
+              ], 16, _hoisted_1$1), [
                 [vShow, unref(showRef) && (unref(backdropReady) && unref(props).backdropFirst || !unref(props).backdropFirst)]
               ])
             ]),
@@ -4106,9 +4106,9 @@ function useFloating(reference, floating, options) {
   };
 }
 const useMouse = createSharedComposable(useMouse$1);
-const _hoisted_1$5 = ["id"];
-const _hoisted_2$5 = ["id"];
-const _sfc_main$5 = /* @__PURE__ */ defineComponent({
+const _hoisted_1 = ["id"];
+const _hoisted_2 = ["id"];
+const _sfc_main = /* @__PURE__ */ defineComponent({
   ...{
     inheritAttrs: false
   },
@@ -4472,9 +4472,9 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
           id: unref(computedId) + "_placeholder",
           ref: "_placeholder",
           style: { "display": "none" }
-        }, null, 8, _hoisted_1$5),
+        }, null, 8, _hoisted_1),
         renderSlot(_ctx.$slots, "target", normalizeProps(guardReactiveProps(sharedSlots.value))),
-        createVNode(_sfc_main$2, {
+        createVNode(_sfc_main$3, {
           to: unref(props).teleportTo,
           disabled: !unref(props).teleportTo || unref(props).teleportDisabled
         }, {
@@ -4518,7 +4518,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
                       ])
                     ], 2)) : createCommentVNode("", true)
                   ], 4)
-                ], 16, _hoisted_2$5), [
+                ], 16, _hoisted_2), [
                   [vShow, unref(showRef) && !hidden.value]
                 ])
               ]),
@@ -4593,7 +4593,7 @@ const bind = (el, binding, props) => {
   if (binding.modifiers.body) document.body.appendChild(div);
   else if (binding.modifiers.child) el.appendChild(div);
   else el.parentNode?.insertBefore(div, el.nextSibling);
-  render(h(_sfc_main$5, props), div);
+  render(h(_sfc_main, props), div);
   el.$__element = div;
 };
 const unbind = (el) => {
@@ -4852,7 +4852,7 @@ const useSegmentEditor = createGlobalState(() => {
   };
 });
 export {
-  _sfc_main as _,
+  _sfc_main$1 as _,
   sleepMax as s,
   useSegmentEditor as u,
   vBTooltip as v

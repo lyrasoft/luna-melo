@@ -32,11 +32,15 @@ $breadcrumb->push($lang->trans('melo.my.lecture.page.title'));
 
 @extends('global.body')
 
+@section('message', '')
+
 @section('content')
     @include('melo.front.page-title', ['title' => $lang->trans('melo.my.lecture.page.title')])
 
     <div class="l-my-lecture-list">
         <div class="container">
+            @include('@messages')
+
             <div class="row">
                 <div class="col-lg-3 d-none d-lg-block">
                     @include('melo.front.profile-sidebar', ['info' => $userInfo])

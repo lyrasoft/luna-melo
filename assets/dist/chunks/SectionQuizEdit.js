@@ -648,7 +648,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
               createElementVNode("button", {
                 type: "button",
                 class: "btn btn-outline-primary btn-sm"
-              }, "\n              按此選擇\n            ")
+              }, "\r\n              按此選擇\r\n            ")
             ], -1))
           ])
         ])
@@ -656,7 +656,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     }), 128))
   ]);
 }
-const QuestionTypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-41ebcfcb"], ["__file", "QuestionTypeSelector.vue"]]);
+const QuestionTypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-3a690932"], ["__file", "QuestionTypeSelector.vue"]]);
 function useQuestionController() {
   async function getQuestions(quizId) {
     const { get } = await useHttpClient();
@@ -817,7 +817,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
           createElementVNode("span", { class: "fal fa-bars" })
         ], -1)),
         _cache[7] || (_cache[7] = createTextVNode()),
-        createElementVNode("div", _hoisted_4$3, toDisplayString($setup.props.index + 1) + ".\n        ", 1),
+        createElementVNode("div", _hoisted_4$3, toDisplayString($setup.props.index + 1) + ".\r\n        ", 1),
         _cache[8] || (_cache[8] = createTextVNode()),
         createElementVNode("div", _hoisted_5$3, toDisplayString($setup.typeToTitle($setup.item.type)), 1),
         _cache[9] || (_cache[9] = createTextVNode()),
@@ -829,7 +829,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
         _cache[10] || (_cache[10] = createTextVNode()),
         createElementVNode("div", _hoisted_6$3, [
           createElementVNode("div", _hoisted_7$1, [
-            _cache[2] || (_cache[2] = createElementVNode("div", { class: "me-1" }, "\n              分數\n            ", -1)),
+            _cache[2] || (_cache[2] = createElementVNode("div", { class: "me-1" }, "\r\n              分數\r\n            ", -1)),
             _cache[3] || (_cache[3] = createTextVNode()),
             createElementVNode("div", null, [
               withDirectives(createElementVNode("input", {
@@ -938,7 +938,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
               class: "m-0"
             }, {
               default: withCtx(() => [..._cache[2] || (_cache[2] = [
-                createTextVNode("\n              正確答案\n            ", -1)
+                createTextVNode("\r\n              正確答案\r\n            ", -1)
               ])]),
               _: 1
             }, 8, ["modelValue"])
@@ -1175,7 +1175,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
       }, {
         default: withCtx(() => [..._cache[1] || (_cache[1] = [
           createElementVNode("i", { class: "fas fa-plus" }, null, -1),
-          createTextVNode("\n      新增選項\n    ", -1)
+          createTextVNode("\r\n      新增選項\r\n    ", -1)
         ])]),
         _: 1
       })
@@ -1312,7 +1312,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           createElementVNode("i", { class: "fas fa-upload fa-2x" })
         ], -1)),
         _cache[6] || (_cache[6] = createTextVNode()),
-        _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted" }, "\n          拖拉至此上傳圖片\n        ", -1)),
+        _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted" }, "\r\n          拖拉至此上傳圖片\r\n        ", -1)),
         _cache[8] || (_cache[8] = createTextVNode()),
         createElementVNode("div", null, [
           createElementVNode("button", {
@@ -1321,7 +1321,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
             onClick: _cache[0] || (_cache[0] = ($event) => $setup.open())
           }, [..._cache[2] || (_cache[2] = [
             createElementVNode("i", { class: "fas fa-image" }, null, -1),
-            createTextVNode("\n            點擊此處選擇檔案\n          ", -1)
+            createTextVNode("\r\n            點擊此處選擇檔案\r\n          ", -1)
           ])]),
           _cache[4] || (_cache[4] = createTextVNode()),
           withDirectives((openBlock(), createElementBlock("button", {
@@ -1345,7 +1345,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: _cache[1] || (_cache[1] = ($event) => $setup.open())
         }, [..._cache[10] || (_cache[10] = [
           createElementVNode("i", { class: "fas fa-image" }, null, -1),
-          createTextVNode("\n          更換檔案\n        ", -1)
+          createTextVNode("\r\n          更換檔案\r\n        ", -1)
         ])]),
         _cache[12] || (_cache[12] = createTextVNode()),
         createElementVNode("div", null, [
@@ -1367,7 +1367,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
         onClick: $setup.clear
       }, [..._cache[15] || (_cache[15] = [
         createElementVNode("i", { class: "fal fa-trash" }, null, -1),
-        createTextVNode("\n        移除圖片\n      ", -1)
+        createTextVNode("\r\n        移除圖片\r\n      ", -1)
       ])])
     ])) : createCommentVNode("", true)
   ], 32);
@@ -1529,7 +1529,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             createVNode($setup["BFormRadio"], { value: "1" }, {
               default: withCtx(() => [..._cache[7] || (_cache[7] = [
                 createElementVNode("i", { class: "fas fa-check" }, null, -1),
-                createTextVNode("\n          是\n        ", -1)
+                createTextVNode("\r\n          是\r\n        ", -1)
               ])]),
               _: 1
             }),
@@ -1537,7 +1537,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             createVNode($setup["BFormRadio"], { value: "0" }, {
               default: withCtx(() => [..._cache[8] || (_cache[8] = [
                 createElementVNode("i", { class: "fas fa-xmark" }, null, -1),
-                createTextVNode("\n          否\n        ", -1)
+                createTextVNode("\r\n          否\r\n        ", -1)
               ])]),
               _: 1
             })
@@ -1730,7 +1730,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }),
     _cache[23] || (_cache[23] = createTextVNode()),
     createElementVNode("div", _hoisted_1, [
-      _cache[14] || (_cache[14] = createElementVNode("div", { class: "h6 c-quiz-edit__title" }, "\n        測驗內容\n      ", -1)),
+      _cache[14] || (_cache[14] = createElementVNode("div", { class: "h6 c-quiz-edit__title" }, "\r\n        測驗內容\r\n      ", -1)),
       _cache[15] || (_cache[15] = createTextVNode()),
       $setup.loading ? (openBlock(), createElementBlock("div", _hoisted_2, [
         createVNode($setup["BSpinner"])
@@ -1777,7 +1777,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: $setup.newQuestion
         }, [..._cache[13] || (_cache[13] = [
           createElementVNode("i", { class: "fas fa-plus" }, null, -1),
-          createTextVNode("\n          新增題目\n        ", -1)
+          createTextVNode("\r\n          新增題目\r\n        ", -1)
         ])])
       ])
     ]),
@@ -1796,7 +1796,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, {
       title: withCtx(() => [
         createElementVNode("div", _hoisted_4, [
-          _cache[19] || (_cache[19] = createElementVNode("div", null, "\n            題目編輯\n          ", -1)),
+          _cache[19] || (_cache[19] = createElementVNode("div", null, "\r\n            題目編輯\r\n          ", -1)),
           _cache[20] || (_cache[20] = createTextVNode()),
           $setup.questionsSaving ? (openBlock(), createElementBlock("div", _hoisted_5, [
             createVNode($setup["BSpinner"], {
@@ -1804,10 +1804,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               type: "border",
               class: "me-1"
             }),
-            _cache[17] || (_cache[17] = createTextVNode("\n            儲存中...\n          ", -1))
+            _cache[17] || (_cache[17] = createTextVNode("\r\n            儲存中...\r\n          ", -1))
           ])) : $setup.questionSaved ? (openBlock(), createElementBlock("div", _hoisted_6, [..._cache[18] || (_cache[18] = [
             createElementVNode("i", { class: "fas fa-check text-success" }, null, -1),
-            createTextVNode("\n            已儲存\n          ", -1)
+            createTextVNode("\r\n            已儲存\r\n          ", -1)
           ])])) : createCommentVNode("", true)
         ])
       ]),
