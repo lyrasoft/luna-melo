@@ -8,7 +8,10 @@ use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Cart\CartService;
 use Lyrasoft\Melo\Cart\CartStorage;
+use Lyrasoft\Melo\Data\AddressInfo;
+use Lyrasoft\Melo\Data\InvoiceData;
 use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Features\CheckoutService;
 use Psr\Container\ContainerExceptionInterface;
 use Unicorn\Attributes\Ajax;
@@ -89,20 +92,20 @@ class LessonCartController
             function () use ($input, $cartService, $user, $checkoutService) {
                 $order = new MeloOrder();
 
-                $invoiceData = [
-                    'invoice_title' => $input['invoice_title'],
-                    'invoice_vat' => $input['invoice_vat'],
-                    'invoice_name' => $input['invoice_name'],
-                    'address' => [
-                        'zip' => $input['zip'],
-                        'city' => $input['city'],
-                        'dist' => $input['dist'],
-                        'address' => $input['address'],
-                    ],
-                ];
+                $invoice = new InvoiceData(
+                    name: $input['invoice_name'] ?? '',
+                    title: $input['invoice_title'] ?? '',
+                    vat: $input['invoice_vat'] ?? '',
+                    address: new AddressInfo(
+                        city: $input['city'] ?? '',
+                        dist: $input['dist'] ?? '',
+                        zip: $input['zip'] ?? '',
+                        address: $input['address'] ?? '',
+                    )
+                );
 
-                $order->invoiceData = $invoiceData;
-                $order->invoiceType = $input['invoice_type'] ?? '';
+                $order->invoiceData = $invoice;
+                $order->invoiceType = $invoice->vat ? InvoiceType::COMPANY : InvoiceType::IDV;
                 $order->userId = $user->id;
                 $order->payment = $input['payment'];
                 $order->createdBy = $user->id;

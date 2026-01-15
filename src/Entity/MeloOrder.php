@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Entity;
 
+use Lyrasoft\Melo\Data\InvoiceData;
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Enum\Payment;
@@ -55,8 +56,11 @@ class MeloOrder implements EntityInterface
     }
 
     #[Column('invoice_data')]
-    #[Cast(JsonCast::class)]
-    public array $invoiceData = [];
+    #[Cast(InvoiceData::class)]
+    public InvoiceData $invoiceData {
+        set(InvoiceData|array|null $value) => $this->invoiceData = InvoiceData::wrap($value);
+        get => $this->invoiceData ??= new InvoiceData();
+    }
 
     #[Column('state')]
     #[Cast(OrderState::class)]
@@ -65,10 +69,7 @@ class MeloOrder implements EntityInterface
     }
 
     #[Column('payment')]
-    #[Cast(Payment::class)]
-    public Payment $payment {
-        set(Payment|string $value) => $this->payment = Payment::wrap($value);
-    }
+    public string $payment = '';
 
     #[Column('payment_no')]
     public string $paymentNo = '';

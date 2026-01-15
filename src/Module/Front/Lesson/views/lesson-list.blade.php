@@ -16,6 +16,7 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
+use Lyrasoft\Melo\Script\MeloScript;
 use Unicorn\Html\Breadcrumb;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -23,6 +24,9 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+
+$meloScript = $app->service(MeloScript::class);
+$meloScript->lessonCart();
 
 $breadcrumb = $app->service(Breadcrumb::class);
 

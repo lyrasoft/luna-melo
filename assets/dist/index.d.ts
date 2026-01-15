@@ -1,6 +1,9 @@
 import { App } from 'vue';
 
+declare function buy(el: HTMLElement): Promise<void>;
+
 export declare interface CartItem {
+    uid: string;
     acquired: string;
     alias: string;
     categoryId: number;
@@ -25,7 +28,7 @@ export declare interface CartItem {
     prices: {
         final: PriceObject;
         origin: PriceObject;
-    };
+    } & CartTotals;
     specialPrice: number;
     startDate: string;
     state: {
@@ -37,8 +40,10 @@ export declare interface CartItem {
     totals: {
         final_total: PriceObject;
         total: PriceObject;
-    };
+    } & CartTotals;
 }
+
+export declare type CartTotals = Record<string, PriceObject>;
 
 export declare function createMeloCartApp(props: Record<string, any>): Promise<App<Element>>;
 
@@ -87,6 +92,8 @@ export declare interface MeloOption {
 declare type ModuleImportCallback = () => Promise<any>;
 
 declare type ModuleImportCallback_2 = () => Promise<any>;
+
+declare function off(): void;
 
 export declare interface PriceObject {
     label: string;
@@ -159,11 +166,21 @@ export declare interface Segment {
     [prop: string]: any;
 }
 
-export declare function useLessonCartButtons(): {
-    listen: (selector?: string) => void;
-    buy: (el: HTMLElement) => Promise<void>;
-    toCartPage: () => void;
-    sendAddAction: (el: HTMLElement) => Promise<any>;
+declare function sendAddAction(el: HTMLElement): Promise<any>;
+
+declare function toCartPage(): void;
+
+export declare function useLessonCartButtons(selector?: string): {
+    off: typeof off;
+    buy: typeof buy;
+    toCartPage: typeof toCartPage;
+    sendAddAction: typeof sendAddAction;
+};
+
+export declare function useMeloFrontLessons(): {
+    $melo: {
+        useLessonCartButtons: typeof useLessonCartButtons;
+    };
 };
 
 export declare function useQuestionEditComponents(): Record<string, ModuleImportCallback_2>;

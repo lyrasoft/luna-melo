@@ -9,6 +9,8 @@ export function createMeloCartApp(props: Record<string, any> = {}) {
     props
   );
 
+  app.component('CartItems')
+
   // app.use(createBootstrap());
 
   return app;

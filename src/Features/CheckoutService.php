@@ -149,11 +149,11 @@ class CheckoutService
      */
     protected function prepareOrderAndPaymentNo(MeloOrder $order, bool $test = false): MeloOrder
     {
-        $no = $this->orderService->createOrderNo($order->id);
+        $no = $this->orderService->createOrderNo($order);
         $tradeNo = $this->orderService->getPaymentNo($no, $test);
 
         // Save NO
-        $this->orm->updateWhere(
+        $this->orm->updateBulk(
             MeloOrder::class,
             ['no' => $no, 'payment_no' => $tradeNo],
             ['id' => $order->id]

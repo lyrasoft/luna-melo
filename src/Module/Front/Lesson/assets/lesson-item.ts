@@ -5,9 +5,7 @@ import dayjs from 'dayjs';
 import tz from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 
-const { listen } = useLessonCartButtons();
-
-listen();
+useLessonCartButtons();
 
 dayjs.extend(utc);
 dayjs.extend(tz);

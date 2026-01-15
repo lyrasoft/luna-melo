@@ -1,76 +1,102 @@
-import { defineComponent, computed, ref, onMounted, createElementBlock, openBlock, renderSlot, createTextVNode, createCommentVNode, toDisplayString, onErrorCaptured, reactive, createElementVNode, createStaticVNode, Fragment, renderList, withModifiers, createVNode, withCtx, normalizeClass, createApp } from "vue";
-import { uid, useHttpClient, simpleAlert, route } from "@windwalker-io/unicorn-next";
-import { u as useCurrentElement } from "./index.js";
-import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
+import { defineComponent, createElementBlock, openBlock, createElementVNode, createTextVNode, Fragment, renderList, toDisplayString, withModifiers, computed, ref, onMounted, renderSlot, createCommentVNode, mergeModels, useModel, watch, createVNode, withCtx, withDirectives, vModelText, vModelSelect, onErrorCaptured, createStaticVNode, normalizeClass, createApp } from "vue";
+import { uid, sleep, useHttpClient, simpleAlert, data, route } from "@windwalker-io/unicorn-next";
 import { numberFormat } from "@lyrasoft/ts-toolkit/generic";
+import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
 import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
-const _sfc_main$1 = /* @__PURE__ */ defineComponent({
-  __name: "FormGroup",
+import { u as useCurrentElement } from "./index.js";
+function formatPrice(price, scale = 0, prefix = "NT $") {
+  if (!price && price !== 0) {
+    return "";
+  }
+  return prefix + numberFormat(price, scale);
+}
+const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+  __name: "CartItems",
   props: {
-    id: {},
-    label: {},
-    description: {},
-    feedback: {},
-    invalid: { type: Boolean }
+    items: {}
   },
-  setup(__props, { expose: __expose }) {
+  emits: ["delete-item"],
+  setup(__props, { expose: __expose, emit: __emit }) {
     __expose();
-    const props = __props;
-    const el = useCurrentElement();
-    const id = computed(() => props.id || "input-" + uid());
-    const input = ref();
-    onMounted(() => {
-      if (el.value) {
-        updateInput();
-      }
-    });
-    function updateInput() {
-      const inputEl = el.value.querySelector("input, textarea, select");
-      if (inputEl) {
-        input.value = inputEl;
-        inputEl.id = id.value;
-        updateInvalid();
-      }
+    const emits = __emit;
+    function deleteItem(item, i) {
+      emits("delete-item", item, i);
     }
-    function updateInvalid() {
-      if (props.invalid) {
-        input.value?.classList.add("is-invalid");
-      } else {
-        input.value?.classList.remove("is-invalid");
-      }
-    }
-    const __returned__ = { props, el, id, input, updateInput, updateInvalid };
+    const __returned__ = { emits, deleteItem, get formatPrice() {
+      return formatPrice;
+    } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
 });
-const _hoisted_1$1 = { class: "form-group d-flex flex-column gap-1" };
-const _hoisted_2$1 = ["for"];
-const _hoisted_3$1 = {
-  key: 0,
-  class: "invalid-tooltip"
-};
-const _hoisted_4$1 = {
-  key: 1,
-  class: "form-text text-muted"
-};
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
-    renderSlot(_ctx.$slots, "label", {}, () => [
-      $props.label ? (openBlock(), createElementBlock("label", {
-        key: 0,
-        for: $setup.id
-      }, toDisplayString($props.label), 9, _hoisted_2$1)) : createCommentVNode("", true)
-    ]),
-    _cache[0] || (_cache[0] = createTextVNode()),
-    renderSlot(_ctx.$slots, "default"),
-    _cache[1] || (_cache[1] = createTextVNode()),
-    $props.feedback ? (openBlock(), createElementBlock("div", _hoisted_3$1, toDisplayString($props.feedback), 1)) : createCommentVNode("", true),
-    _cache[2] || (_cache[2] = createTextVNode()),
-    $props.description ? (openBlock(), createElementBlock("div", _hoisted_4$1, toDisplayString($props.description), 1)) : createCommentVNode("", true)
+const _hoisted_1$3 = { class: "l-cart-items table table-bordered" };
+const _hoisted_2$3 = { class: "bg-white" };
+const _hoisted_3$3 = ["i"];
+const _hoisted_4$3 = { class: "text-center align-middle text-nowrap border-0" };
+const _hoisted_5$2 = { class: "border-0" };
+const _hoisted_6$2 = { class: "d-flex align-items-center" };
+const _hoisted_7$2 = ["src"];
+const _hoisted_8$2 = { style: { "min-width": "150px" } };
+const _hoisted_9$2 = { class: "text-nowrap text-center border-0 align-middle" };
+const _hoisted_10$2 = { class: "text-center text-nowrap border-0 align-middle" };
+const _hoisted_11$2 = ["onClick"];
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("table", _hoisted_1$3, [
+    _cache[5] || (_cache[5] = createElementVNode("thead", { class: "bg-light" }, [
+      createElementVNode("tr", { class: "b" }, [
+        createElementVNode("th", {
+          width: "5%",
+          class: "text-center text-nowrap border-0"
+        }, "\n        編號\n      "),
+        createTextVNode(),
+        createElementVNode("th", { class: "text-nowrap border-0" }, "\n        課程名稱\n      "),
+        createTextVNode(),
+        createElementVNode("th", { class: "text-center text-nowrap border-0" }, "\n        售價\n      "),
+        createTextVNode(),
+        createElementVNode("th", {
+          width: "5%",
+          class: "text-center text-nowrap border-0"
+        }, "\n        刪除\n      ")
+      ])
+    ], -1)),
+    _cache[6] || (_cache[6] = createTextVNode()),
+    createElementVNode("tbody", _hoisted_2$3, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList($props.items, (item, i) => {
+        return openBlock(), createElementBlock("tr", {
+          key: item.uid,
+          i
+        }, [
+          createElementVNode("td", _hoisted_4$3, toDisplayString(i + 1), 1),
+          _cache[2] || (_cache[2] = createTextVNode()),
+          createElementVNode("td", _hoisted_5$2, [
+            createElementVNode("div", _hoisted_6$2, [
+              createElementVNode("img", {
+                src: item.image,
+                alt: "Image",
+                class: "me-2",
+                width: "100px"
+              }, null, 8, _hoisted_7$2),
+              _cache[0] || (_cache[0] = createTextVNode()),
+              createElementVNode("span", _hoisted_8$2, toDisplayString(item.title), 1)
+            ])
+          ]),
+          _cache[3] || (_cache[3] = createTextVNode()),
+          createElementVNode("td", _hoisted_9$2, toDisplayString($setup.formatPrice(item?.prices?.final?.price || "")), 1),
+          _cache[4] || (_cache[4] = createTextVNode()),
+          createElementVNode("td", _hoisted_10$2, [
+            createElementVNode("a", {
+              href: "javascript://",
+              onClick: withModifiers(($event) => $setup.deleteItem(item, i), ["prevent"])
+            }, [..._cache[1] || (_cache[1] = [
+              createElementVNode("i", { class: "fas fa-trash fa-fw" }, null, -1)
+            ])], 8, _hoisted_11$2)
+          ])
+        ], 8, _hoisted_3$3);
+      }), 128))
+    ])
   ]);
 }
-const FormGroup = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__file", "FormGroup.vue"]]);
+const CartItems = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__file", "CartItems.vue"]]);
 var twCitySelector = { exports: {} };
 var hasRequiredTwCitySelector;
 function requireTwCitySelector() {
@@ -318,6 +344,277 @@ function requireTwCitySelector() {
 }
 var twCitySelectorExports = requireTwCitySelector();
 const TwCitySelector = /* @__PURE__ */ getDefaultExportFromCjs(twCitySelectorExports);
+const _sfc_main$2 = /* @__PURE__ */ defineComponent({
+  __name: "FormGroup",
+  props: {
+    id: {},
+    label: {},
+    description: {},
+    feedback: {},
+    invalid: { type: Boolean }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const el = useCurrentElement();
+    const id = computed(() => props.id || "input-" + uid());
+    const input = ref();
+    onMounted(() => {
+      if (el.value) {
+        updateInput();
+      }
+    });
+    function updateInput() {
+      const inputEl = el.value.querySelector("input, textarea, select");
+      if (inputEl) {
+        input.value = inputEl;
+        inputEl.id = id.value;
+        updateInvalid();
+      }
+    }
+    function updateInvalid() {
+      if (props.invalid) {
+        input.value?.classList.add("is-invalid");
+      } else {
+        input.value?.classList.remove("is-invalid");
+      }
+    }
+    const __returned__ = { props, el, id, input, updateInput, updateInvalid };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+const _hoisted_1$2 = { class: "form-group d-flex flex-column gap-1" };
+const _hoisted_2$2 = ["for"];
+const _hoisted_3$2 = {
+  key: 0,
+  class: "invalid-tooltip"
+};
+const _hoisted_4$2 = {
+  key: 1,
+  class: "form-text text-muted"
+};
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$2, [
+    renderSlot(_ctx.$slots, "label", {}, () => [
+      $props.label ? (openBlock(), createElementBlock("label", {
+        key: 0,
+        for: $setup.id
+      }, toDisplayString($props.label), 9, _hoisted_2$2)) : createCommentVNode("", true)
+    ]),
+    _cache[0] || (_cache[0] = createTextVNode()),
+    renderSlot(_ctx.$slots, "default"),
+    _cache[1] || (_cache[1] = createTextVNode()),
+    $props.feedback ? (openBlock(), createElementBlock("div", _hoisted_3$2, toDisplayString($props.feedback), 1)) : createCommentVNode("", true),
+    _cache[2] || (_cache[2] = createTextVNode()),
+    $props.description ? (openBlock(), createElementBlock("div", _hoisted_4$2, toDisplayString($props.description), 1)) : createCommentVNode("", true)
+  ]);
+}
+const FormGroup = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__file", "FormGroup.vue"]]);
+const _sfc_main$1 = /* @__PURE__ */ defineComponent({
+  __name: "InvoiceForm",
+  props: /* @__PURE__ */ mergeModels({
+    formSelector: { default: "#checkout-form" }
+  }, {
+    "modelValue": {
+      required: true
+    },
+    "modelModifiers": {}
+  }),
+  emits: ["update:modelValue"],
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const invoice = useModel(__props, "modelValue");
+    onMounted(() => {
+      new TwCitySelector({
+        el: props.formSelector,
+        elCounty: "[data-city]",
+        elDistrict: "[data-dist]",
+        elZipcode: "[data-zip]",
+        countyFieldName: "item[address][city]",
+        districtFieldName: "item[address][dist]",
+        zipcodeFieldName: "item[address][zip]"
+      });
+    });
+    watch(() => [invoice.value.address.city, invoice.value.address.dist], async () => {
+      await sleep(100);
+      invoice.value.address.zip = document.querySelector(`${props.formSelector} [data-zip]`)?.value || "";
+    });
+    const __returned__ = { props, invoice, FormGroup };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+const _hoisted_1$1 = { class: "row gy-4" };
+const _hoisted_2$1 = { class: "col-lg-6" };
+const _hoisted_3$1 = { class: "col-lg-6" };
+const _hoisted_4$1 = { class: "col-lg-6" };
+const _hoisted_5$1 = { class: "col-lg-6" };
+const _hoisted_6$1 = { class: "col-lg-12" };
+const _hoisted_7$1 = { class: "row gy-3" };
+const _hoisted_8$1 = { class: "col-lg-4" };
+const _hoisted_9$1 = { class: "col-lg-4" };
+const _hoisted_10$1 = { class: "col-lg-4" };
+const _hoisted_11$1 = { class: "col-lg-12" };
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", null, [
+    _cache[15] || (_cache[15] = createElementVNode("div", { class: "mb-3" }, "\n      以下資訊只用於開立發票，並不會在其他頁面顯示。發票一經開立後不可更改，請確認資訊是否都填寫正確喔！\n\n    ", -1)),
+    _cache[16] || (_cache[16] = createTextVNode()),
+    createElementVNode("div", _hoisted_1$1, [
+      createElementVNode("div", _hoisted_2$1, [
+        createVNode($setup["FormGroup"], { label: "統一編號" }, {
+          default: withCtx(() => [
+            withDirectives(createElementVNode("input", {
+              type: "text",
+              class: "form-control",
+              "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.invoice.vat = $event),
+              name: "checkout[invoice_vat]",
+              placeholder: "請填寫統一編號"
+            }, null, 512), [
+              [vModelText, $setup.invoice.vat]
+            ])
+          ]),
+          _: 1
+        })
+      ]),
+      _cache[11] || (_cache[11] = createTextVNode()),
+      createElementVNode("div", _hoisted_3$1, [
+        createVNode($setup["FormGroup"], { label: "發票抬頭" }, {
+          default: withCtx(() => [
+            withDirectives(createElementVNode("input", {
+              type: "text",
+              class: "form-control",
+              "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.invoice.title = $event),
+              name: "checkout[invoice_title]",
+              placeholder: "請填寫發票抬頭"
+            }, null, 512), [
+              [vModelText, $setup.invoice.title]
+            ])
+          ]),
+          _: 1
+        })
+      ]),
+      _cache[12] || (_cache[12] = createTextVNode()),
+      createElementVNode("div", _hoisted_4$1, [
+        createVNode($setup["FormGroup"], { label: "收件人" }, {
+          default: withCtx(() => [
+            withDirectives(createElementVNode("input", {
+              type: "text",
+              class: "form-control",
+              "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.invoice.name = $event),
+              name: "checkout[invoice_name]",
+              placeholder: "請填寫真實姓名"
+            }, null, 512), [
+              [vModelText, $setup.invoice.name]
+            ])
+          ]),
+          _: 1
+        })
+      ]),
+      _cache[13] || (_cache[13] = createTextVNode()),
+      createElementVNode("div", _hoisted_5$1, [
+        createVNode($setup["FormGroup"], { label: "電子發票載具" }, {
+          default: withCtx(() => [
+            withDirectives(createElementVNode("input", {
+              type: "text",
+              class: "form-control",
+              "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.invoice.carrier = $event),
+              name: "checkout[invoice_carrier]",
+              placeholder: "請填寫電子發票載具"
+            }, null, 512), [
+              [vModelText, $setup.invoice.carrier]
+            ])
+          ]),
+          _: 1
+        })
+      ]),
+      _cache[14] || (_cache[14] = createTextVNode()),
+      createElementVNode("div", _hoisted_6$1, [
+        createVNode($setup["FormGroup"], { label: "地址" }, {
+          default: withCtx(() => [
+            createElementVNode("div", _hoisted_7$1, [
+              createElementVNode("div", _hoisted_8$1, [
+                createVNode($setup["FormGroup"], { label: "" }, {
+                  default: withCtx(() => [
+                    withDirectives(createElementVNode("select", {
+                      class: "form-select",
+                      "data-city": "",
+                      name: "checkout[address][city]",
+                      "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $setup.invoice.address.city = $event)
+                    }, null, 512), [
+                      [vModelSelect, $setup.invoice.address.city]
+                    ])
+                  ]),
+                  _: 1
+                })
+              ]),
+              _cache[8] || (_cache[8] = createTextVNode()),
+              createElementVNode("div", _hoisted_9$1, [
+                createVNode($setup["FormGroup"], { label: "" }, {
+                  default: withCtx(() => [
+                    withDirectives(createElementVNode("select", {
+                      class: "form-select",
+                      "data-dist": "",
+                      name: "checkout[address][dist]",
+                      "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $setup.invoice.address.dist = $event)
+                    }, null, 512), [
+                      [vModelSelect, $setup.invoice.address.dist]
+                    ])
+                  ]),
+                  _: 1
+                })
+              ]),
+              _cache[9] || (_cache[9] = createTextVNode()),
+              createElementVNode("div", _hoisted_10$1, [
+                createVNode($setup["FormGroup"], { label: "" }, {
+                  default: withCtx(() => [
+                    withDirectives(createElementVNode("input", {
+                      type: "text",
+                      class: "form-control",
+                      placeholder: "郵遞區號",
+                      readonly: "",
+                      "data-zip": "",
+                      "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => $setup.invoice.address.zip = $event),
+                      name: "checkout[address][zip]"
+                    }, null, 512), [
+                      [
+                        vModelText,
+                        $setup.invoice.address.zip,
+                        void 0,
+                        { lazy: true }
+                      ]
+                    ])
+                  ]),
+                  _: 1
+                })
+              ]),
+              _cache[10] || (_cache[10] = createTextVNode()),
+              createElementVNode("div", _hoisted_11$1, [
+                createVNode($setup["FormGroup"], null, {
+                  default: withCtx(() => [
+                    withDirectives(createElementVNode("input", {
+                      type: "text",
+                      class: "form-control",
+                      "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $setup.invoice.address.address = $event),
+                      name: "checkout[address][address]",
+                      placeholder: "請填寫地址"
+                    }, null, 512), [
+                      [vModelText, $setup.invoice.address.address]
+                    ])
+                  ]),
+                  _: 1
+                })
+              ])
+            ])
+          ]),
+          _: 1
+        })
+      ])
+    ])
+  ]);
+}
+const InvoiceForm = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__file", "InvoiceForm.vue"]]);
 const formSelector = "#checkout-form";
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "MeloCartApp",
@@ -332,69 +629,53 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }
       });
     });
-    const cartStore = reactive({
-      items: [],
-      totals: {
-        grand_total: {},
-        product_total: {}
-      },
-      count: 0
+    const items = ref([]);
+    const invoice = ref({
+      vat: "",
+      title: "",
+      name: "",
+      carrier: "",
+      address: {
+        city: "",
+        dist: "",
+        zip: "",
+        address: ""
+      }
     });
-    getData();
+    const totals = ref();
+    const count = computed(() => items.value.length);
+    const csrf = data("csrf-token");
+    loadItems();
     const checkoutLink = route("checkoutLink");
     const lessonLink = route("search");
-    async function getData() {
+    async function loadItems() {
       const { get } = await useHttpClient();
       await get("@cart_ajax/getData").then((res) => {
-        let data = res.data.data;
-        cartStore.items = data.items;
-        cartStore.count = cartStore.items.length;
-        cartStore.totals = data.totals;
+        let data2 = res.data.data;
+        items.value = data2.items;
+        totals.value = data2.totals;
       }).catch((e) => {
         swal(e.statusText || "", e.message || "", "warning");
       });
     }
-    async function deleteItem(e) {
+    async function deleteItem(item, i) {
       const { delete: del } = await useHttpClient();
-      let hash = cartStore.items[e].hash;
-      cartStore.items.splice(e, 1);
+      let hash = items.value[i].hash;
+      items.value.splice(i, 1);
       await del(
         "@cart_ajax/deleteItem",
         { hash }
       );
-      getData();
+      loadItems();
     }
-    function checkTerm(e) {
-      e.preventDefault();
-      const target = e.currentTarget;
-      location.href = target.href;
-    }
-    function formatPrice(price) {
-      const prefix = "NT $";
-      const scale = 0;
-      return prefix + numberFormat(price, scale);
-    }
-    onMounted(() => {
-      new TwCitySelector({
-        el: formSelector,
-        elCounty: "[data-city]",
-        elDistrict: "[data-dist]",
-        elZipcode: "[data-zip]",
-        countyFieldName: "item[address][city]",
-        districtFieldName: "item[address][dist]",
-        zipcodeFieldName: "item[address][zip]"
-      });
-    });
-    const __returned__ = { cartStore, checkoutLink, lessonLink, getData, deleteItem, checkTerm, formatPrice, formSelector, FormGroup };
+    const __returned__ = { items, invoice, totals, count, csrf, checkoutLink, lessonLink, loadItems, deleteItem, formSelector, CartItems, InvoiceForm, get formatPrice() {
+      return formatPrice;
+    } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
 });
-const _hoisted_1 = {
-  id: "checkout-form",
-  method: "POST",
-  enctype: "multipart/form-data"
-};
+const _hoisted_1 = ["action"];
 const _hoisted_2 = { class: "row" };
 const _hoisted_3 = { class: "col-md-8 d-flex flex-column gap-5" };
 const _hoisted_4 = { class: "card" };
@@ -409,58 +690,42 @@ const _hoisted_9 = {
   key: 0,
   class: "table-responsive bg-light"
 };
-const _hoisted_10 = { class: "l-cart-items table table-bordered" };
-const _hoisted_11 = { class: "bg-white" };
-const _hoisted_12 = ["i"];
-const _hoisted_13 = { class: "text-center align-middle text-nowrap border-0" };
-const _hoisted_14 = { class: "border-0" };
-const _hoisted_15 = { class: "d-flex align-items-center" };
-const _hoisted_16 = ["src"];
-const _hoisted_17 = { style: { "min-width": "150px" } };
-const _hoisted_18 = { class: "text-nowrap text-center border-0 align-middle" };
-const _hoisted_19 = { class: "text-center text-nowrap border-0 align-middle" };
-const _hoisted_20 = ["onClick"];
-const _hoisted_21 = { class: "card" };
-const _hoisted_22 = { class: "card-body" };
-const _hoisted_23 = { class: "row gy-4" };
-const _hoisted_24 = { class: "col-lg-6" };
-const _hoisted_25 = { class: "col-lg-6" };
-const _hoisted_26 = { class: "col-lg-6" };
-const _hoisted_27 = { class: "col-lg-6" };
-const _hoisted_28 = { class: "col-lg-12" };
-const _hoisted_29 = { class: "row gy-3" };
-const _hoisted_30 = { class: "col-lg-4" };
-const _hoisted_31 = { class: "col-lg-4" };
-const _hoisted_32 = { class: "col-lg-4" };
-const _hoisted_33 = { class: "col-lg-12" };
-const _hoisted_34 = { class: "col-md-4" };
-const _hoisted_35 = {
+const _hoisted_10 = { class: "card" };
+const _hoisted_11 = { class: "col-md-4" };
+const _hoisted_12 = {
   class: "card std-card c-cart-card position-sticky",
   style: { "top": "var(--melo-cart-sticky-top, 75px)" }
 };
-const _hoisted_36 = { class: "card-body" };
-const _hoisted_37 = {
+const _hoisted_13 = { class: "card-body" };
+const _hoisted_14 = {
   key: 0,
   class: "d-flex justify-content-between mb-2"
 };
-const _hoisted_38 = { class: "text-base m-0" };
-const _hoisted_39 = { class: "d-flex justify-content-between mb-2" };
-const _hoisted_40 = { class: "text-base m-0" };
-const _hoisted_41 = { class: "text-end mb-3" };
-const _hoisted_42 = { class: "text-primary" };
-const _hoisted_43 = { class: "d-grid gap-2" };
+const _hoisted_15 = { class: "text-base m-0" };
+const _hoisted_16 = { class: "d-flex justify-content-between mb-2" };
+const _hoisted_17 = { class: "text-base m-0" };
+const _hoisted_18 = { class: "text-end mb-3" };
+const _hoisted_19 = { class: "text-primary" };
+const _hoisted_20 = { class: "d-grid gap-2" };
+const _hoisted_21 = { class: "d-none" };
+const _hoisted_22 = ["value"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("form", _hoisted_1, [
+  return openBlock(), createElementBlock("form", {
+    id: "checkout-form",
+    action: $setup.checkoutLink,
+    method: "POST",
+    enctype: "multipart/form-data"
+  }, [
     createElementVNode("div", _hoisted_2, [
       createElementVNode("div", _hoisted_3, [
         createElementVNode("div", _hoisted_4, [
           createElementVNode("div", _hoisted_5, [
-            _cache[2] || (_cache[2] = createElementVNode("h4", { class: "text-secondary mb-0" }, "\n              購物車\n            ", -1)),
-            _cache[3] || (_cache[3] = createTextVNode()),
-            !$setup.cartStore?.count ? (openBlock(), createElementBlock("div", _hoisted_6, [
+            _cache[3] || (_cache[3] = createElementVNode("h4", { class: "text-secondary mb-0" }, "\n              購物車\n            ", -1)),
+            _cache[4] || (_cache[4] = createTextVNode()),
+            !$setup.count ? (openBlock(), createElementBlock("div", _hoisted_6, [
               createElementVNode("div", _hoisted_7, [
-                _cache[0] || (_cache[0] = createElementVNode("div", { class: "mb-4" }, "\n                  您的購物車是空的，來去逛逛！\n                ", -1)),
-                _cache[1] || (_cache[1] = createTextVNode()),
+                _cache[1] || (_cache[1] = createElementVNode("div", { class: "mb-4" }, "\n                  您的購物車是空的，來去逛逛！\n                ", -1)),
+                _cache[2] || (_cache[2] = createTextVNode()),
                 createElementVNode("a", {
                   href: $setup.lessonLink,
                   class: "btn btn-lg btn-primary h-btn px-4"
@@ -468,231 +733,72 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             ])) : createCommentVNode("", true)
           ]),
-          _cache[11] || (_cache[11] = createTextVNode()),
-          $setup.cartStore?.count ? (openBlock(), createElementBlock("div", _hoisted_9, [
-            createElementVNode("table", _hoisted_10, [
-              _cache[9] || (_cache[9] = createElementVNode("thead", { class: "bg-light" }, [
-                createElementVNode("tr", { class: "b" }, [
-                  createElementVNode("th", {
-                    width: "5%",
-                    class: "text-center text-nowrap border-0"
-                  }, "\n                  編號\n                "),
-                  createTextVNode(),
-                  createElementVNode("th", { class: "text-nowrap border-0" }, "\n                  課程名稱\n                "),
-                  createTextVNode(),
-                  createElementVNode("th", { class: "text-center text-nowrap border-0" }, "\n                  售價\n                "),
-                  createTextVNode(),
-                  createElementVNode("th", {
-                    width: "5%",
-                    class: "text-center text-nowrap border-0"
-                  }, "\n                  刪除\n                ")
-                ])
-              ], -1)),
-              _cache[10] || (_cache[10] = createTextVNode()),
-              createElementVNode("tbody", _hoisted_11, [
-                (openBlock(true), createElementBlock(Fragment, null, renderList($setup.cartStore?.items, (item, i) => {
-                  return openBlock(), createElementBlock("tr", {
-                    key: item.uid,
-                    i
-                  }, [
-                    createElementVNode("td", _hoisted_13, toDisplayString(i + 1), 1),
-                    _cache[6] || (_cache[6] = createTextVNode()),
-                    createElementVNode("td", _hoisted_14, [
-                      createElementVNode("div", _hoisted_15, [
-                        createElementVNode("img", {
-                          src: item.image,
-                          alt: "Image",
-                          class: "me-2",
-                          width: "100px"
-                        }, null, 8, _hoisted_16),
-                        _cache[4] || (_cache[4] = createTextVNode()),
-                        createElementVNode("span", _hoisted_17, toDisplayString(item.title), 1)
-                      ])
-                    ]),
-                    _cache[7] || (_cache[7] = createTextVNode()),
-                    createElementVNode("td", _hoisted_18, toDisplayString($setup.formatPrice(item?.prices?.final?.price)), 1),
-                    _cache[8] || (_cache[8] = createTextVNode()),
-                    createElementVNode("td", _hoisted_19, [
-                      createElementVNode("a", {
-                        href: "javascript://",
-                        onClick: withModifiers(($event) => $setup.deleteItem(i), ["prevent"])
-                      }, [..._cache[5] || (_cache[5] = [
-                        createElementVNode("i", { class: "fas fa-trash fa-fw" }, null, -1)
-                      ])], 8, _hoisted_20)
-                    ])
-                  ], 8, _hoisted_12);
-                }), 128))
-              ])
-            ])
+          _cache[5] || (_cache[5] = createTextVNode()),
+          $setup.count ? (openBlock(), createElementBlock("div", _hoisted_9, [
+            createVNode($setup["CartItems"], {
+              items: $setup.items,
+              onDeleteItem: $setup.deleteItem
+            }, null, 8, ["items"])
           ])) : createCommentVNode("", true)
         ]),
-        _cache[31] || (_cache[31] = createTextVNode()),
-        createElementVNode("div", _hoisted_21, [
-          _cache[29] || (_cache[29] = createElementVNode("div", { class: "card-body border-bottom" }, [
+        _cache[8] || (_cache[8] = createTextVNode()),
+        createElementVNode("div", _hoisted_10, [
+          _cache[6] || (_cache[6] = createElementVNode("div", { class: "card-body border-bottom" }, [
             createElementVNode("h4", { class: "text-secondary m-0" }, "\n              電子發票開立資訊\n            ")
           ], -1)),
-          _cache[30] || (_cache[30] = createTextVNode()),
-          createElementVNode("div", _hoisted_22, [
-            _cache[27] || (_cache[27] = createElementVNode("div", { class: "mb-3" }, "\n              以下資訊只用於開立發票，並不會在其他頁面顯示。發票一經開立後不可更改，請確認資訊是否都填寫正確喔！\n            ", -1)),
-            _cache[28] || (_cache[28] = createTextVNode()),
-            createElementVNode("div", _hoisted_23, [
-              createElementVNode("div", _hoisted_24, [
-                createVNode($setup["FormGroup"], { label: "統一編號" }, {
-                  default: withCtx(() => [..._cache[12] || (_cache[12] = [
-                    createElementVNode("input", {
-                      type: "text",
-                      class: "form-control",
-                      name: "item[invoice_vat]",
-                      placeholder: "請填寫統一編號"
-                    }, null, -1)
-                  ])]),
-                  _: 1
-                })
-              ]),
-              _cache[23] || (_cache[23] = createTextVNode()),
-              createElementVNode("div", _hoisted_25, [
-                createVNode($setup["FormGroup"], { label: "發票抬頭" }, {
-                  default: withCtx(() => [..._cache[13] || (_cache[13] = [
-                    createElementVNode("input", {
-                      type: "text",
-                      class: "form-control",
-                      name: "item[invoice_title]",
-                      placeholder: "請填寫發票抬頭"
-                    }, null, -1)
-                  ])]),
-                  _: 1
-                })
-              ]),
-              _cache[24] || (_cache[24] = createTextVNode()),
-              createElementVNode("div", _hoisted_26, [
-                createVNode($setup["FormGroup"], { label: "收件人" }, {
-                  default: withCtx(() => [..._cache[14] || (_cache[14] = [
-                    createElementVNode("input", {
-                      type: "text",
-                      class: "form-control",
-                      name: "item[invoice_name]",
-                      placeholder: "請填寫真實姓名"
-                    }, null, -1)
-                  ])]),
-                  _: 1
-                })
-              ]),
-              _cache[25] || (_cache[25] = createTextVNode()),
-              createElementVNode("div", _hoisted_27, [
-                createVNode($setup["FormGroup"], { label: "電子發票載具" }, {
-                  default: withCtx(() => [..._cache[15] || (_cache[15] = [
-                    createElementVNode("input", {
-                      type: "text",
-                      class: "form-control",
-                      name: "item[invoice_carrier]",
-                      placeholder: "請填寫電子發票載具"
-                    }, null, -1)
-                  ])]),
-                  _: 1
-                })
-              ]),
-              _cache[26] || (_cache[26] = createTextVNode()),
-              createElementVNode("div", _hoisted_28, [
-                createVNode($setup["FormGroup"], { label: "地址" }, {
-                  default: withCtx(() => [
-                    createElementVNode("div", _hoisted_29, [
-                      createElementVNode("div", _hoisted_30, [
-                        createVNode($setup["FormGroup"], { label: "" }, {
-                          default: withCtx(() => [..._cache[16] || (_cache[16] = [
-                            createElementVNode("select", {
-                              class: "form-select",
-                              "data-city": ""
-                            }, null, -1)
-                          ])]),
-                          _: 1
-                        })
-                      ]),
-                      _cache[20] || (_cache[20] = createTextVNode()),
-                      createElementVNode("div", _hoisted_31, [
-                        createVNode($setup["FormGroup"], { label: "" }, {
-                          default: withCtx(() => [..._cache[17] || (_cache[17] = [
-                            createElementVNode("select", {
-                              class: "form-select",
-                              "data-dist": ""
-                            }, null, -1)
-                          ])]),
-                          _: 1
-                        })
-                      ]),
-                      _cache[21] || (_cache[21] = createTextVNode()),
-                      createElementVNode("div", _hoisted_32, [
-                        createVNode($setup["FormGroup"], { label: "" }, {
-                          default: withCtx(() => [..._cache[18] || (_cache[18] = [
-                            createElementVNode("input", {
-                              type: "text",
-                              class: "form-control",
-                              placeholder: "郵遞區號",
-                              readonly: "",
-                              "data-zip": ""
-                            }, null, -1)
-                          ])]),
-                          _: 1
-                        })
-                      ]),
-                      _cache[22] || (_cache[22] = createTextVNode()),
-                      createElementVNode("div", _hoisted_33, [
-                        createVNode($setup["FormGroup"], null, {
-                          default: withCtx(() => [..._cache[19] || (_cache[19] = [
-                            createElementVNode("input", {
-                              type: "text",
-                              class: "form-control",
-                              name: "item[address][address]",
-                              placeholder: "請填寫地址"
-                            }, null, -1)
-                          ])]),
-                          _: 1
-                        })
-                      ])
-                    ])
-                  ]),
-                  _: 1
-                })
-              ])
-            ])
-          ])
+          _cache[7] || (_cache[7] = createTextVNode()),
+          createVNode($setup["InvoiceForm"], {
+            class: "card-body",
+            modelValue: $setup.invoice,
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.invoice = $event),
+            formSelector: $setup.formSelector
+          }, null, 8, ["modelValue"])
         ]),
-        _cache[32] || (_cache[32] = createStaticVNode(' <div class="card"><div class="card-body border-bottom"><h4 class="text-secondary m-0">\n              付款方式\n            </h4></div> <div class="card-body"><div class="row"><div class="col-md-7"><select class="form-select"></select></div></div></div></div>', 2))
+        _cache[9] || (_cache[9] = createStaticVNode(' <div class="card"><div class="card-body border-bottom"><h4 class="text-secondary m-0">\n              付款方式\n            </h4></div> <div class="card-body"><div class="row"><div class="col-md-7"><select class="form-select"></select></div></div></div></div>', 2))
       ]),
-      _cache[42] || (_cache[42] = createTextVNode()),
-      createElementVNode("div", _hoisted_34, [
-        createElementVNode("div", _hoisted_35, [
-          _cache[40] || (_cache[40] = createElementVNode("div", { class: "card-body border-bottom" }, [
+      _cache[19] || (_cache[19] = createTextVNode()),
+      createElementVNode("div", _hoisted_11, [
+        createElementVNode("div", _hoisted_12, [
+          _cache[17] || (_cache[17] = createElementVNode("div", { class: "card-body border-bottom" }, [
             createElementVNode("h4", { class: "text-secondary m-0" }, "\n              訂單明細\n            ")
           ], -1)),
-          _cache[41] || (_cache[41] = createTextVNode()),
-          createElementVNode("div", _hoisted_36, [
-            $setup.cartStore?.count ? (openBlock(), createElementBlock("div", _hoisted_37, [
-              _cache[33] || (_cache[33] = createElementVNode("div", { class: "text-base" }, "\n                總計\n              ", -1)),
-              _cache[34] || (_cache[34] = createTextVNode()),
-              createElementVNode("h5", _hoisted_38, toDisplayString($setup.cartStore?.count) + " 堂課\n              ", 1)
+          _cache[18] || (_cache[18] = createTextVNode()),
+          createElementVNode("div", _hoisted_13, [
+            $setup.count ? (openBlock(), createElementBlock("div", _hoisted_14, [
+              _cache[10] || (_cache[10] = createElementVNode("div", { class: "text-base" }, "\n                總計\n              ", -1)),
+              _cache[11] || (_cache[11] = createTextVNode()),
+              createElementVNode("h5", _hoisted_15, toDisplayString($setup.count) + " 堂課\n              ", 1)
             ])) : createCommentVNode("", true),
-            _cache[37] || (_cache[37] = createTextVNode()),
-            createElementVNode("div", _hoisted_39, [
-              _cache[35] || (_cache[35] = createElementVNode("div", { class: "text-base" }, "\n                小計\n              ", -1)),
-              _cache[36] || (_cache[36] = createTextVNode()),
-              createElementVNode("h5", _hoisted_40, toDisplayString($setup.formatPrice($setup.cartStore?.totals?.lesson_total?.price)), 1)
+            _cache[14] || (_cache[14] = createTextVNode()),
+            createElementVNode("div", _hoisted_16, [
+              _cache[12] || (_cache[12] = createElementVNode("div", { class: "text-base" }, "\n                小計\n              ", -1)),
+              _cache[13] || (_cache[13] = createTextVNode()),
+              createElementVNode("h5", _hoisted_17, toDisplayString($setup.formatPrice($setup.totals?.lesson_total?.price)), 1)
             ]),
-            _cache[38] || (_cache[38] = createTextVNode()),
-            createElementVNode("div", _hoisted_41, [
-              createElementVNode("h3", _hoisted_42, toDisplayString($setup.formatPrice($setup.cartStore?.totals?.grand_total?.price)), 1)
+            _cache[15] || (_cache[15] = createTextVNode()),
+            createElementVNode("div", _hoisted_18, [
+              createElementVNode("h3", _hoisted_19, toDisplayString($setup.formatPrice($setup.totals?.grand_total?.price)), 1)
             ]),
-            _cache[39] || (_cache[39] = createTextVNode()),
-            createElementVNode("div", _hoisted_43, [
+            _cache[16] || (_cache[16] = createTextVNode()),
+            createElementVNode("div", _hoisted_20, [
               createElementVNode("button", {
                 type: "submit",
-                class: normalizeClass(["btn disable-on-submit", $setup.cartStore?.count ? "btn-primary" : "btn-outline-base disabled"])
+                class: normalizeClass(["btn disable-on-submit", $setup.count ? "btn-primary" : "btn-outline-base disabled"])
               }, "\n                確定結賬\n              ", 2)
             ])
           ])
         ])
       ])
+    ]),
+    _cache[20] || (_cache[20] = createTextVNode()),
+    createElementVNode("div", _hoisted_21, [
+      createElementVNode("input", {
+        name: "anticsrf",
+        type: "hidden",
+        value: $setup.csrf
+      }, null, 8, _hoisted_22)
     ])
-  ]);
+  ], 8, _hoisted_1);
 }
 const MeloCartApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "MeloCartApp.vue"]]);
 function createMeloCartApp(props = {}) {
@@ -700,6 +806,7 @@ function createMeloCartApp(props = {}) {
     MeloCartApp,
     props
   );
+  app.component("CartItems");
   return app;
 }
 export {

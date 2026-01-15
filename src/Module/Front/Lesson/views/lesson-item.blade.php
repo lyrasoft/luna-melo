@@ -23,6 +23,7 @@ use Lyrasoft\Melo\Features\VideoService;
 use Lyrasoft\Luna\Entity\Tag;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
+use Lyrasoft\Melo\Script\MeloScript;
 use Unicorn\Html\Breadcrumb;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Module\Front\Lesson\LessonItemView;
@@ -61,9 +62,8 @@ if ($totalDuration >= 3600) {
 
 $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
 
-$uniScript = $app->service(UnicornScript::class);
-$uniScript->addRoute('@melo_cart_ajax');
-$uniScript->addRoute('melo_cart', $nav->to('melo_cart'));
+$meloScript = $app->service(MeloScript::class);
+$meloScript->lessonCart();
 ?>
 
 @extends('global.body')

@@ -1,4 +1,5 @@
 export interface CartItem {
+  uid: string;
   acquired: string;
   alias: string;
   categoryId: number;
@@ -23,7 +24,7 @@ export interface CartItem {
   prices: {
     final: PriceObject;
     origin: PriceObject;
-  };
+  } & CartTotals;
   specialPrice: number;
   startDate: string;
   state: {
@@ -35,8 +36,10 @@ export interface CartItem {
   totals: {
     final_total: PriceObject;
     total: PriceObject;
-  }
+  } & CartTotals;
 }
+
+export type CartTotals = Record<string, PriceObject>;
 
 export interface PriceObject {
   label: string;

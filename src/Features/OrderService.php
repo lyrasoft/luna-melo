@@ -12,11 +12,9 @@ use Lyrasoft\Melo\Entity\UserAnswer;
 use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\OrderHistoryType;
-use Lyrasoft\Melo\Enum\OrderNoMode;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Enum\UserLessonStatus;
 use Lyrasoft\Melo\MeloPackage;
-use Lyrasoft\Sequence\Service\SequenceService;
 use Lyrasoft\Toolkit\Encode\BaseConvert;
 use Random\RandomException;
 use Windwalker\Core\Application\ApplicationInterface;
@@ -27,17 +25,15 @@ use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
 use Windwalker\Utilities\Str;
 
-use function Windwalker\now;
-
 #[Service]
 class OrderService
 {
     public function __construct(
+        protected ApplicationInterface $app,
         protected ORM $orm,
         protected MailerInterface $mailer,
         #[Autowire]
         protected MeloPackage $melo,
-        protected ApplicationInterface $app,
     ) {
     }
 
@@ -143,27 +139,27 @@ class OrderService
 
         /** @var MeloOrderItem $orderItem */
         foreach ($orderItems as $orderItem) {
-            $this->orm->deleteWhere(
+            $this->orm->deleteBatch(
                 UserLessonMap::class,
                 [
                     'lesson_id' => $orderItem->lessonId,
-                    'user_id' => $order->userId
+                    'user_id' => $order->userId,
                 ]
             );
 
-            $this->orm->deleteWhere(
+            $this->orm->deleteBatch(
                 UserSegmentMap::class,
                 [
                     'lesson_id' => $orderItem->lessonId,
-                    'user_id' => $order->userId
+                    'user_id' => $order->userId,
                 ]
             );
 
-            $this->orm->deleteWhere(
+            $this->orm->deleteBatch(
                 UserAnswer::class,
                 [
                     'lesson_id' => $orderItem->lessonId,
-                    'user_id' => $order->userId
+                    'user_id' => $order->userId,
                 ]
             );
         }
@@ -203,62 +199,18 @@ class OrderService
      * @throws RandomException
      * @throws \Exception
      */
-    public function createOrderNo(int $id): string
+    public function createOrderNo(MeloOrder $order): string
     {
-        $prefix = (string) $this->melo->config('order_no.prefix');
-        $mode = OrderNoMode::wrap(
-            $this->melo->config('order_no.mode') ?: OrderNoMode::INCREMENT_ID
-        );
+        $handler = $this->melo->config('order.no_handler');
 
-        if ($mode === OrderNoMode::INCREMENT_ID) {
-            $availableLength = $this->getAvailableNoLength($prefix);
-
-            return $prefix . Str::padLeft((string) $id, $availableLength, '0');
+        if ($handler && is_callable($handler)) {
+            return $this->app->call(
+                $handler,
+                compact('order')
+            );
         }
 
-        if ($mode === OrderNoMode::DAILY_SEQUENCE) {
-            $sequenceService = $this->app->service(SequenceService::class);
-            $format = $this->melo->config('order_no.sequence_day_format') ?: 'Ymd';
-            $prefix .= now($format);
-
-            $availableLength = $this->getAvailableNoLength($prefix);
-
-            return $prefix . $sequenceService->getNextSerialAndPadZero('melo_order', $prefix, $availableLength);
-        }
-
-        if ($mode === OrderNoMode::SEQUENCE_HASHES) {
-            $offsets = (int) $this->melo->config('order_no.hash_offsets');
-            $seed = $this->melo->config('order_no.hash_seed') ?: BaseConvert::BASE62;
-            $hash = BaseConvert::encode($id + $offsets, $seed);
-
-            return $prefix . $hash;
-        }
-
-        if ($mode === OrderNoMode::RANDOM_HASHES) {
-            $uid = bin2hex(random_bytes(6));
-            $seed = $this->melo->config('order_no.hash_seed') ?: BaseConvert::BASE62;
-
-            do {
-                $no = $prefix . BaseConvert::encode(base_convert($uid, 16, 10), $seed);
-
-                $exists = $this->orm->findOne(MeloOrder::class, ['no' => $no]);
-            } while ($exists !== null);
-
-            return $no;
-        }
-
-        throw new \RuntimeException('Order no config wrong');
-    }
-
-    protected function getAvailableNoLength(string $prefix): int
-    {
-        $maxlength = (int) $this->melo->config('order_no.maxlength') ?: 20;
-
-        $t = static::getCurrentTimeBase62();
-
-        $availableLength = $maxlength - strlen($t) - strlen($prefix) - 1;
-
-        return min($availableLength, 11);
+        return 'LS' . Str::padLeft((string) $order->id, 10, '0');
     }
 
     public static function getCurrentTimeBase62(): string
