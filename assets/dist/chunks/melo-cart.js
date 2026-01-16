@@ -1,4 +1,4 @@
-import { defineComponent, createElementBlock, openBlock, createElementVNode, createTextVNode, Fragment, renderList, toDisplayString, withModifiers, computed, ref, onMounted, renderSlot, createCommentVNode, mergeModels, useModel, watch, createVNode, withCtx, withDirectives, vModelText, vModelSelect, onErrorCaptured, createStaticVNode, normalizeClass, createApp } from "vue";
+import { defineComponent, createElementBlock, openBlock, createElementVNode, createTextVNode, Fragment, renderList, toDisplayString, withModifiers, computed, ref, onMounted, renderSlot, createCommentVNode, mergeModels, useModel, watch, createVNode, withCtx, withDirectives, vModelText, vModelSelect, onErrorCaptured, normalizeClass, createApp } from "vue";
 import { uid, sleep, useHttpClient, simpleAlert, data, route } from "@windwalker-io/unicorn-next";
 import { numberFormat } from "@lyrasoft/ts-toolkit/generic";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
@@ -618,8 +618,13 @@ const InvoiceForm = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_re
 const formSelector = "#checkout-form";
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "MeloCartApp",
+  props: {
+    user: {},
+    payments: {}
+  },
   setup(__props, { expose: __expose }) {
     __expose();
+    const props = __props;
     onErrorCaptured((e) => {
       useHttpClient().then(({ isAxiosError }) => {
         if (isAxiosError(e)) {
@@ -642,6 +647,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         address: ""
       }
     });
+    const payment = ref(Object.keys(props.payments)[0] ?? "");
     const totals = ref();
     const count = computed(() => items.value.length);
     const csrf = data("csrf-token");
@@ -668,7 +674,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       );
       loadItems();
     }
-    const __returned__ = { items, invoice, totals, count, csrf, checkoutLink, lessonLink, loadItems, deleteItem, formSelector, CartItems, InvoiceForm, get formatPrice() {
+    const __returned__ = { props, items, invoice, payment, totals, count, csrf, checkoutLink, lessonLink, loadItems, deleteItem, formSelector, CartItems, InvoiceForm, get formatPrice() {
       return formatPrice;
     } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
@@ -691,24 +697,29 @@ const _hoisted_9 = {
   class: "table-responsive bg-light"
 };
 const _hoisted_10 = { class: "card" };
-const _hoisted_11 = { class: "col-md-4" };
-const _hoisted_12 = {
+const _hoisted_11 = { class: "card" };
+const _hoisted_12 = { class: "card-body" };
+const _hoisted_13 = { class: "row" };
+const _hoisted_14 = { class: "col-md-7" };
+const _hoisted_15 = ["value"];
+const _hoisted_16 = { class: "col-md-4" };
+const _hoisted_17 = {
   class: "card std-card c-cart-card position-sticky",
   style: { "top": "var(--melo-cart-sticky-top, 75px)" }
 };
-const _hoisted_13 = { class: "card-body" };
-const _hoisted_14 = {
+const _hoisted_18 = { class: "card-body" };
+const _hoisted_19 = {
   key: 0,
   class: "d-flex justify-content-between mb-2"
 };
-const _hoisted_15 = { class: "text-base m-0" };
-const _hoisted_16 = { class: "d-flex justify-content-between mb-2" };
-const _hoisted_17 = { class: "text-base m-0" };
-const _hoisted_18 = { class: "text-end mb-3" };
-const _hoisted_19 = { class: "text-primary" };
-const _hoisted_20 = { class: "d-grid gap-2" };
-const _hoisted_21 = { class: "d-none" };
-const _hoisted_22 = ["value"];
+const _hoisted_20 = { class: "text-base m-0" };
+const _hoisted_21 = { class: "d-flex justify-content-between mb-2" };
+const _hoisted_22 = { class: "text-base m-0" };
+const _hoisted_23 = { class: "text-end mb-3" };
+const _hoisted_24 = { class: "text-primary" };
+const _hoisted_25 = { class: "d-grid gap-2" };
+const _hoisted_26 = { class: "d-none" };
+const _hoisted_27 = ["value"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("form", {
     id: "checkout-form",
@@ -720,12 +731,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       createElementVNode("div", _hoisted_3, [
         createElementVNode("div", _hoisted_4, [
           createElementVNode("div", _hoisted_5, [
-            _cache[3] || (_cache[3] = createElementVNode("h4", { class: "text-secondary mb-0" }, "\n              購物車\n            ", -1)),
-            _cache[4] || (_cache[4] = createTextVNode()),
+            _cache[4] || (_cache[4] = createElementVNode("h4", { class: "text-secondary mb-0" }, "\n              購物車\n            ", -1)),
+            _cache[5] || (_cache[5] = createTextVNode()),
             !$setup.count ? (openBlock(), createElementBlock("div", _hoisted_6, [
               createElementVNode("div", _hoisted_7, [
-                _cache[1] || (_cache[1] = createElementVNode("div", { class: "mb-4" }, "\n                  您的購物車是空的，來去逛逛！\n                ", -1)),
-                _cache[2] || (_cache[2] = createTextVNode()),
+                _cache[2] || (_cache[2] = createElementVNode("div", { class: "mb-4" }, "\n                  您的購物車是空的，來去逛逛！\n                ", -1)),
+                _cache[3] || (_cache[3] = createTextVNode()),
                 createElementVNode("a", {
                   href: $setup.lessonLink,
                   class: "btn btn-lg btn-primary h-btn px-4"
@@ -733,7 +744,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             ])) : createCommentVNode("", true)
           ]),
-          _cache[5] || (_cache[5] = createTextVNode()),
+          _cache[6] || (_cache[6] = createTextVNode()),
           $setup.count ? (openBlock(), createElementBlock("div", _hoisted_9, [
             createVNode($setup["CartItems"], {
               items: $setup.items,
@@ -741,12 +752,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             }, null, 8, ["items"])
           ])) : createCommentVNode("", true)
         ]),
-        _cache[8] || (_cache[8] = createTextVNode()),
+        _cache[11] || (_cache[11] = createTextVNode()),
         createElementVNode("div", _hoisted_10, [
-          _cache[6] || (_cache[6] = createElementVNode("div", { class: "card-body border-bottom" }, [
+          _cache[7] || (_cache[7] = createElementVNode("div", { class: "card-body border-bottom" }, [
             createElementVNode("h4", { class: "text-secondary m-0" }, "\n              電子發票開立資訊\n            ")
           ], -1)),
-          _cache[7] || (_cache[7] = createTextVNode()),
+          _cache[8] || (_cache[8] = createTextVNode()),
           createVNode($setup["InvoiceForm"], {
             class: "card-body",
             modelValue: $setup.invoice,
@@ -754,33 +765,59 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             formSelector: $setup.formSelector
           }, null, 8, ["modelValue"])
         ]),
-        _cache[9] || (_cache[9] = createStaticVNode(' <div class="card"><div class="card-body border-bottom"><h4 class="text-secondary m-0">\n              付款方式\n            </h4></div> <div class="card-body"><div class="row"><div class="col-md-7"><select class="form-select"></select></div></div></div></div>', 2))
+        _cache[12] || (_cache[12] = createTextVNode()),
+        createElementVNode("div", _hoisted_11, [
+          _cache[9] || (_cache[9] = createElementVNode("div", { class: "card-body border-bottom" }, [
+            createElementVNode("h4", { class: "text-secondary m-0" }, "\n              付款方式\n            ")
+          ], -1)),
+          _cache[10] || (_cache[10] = createTextVNode()),
+          createElementVNode("div", _hoisted_12, [
+            createElementVNode("div", _hoisted_13, [
+              createElementVNode("div", _hoisted_14, [
+                withDirectives(createElementVNode("select", {
+                  class: "form-select",
+                  "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.payment = $event),
+                  name: "checkout[payment]"
+                }, [
+                  (openBlock(true), createElementBlock(Fragment, null, renderList($props.payments, (payment, key) => {
+                    return openBlock(), createElementBlock("option", {
+                      key,
+                      value: key
+                    }, toDisplayString(payment.title), 9, _hoisted_15);
+                  }), 128))
+                ], 512), [
+                  [vModelSelect, $setup.payment]
+                ])
+              ])
+            ])
+          ])
+        ])
       ]),
-      _cache[19] || (_cache[19] = createTextVNode()),
-      createElementVNode("div", _hoisted_11, [
-        createElementVNode("div", _hoisted_12, [
-          _cache[17] || (_cache[17] = createElementVNode("div", { class: "card-body border-bottom" }, [
+      _cache[22] || (_cache[22] = createTextVNode()),
+      createElementVNode("div", _hoisted_16, [
+        createElementVNode("div", _hoisted_17, [
+          _cache[20] || (_cache[20] = createElementVNode("div", { class: "card-body border-bottom" }, [
             createElementVNode("h4", { class: "text-secondary m-0" }, "\n              訂單明細\n            ")
           ], -1)),
-          _cache[18] || (_cache[18] = createTextVNode()),
-          createElementVNode("div", _hoisted_13, [
-            $setup.count ? (openBlock(), createElementBlock("div", _hoisted_14, [
-              _cache[10] || (_cache[10] = createElementVNode("div", { class: "text-base" }, "\n                總計\n              ", -1)),
-              _cache[11] || (_cache[11] = createTextVNode()),
-              createElementVNode("h5", _hoisted_15, toDisplayString($setup.count) + " 堂課\n              ", 1)
+          _cache[21] || (_cache[21] = createTextVNode()),
+          createElementVNode("div", _hoisted_18, [
+            $setup.count ? (openBlock(), createElementBlock("div", _hoisted_19, [
+              _cache[13] || (_cache[13] = createElementVNode("div", { class: "text-base" }, "\n                總計\n              ", -1)),
+              _cache[14] || (_cache[14] = createTextVNode()),
+              createElementVNode("h5", _hoisted_20, toDisplayString($setup.count) + " 堂課\n              ", 1)
             ])) : createCommentVNode("", true),
-            _cache[14] || (_cache[14] = createTextVNode()),
-            createElementVNode("div", _hoisted_16, [
-              _cache[12] || (_cache[12] = createElementVNode("div", { class: "text-base" }, "\n                小計\n              ", -1)),
-              _cache[13] || (_cache[13] = createTextVNode()),
-              createElementVNode("h5", _hoisted_17, toDisplayString($setup.formatPrice($setup.totals?.lesson_total?.price)), 1)
+            _cache[17] || (_cache[17] = createTextVNode()),
+            createElementVNode("div", _hoisted_21, [
+              _cache[15] || (_cache[15] = createElementVNode("div", { class: "text-base" }, "\n                小計\n              ", -1)),
+              _cache[16] || (_cache[16] = createTextVNode()),
+              createElementVNode("h5", _hoisted_22, toDisplayString($setup.formatPrice($setup.totals?.lesson_total?.price)), 1)
             ]),
-            _cache[15] || (_cache[15] = createTextVNode()),
-            createElementVNode("div", _hoisted_18, [
-              createElementVNode("h3", _hoisted_19, toDisplayString($setup.formatPrice($setup.totals?.grand_total?.price)), 1)
+            _cache[18] || (_cache[18] = createTextVNode()),
+            createElementVNode("div", _hoisted_23, [
+              createElementVNode("h3", _hoisted_24, toDisplayString($setup.formatPrice($setup.totals?.grand_total?.price)), 1)
             ]),
-            _cache[16] || (_cache[16] = createTextVNode()),
-            createElementVNode("div", _hoisted_20, [
+            _cache[19] || (_cache[19] = createTextVNode()),
+            createElementVNode("div", _hoisted_25, [
               createElementVNode("button", {
                 type: "submit",
                 class: normalizeClass(["btn disable-on-submit", $setup.count ? "btn-primary" : "btn-outline-base disabled"])
@@ -790,13 +827,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ])
     ]),
-    _cache[20] || (_cache[20] = createTextVNode()),
-    createElementVNode("div", _hoisted_21, [
+    _cache[23] || (_cache[23] = createTextVNode()),
+    createElementVNode("div", _hoisted_26, [
       createElementVNode("input", {
         name: "anticsrf",
         type: "hidden",
         value: $setup.csrf
-      }, null, 8, _hoisted_22)
+      }, null, 8, _hoisted_27)
     ])
   ], 8, _hoisted_1);
 }

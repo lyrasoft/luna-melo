@@ -6,6 +6,8 @@ namespace Lyrasoft\Melo\Module\Front\LessonCart;
 
 use Lyrasoft\Melo\Cart\CartStorage;
 use Lyrasoft\Luna\User\UserService;
+use Lyrasoft\Melo\Features\Payment\MeloPaymentInterface;
+use Lyrasoft\Melo\Features\Payment\PaymentComposer;
 use Lyrasoft\Melo\Module\Front\LessonCart\Form\InvoiceForm;
 use Psr\Cache\InvalidArgumentException;
 use Windwalker\Core\Application\AppContext;
@@ -13,6 +15,7 @@ use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Form\FormFactory;
 use Windwalker\Core\Html\HtmlFrame;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
@@ -25,6 +28,8 @@ use Windwalker\ORM\ORM;
 )]
 class LessonCartView implements ViewModelInterface
 {
+    use TranslatorTrait;
+
     public function __construct(
         protected ORM $orm,
         protected UserService $userService,
@@ -32,6 +37,7 @@ class LessonCartView implements ViewModelInterface
         #[Autowire]
         protected CartStorage $cartStorage,
         protected FormFactory $formFactory,
+        protected PaymentComposer $paymentComposer,
     ) {
         //
     }
@@ -63,7 +69,10 @@ class LessonCartView implements ViewModelInterface
 
         $cartItems = $app->state->get('cart.items') ?? [];
 
-        return compact('cartItems', 'form');
+        $payments = $this->paymentComposer->getGateways();
+        $payments = $payments->map(fn (MeloPaymentInterface $payment) => $payment->toArray($this->lang));
+
+        return compact('cartItems', 'form', 'payments');
     }
 
     #[ViewMetadata]

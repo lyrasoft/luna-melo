@@ -8,11 +8,14 @@ use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Entity\UserRoleMap;
 use Lyrasoft\Melo\Cart\Price\PriceObject;
 use Lyrasoft\Melo\Cart\Price\PriceSet;
+use Lyrasoft\Melo\Data\CartData;
+use Lyrasoft\Melo\Data\CheckoutParams;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
+use Lyrasoft\Melo\Features\Payment\PaymentComposer;
 use Lyrasoft\Melo\MeloPackage;
 use Random\RandomException;
 use Windwalker\Core\Application\ApplicationInterface;
@@ -27,7 +30,7 @@ use Windwalker\Query\Query;
 use function Windwalker\collect;
 
 #[Service]
-class CheckoutService
+class LessonCheckoutService
 {
     use TranslatorTrait;
 
@@ -37,6 +40,7 @@ class CheckoutService
         protected OrderService $orderService,
         #[Autowire]
         protected MeloPackage $melo,
+        protected PaymentComposer $paymentComposer,
         protected MailerInterface $mailer,
         protected ApplicationInterface $app,
     ) {
@@ -47,11 +51,11 @@ class CheckoutService
      */
     public function createOrder(
         MeloOrder $orderData,
-        array $cartData,
+        CartData $cartData,
         array $input
     ): MeloOrder {
-        $totals = (float) $cartData['totals']->get('lesson_total')->__toString();
-        $grandTotal = (float) $cartData['totals']->get('grand_total')->__toString();
+        $totals = (float) (string) $cartData->totals->get('lesson_total');
+        $grandTotal = (float) (string) $cartData->totals->get('grand_total');
 
         if ($grandTotal < 0) {
             throw new ValidateFailException('Cannot process checkout for negative price.');
@@ -63,7 +67,7 @@ class CheckoutService
 
         $order = $this->orm->createOne(MeloOrder::class, $orderData);
 
-        $order = $this->prepareOrderAndPaymentNo($order);
+        $order = $this->prepareOrderNo($order);
 
         $orderItems = $this->createOrderItems($order, $cartData);
         $orderTotals = $this->createOrderTotals($order, $cartData['totals']);
@@ -147,25 +151,23 @@ class CheckoutService
     /**
      * @throws RandomException
      */
-    protected function prepareOrderAndPaymentNo(MeloOrder $order, bool $test = false): MeloOrder
+    protected function prepareOrderNo(MeloOrder $order): MeloOrder
     {
         $no = $this->orderService->createOrderNo($order);
-        $tradeNo = $this->orderService->getPaymentNo($no, $test);
 
         // Save NO
         $this->orm->updateBulk(
             MeloOrder::class,
-            ['no' => $no, 'payment_no' => $tradeNo],
+            ['no' => $no],
             ['id' => $order->id]
         );
 
         $order->no = $no;
-        $order->paymentNo = $tradeNo;
 
         return $order;
     }
 
-    public function notifyForCheckout(MeloOrder $order, array $cartData, User $user): MeloOrder
+    public function notifyForCheckout(MeloOrder $order, CartData $cartData, User $user): MeloOrder
     {
         $userMail = $user->email;
 
@@ -180,7 +182,7 @@ class CheckoutService
     }
 
 
-    protected function notifyBuyer(MeloOrder $order, array $cartData, User $user): void
+    protected function notifyBuyer(MeloOrder $order, CartData $cartData, User $user): void
     {
         $isAdmin = false;
 
@@ -199,7 +201,7 @@ class CheckoutService
             ->send();
     }
 
-    protected function notifyAdmins(MeloOrder $order, array $cartData, User $user): void
+    protected function notifyAdmins(MeloOrder $order, CartData $cartData, User $user): void
     {
         $roles = $this->app->config('checkout.receiver_roles') ?? ['superuser', 'manager', 'admin'];
 
@@ -234,5 +236,26 @@ class CheckoutService
                 )
                 ->send();
         }
+    }
+
+    public function processPayment(CheckoutParams $params)
+    {
+        $order = $params->order;
+
+        if (!$order) {
+            throw new \RuntimeException('Order not found in attending store.');
+        }
+
+        $gateway = $this->paymentComposer->getGateway($order->payment);
+
+        if (!$gateway) {
+            throw new \RuntimeException('付款方式不可用，請聯繫管理員');
+        }
+
+        $order->paymentNo = $this->paymentComposer->createNo($order);
+
+        $this->orm->updateOne($order);
+
+        return $gateway->process($params);
     }
 }

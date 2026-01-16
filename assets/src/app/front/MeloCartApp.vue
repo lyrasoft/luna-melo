@@ -4,7 +4,12 @@ import { computed, onErrorCaptured, ref } from 'vue';
 import CartItems from '~melo/components/cart/CartItems.vue';
 import InvoiceForm from '~melo/components/cart/InvoiceForm.vue';
 import { formatPrice } from '~melo/shared/currency';
-import { CartItem, CartTotals, PriceObject } from '~melo/types';
+import { CartItem, CartTotals, PaymentGateway, PriceObject } from '~melo/types';
+
+const props = defineProps<{
+  user: any,
+  payments: Record<string, PaymentGateway>;
+}>()
 
 onErrorCaptured((e) => {
   useHttpClient().then(({ isAxiosError }) => {
@@ -29,6 +34,7 @@ const invoice = ref({
     address: '',
   },
 });
+const payment = ref<string>(Object.keys(props.payments)[0] ?? '');
 
 const totals = ref<{
   grand_total: PriceObject,
@@ -128,8 +134,10 @@ const formSelector = '#checkout-form';
           <div class="card-body">
             <div class="row">
               <div class="col-md-7">
-                <select class="form-select">
-
+                <select class="form-select" v-model="payment" name="checkout[payment]">
+                  <option v-for="(payment, key) in payments" :key="key" :value="key">
+                    {{ payment.title }}
+                  </option>
                 </select>
               </div>
             </div>

@@ -1496,7 +1496,7 @@ function isOverflowElement(element) {
     overflowX,
     overflowY,
     display
-  } = getComputedStyle$1(element);
+  } = getComputedStyle(element);
   return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !invalidOverflowDisplayValues.has(display);
 }
 const tableElements = /* @__PURE__ */ new Set(["table", "td", "th"]);
@@ -1518,7 +1518,7 @@ const willChangeValues = ["transform", "translate", "scale", "rotate", "perspect
 const containValues = ["paint", "layout", "strict", "content"];
 function isContainingBlock(elementOrCss) {
   const webkit = isWebKit();
-  const css = isElement(elementOrCss) ? getComputedStyle$1(elementOrCss) : elementOrCss;
+  const css = isElement(elementOrCss) ? getComputedStyle(elementOrCss) : elementOrCss;
   return transformProperties.some((value) => css[value] ? css[value] !== "none" : false) || (css.containerType ? css.containerType !== "normal" : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== "none" : false) || !webkit && (css.filter ? css.filter !== "none" : false) || willChangeValues.some((value) => (css.willChange || "").includes(value)) || containValues.some((value) => (css.contain || "").includes(value));
 }
 function getContainingBlock(element) {
@@ -1541,7 +1541,7 @@ const lastTraversableNodeNames = /* @__PURE__ */ new Set(["html", "body", "#docu
 function isLastTraversableNode(node) {
   return lastTraversableNodeNames.has(getNodeName(node));
 }
-function getComputedStyle$1(element) {
+function getComputedStyle(element) {
   return getWindow(element).getComputedStyle(element);
 }
 function getNodeScroll(element) {
@@ -1600,7 +1600,7 @@ function getFrameElement(win) {
   return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
 }
 function getCssDimensions(element) {
-  const css = getComputedStyle$1(element);
+  const css = getComputedStyle(element);
   let width = parseFloat(css.width) || 0;
   let height = parseFloat(css.height) || 0;
   const hasOffset = isHTMLElement(element);
@@ -1696,7 +1696,7 @@ function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetPar
     while (currentIFrame && offsetParent && offsetWin !== currentWin) {
       const iframeScale = getScale(currentIFrame);
       const iframeRect = currentIFrame.getBoundingClientRect();
-      const css = getComputedStyle$1(currentIFrame);
+      const css = getComputedStyle(currentIFrame);
       const left = iframeRect.left + (currentIFrame.clientLeft + parseFloat(css.paddingLeft)) * iframeScale.x;
       const top = iframeRect.top + (currentIFrame.clientTop + parseFloat(css.paddingTop)) * iframeScale.y;
       x *= iframeScale.x;
@@ -1788,7 +1788,7 @@ function getDocumentRect(element) {
   const height = max(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
   let x = -scroll.scrollLeft + getWindowScrollBarX(element);
   const y = -scroll.scrollTop;
-  if (getComputedStyle$1(body).direction === "rtl") {
+  if (getComputedStyle(body).direction === "rtl") {
     x += max(html.clientWidth, body.clientWidth) - width;
   }
   return {
@@ -1863,7 +1863,7 @@ function hasFixedPositionAncestor(element, stopNode) {
   if (parentNode === stopNode || !isElement(parentNode) || isLastTraversableNode(parentNode)) {
     return false;
   }
-  return getComputedStyle$1(parentNode).position === "fixed" || hasFixedPositionAncestor(parentNode, stopNode);
+  return getComputedStyle(parentNode).position === "fixed" || hasFixedPositionAncestor(parentNode, stopNode);
 }
 function getClippingElementAncestors(element, cache) {
   const cachedResult = cache.get(element);
@@ -1872,10 +1872,10 @@ function getClippingElementAncestors(element, cache) {
   }
   let result = getOverflowAncestors(element, [], false).filter((el) => isElement(el) && getNodeName(el) !== "body");
   let currentContainingBlockComputedStyle = null;
-  const elementIsFixed = getComputedStyle$1(element).position === "fixed";
+  const elementIsFixed = getComputedStyle(element).position === "fixed";
   let currentNode = elementIsFixed ? getParentNode(element) : element;
   while (isElement(currentNode) && !isLastTraversableNode(currentNode)) {
-    const computedStyle = getComputedStyle$1(currentNode);
+    const computedStyle = getComputedStyle(currentNode);
     const currentNodeIsContaining = isContainingBlock(currentNode);
     if (!currentNodeIsContaining && computedStyle.position === "fixed") {
       currentContainingBlockComputedStyle = null;
@@ -1965,10 +1965,10 @@ function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
   };
 }
 function isStaticPositioned(element) {
-  return getComputedStyle$1(element).position === "static";
+  return getComputedStyle(element).position === "static";
 }
 function getTrueOffsetParent(element, polyfill) {
-  if (!isHTMLElement(element) || getComputedStyle$1(element).position === "fixed") {
+  if (!isHTMLElement(element) || getComputedStyle(element).position === "fixed") {
     return null;
   }
   if (polyfill) {
@@ -2019,7 +2019,7 @@ const getElementRects = async function(data) {
   };
 };
 function isRTL(element) {
-  return getComputedStyle$1(element).direction === "rtl";
+  return getComputedStyle(element).direction === "rtl";
 }
 const platform = {
   convertOffsetParentRelativeRectToViewportRelativeRect,

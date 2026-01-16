@@ -73,26 +73,28 @@ class OrderService
     }
 
     public function changeState(
-        OrderHistoryType $historyType,
-        int $id,
+        MeloOrder|int $order,
         OrderState|null $state,
+        OrderHistoryType $historyType,
+        string $message = '',
         bool $notify = false,
-        string $message = ''
     ): void {
-        $order = $this->orm->findOne(MeloOrder::class, ['id' => $id]);
+        if (!$order instanceof MeloOrder) {
+            $order = $this->orm->findOne(MeloOrder::class, ['id' => $order]);
+        }
 
         if (!$order) {
-            throw new ValidateFailException('訂單編號: ' . $order->no . 'ID: ' . $id . ' 找不到');
+            throw new ValidateFailException('Order not found.');
         }
 
         if ($order->state === $state) {
             return;
         }
 
-        $this->orm->getDb()->transaction(function () use ($order, $historyType, $id, $state, $notify, $message) {
+        $this->orm->getDb()->transaction(function () use ($order, $historyType, $state, $notify, $message) {
             $order->state = $state;
 
-            $this->orm->updateOne(MeloOrder::class, $order, 'id');
+            $this->orm->updateOne($order);
 
             $history = $this->createHistory($order, $state, $historyType, $message, $notify);
 

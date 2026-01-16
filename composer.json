@@ -6,12 +6,19 @@
     "autoload": {
         "psr-4": {
             "Lyrasoft\\Melo\\": "src/"
-        }
+        },
+        "files": [
+            "src/bootstrap.php"
+        ]
     },
     "authors": [
         {
             "name": "yinminc",
             "email": "a1598742002@gmail.com"
+        },
+        {
+            "name": "Simon Asika",
+            "email": "asika32764@gmail.com"
         }
     ],
     "minimum-stability": "beta",

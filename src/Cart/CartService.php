@@ -14,6 +14,7 @@ namespace Lyrasoft\Melo\Cart;
 use Lyrasoft\Melo\Cart\Price\PriceObject;
 use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Brick\Math\Exception\MathException;
+use Lyrasoft\Melo\Data\CartData;
 use Lyrasoft\Melo\Entity\Lesson;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Language\TranslatorTrait;
@@ -40,14 +41,7 @@ class CartService
         //
     }
 
-    /**
-     * getData
-     *
-     * @return  array
-     *
-     * @throws \Exception
-     */
-    public function getData(): array
+    public function getData(): CartData
     {
         $lessons = $this->getItems();
 
@@ -67,10 +61,10 @@ class CartService
             $totalPrices->get('grand_total')->setPrice(0);
         }
 
-        return [
-            'items' => $lessons,
-            'totals' => $totalPrices,
-        ];
+        return new CartData(
+            items: $lessons,
+            totals: $totalPrices
+        );
     }
 
     /**

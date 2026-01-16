@@ -16,6 +16,7 @@ namespace App\view;
  * @var $lang      LangService     The language translation service.
  */
 
+use Lyrasoft\Melo\Data\CartData;
 use Lyrasoft\Melo\MeloPackage;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Windwalker\Core\Application\AppContext;
@@ -28,7 +29,8 @@ use Windwalker\Core\Router\SystemUri;
 use function Windwalker\str;
 
 /**
- * @var $item Order
+ * @var $item     MeloOrder
+ * @var $cartData CartData
  */
 
 $item = $order;

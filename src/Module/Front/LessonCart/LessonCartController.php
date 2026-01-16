@@ -9,10 +9,11 @@ use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Cart\CartService;
 use Lyrasoft\Melo\Cart\CartStorage;
 use Lyrasoft\Melo\Data\AddressInfo;
+use Lyrasoft\Melo\Data\CartData;
 use Lyrasoft\Melo\Data\InvoiceData;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Enum\InvoiceType;
-use Lyrasoft\Melo\Features\CheckoutService;
+use Lyrasoft\Melo\Features\LessonCheckoutService;
 use Psr\Container\ContainerExceptionInterface;
 use Unicorn\Attributes\Ajax;
 use Unicorn\Controller\AjaxControllerTrait;
@@ -56,73 +57,9 @@ class LessonCartController
     #[Ajax]
     public function getData(
         AppContext $app,
-    ): array {
+    ): CartData {
         $cartService = $app->service(CartService::class);
 
         return $cartService->getData();
-    }
-
-    public function checkout(
-        AppContext $app,
-        ORM $orm,
-        Navigator $nav,
-        UserService $userService,
-        #[Service]
-        CartService $cartService,
-        #[Service]
-        CheckoutService $checkoutService,
-        #[Service]
-        CartStorage $cartStorage,
-    ) {
-        $input = (array) $app->input('checkout');
-
-        $app->state->remember('checkout.data', $input);
-
-        /** @var User $user */
-        $user = $userService->getUser();
-
-        if (!$user->isLogin()) {
-            return $nav->to('melo_cart');
-        }
-
-        /**
-         * @var MeloOrder $order
-         */
-        [$order, $cartData] = (array) $orm->getDb()->transaction(
-            function () use ($input, $cartService, $user, $checkoutService) {
-                $order = new MeloOrder();
-
-                $invoice = new InvoiceData(
-                    name: $input['invoice_name'] ?? '',
-                    title: $input['invoice_title'] ?? '',
-                    vat: $input['invoice_vat'] ?? '',
-                    address: new AddressInfo(
-                        city: $input['city'] ?? '',
-                        dist: $input['dist'] ?? '',
-                        zip: $input['zip'] ?? '',
-                        address: $input['address'] ?? '',
-                    )
-                );
-
-                $order->invoiceData = $invoice;
-                $order->invoiceType = $invoice->vat ? InvoiceType::COMPANY : InvoiceType::IDV;
-                $order->userId = $user->id;
-                $order->payment = $input['payment'];
-                $order->createdBy = $user->id;
-
-                $cartData = $cartService->getData();
-
-                return [
-                    $checkoutService->createOrder($order, $cartData, $input),
-                    $cartData,
-                ];
-            }
-        );
-
-        $checkoutService->notifyForCheckout($order, $cartData, $user);
-
-        $cartStorage->clear();
-
-        return $nav->to('melo_order_list')->full();
     }
 }

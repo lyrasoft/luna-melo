@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Payment;
 
-use Lyrasoft\EventBooking\Data\EventAttendingStore;
-use Lyrasoft\EventBooking\Entity\EventOrder;
+use Lyrasoft\Melo\Data\CheckoutParams;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
@@ -19,9 +19,13 @@ interface MeloPaymentInterface
 
     public function getTitle(LanguageInterface $lang): string;
 
-    public function process(EventAttendingStore $store): mixed;
+    public function process(CheckoutParams $params): mixed;
 
-    public function orderInfo(EventOrder $order, iterable $attends): string;
+    public function orderInfo(MeloOrder $order, iterable $attends): string;
 
-    public function runTask(AppContext $app, EventOrder $order, string $task): mixed;
+    public function runTask(AppContext $app, MeloOrder $order, string $task): mixed;
+
+    public function isTest(): bool;
+
+    public function toArray(LanguageInterface $lang): array;
 }

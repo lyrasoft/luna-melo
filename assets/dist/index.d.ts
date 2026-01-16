@@ -95,6 +95,13 @@ declare type ModuleImportCallback_2 = () => Promise<any>;
 
 declare function off(): void;
 
+export declare interface PaymentGateway {
+    id: string;
+    typeTitle: string;
+    title: string;
+    description?: string;
+}
+
 export declare interface PriceObject {
     label: string;
     name: string;

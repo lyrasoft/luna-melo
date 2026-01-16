@@ -421,7 +421,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
               createElementVNode("i", { class: "fas fa-folder" })
             ], -1)),
             _cache[8] || (_cache[8] = createTextVNode()),
-            createElementVNode("div", _hoisted_5$3, toDisplayString($setup.props.index + 1) + ".\r\n            ", 1),
+            createElementVNode("div", _hoisted_5$3, toDisplayString($setup.props.index + 1) + ".\n            ", 1),
             _cache[9] || (_cache[9] = createTextVNode()),
             createElementVNode("a", {
               href: "#",
@@ -503,7 +503,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
             onClick: $setup.newSection
           }, [..._cache[11] || (_cache[11] = [
             createElementVNode("i", { class: "far fa-plus" }, null, -1),
-            createTextVNode("\r\n            新增小節\r\n          ", -1)
+            createTextVNode("\n            新增小節\n          ", -1)
           ])])
         ])
       ], 4)
@@ -606,25 +606,25 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       createElementVNode("div", _hoisted_3$2, [
         createElementVNode("h3", _hoisted_4$2, [
           $setup.isChapter ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-            createTextVNode("\r\n            編輯章節\r\n          ")
+            createTextVNode("\n            編輯章節\n          ")
           ], 64)) : $setup.isEditing ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-            createTextVNode("\r\n            編輯小節\r\n          ")
+            createTextVNode("\n            編輯小節\n          ")
           ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 2 }, [
-            createTextVNode("\r\n            編輯\r\n          ")
+            createTextVNode("\n            編輯\n          ")
           ], 64))
         ]),
         _cache[3] || (_cache[3] = createTextVNode()),
         $setup.saving ? (openBlock(), createElementBlock("div", _hoisted_5$2, [
           createVNode($setup["BSpinner"], { small: "" }),
-          _cache[1] || (_cache[1] = createTextVNode("\r\n          儲存中...\r\n        ", -1))
+          _cache[1] || (_cache[1] = createTextVNode("\n          儲存中...\n        ", -1))
         ])) : $setup.saved ? (openBlock(), createElementBlock("div", _hoisted_6$2, [..._cache[2] || (_cache[2] = [
           createElementVNode("i", { class: "far fa-check" }, null, -1),
-          createTextVNode("\r\n          已儲存\r\n        ", -1)
+          createTextVNode("\n          已儲存\n        ", -1)
         ])])) : createCommentVNode("", true)
       ]),
       _cache[5] || (_cache[5] = createTextVNode()),
       $setup.isEditing ? (openBlock(), createElementBlock("div", _hoisted_7$2, [..._cache[4] || (_cache[4] = [
-        createElementVNode("span", { class: "badge bg-warning" }, "\r\n          修改後會即時儲存\r\n        ", -1)
+        createElementVNode("span", { class: "badge bg-warning" }, "\n          修改後會即時儲存\n        ", -1)
       ])])) : createCommentVNode("", true)
     ]),
     _cache[7] || (_cache[7] = createTextVNode()),
@@ -637,7 +637,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       createElementVNode("div", {
         class: "text-muted",
         style: { "margin": "100px auto" }
-      }, "\r\n        請選擇或新增章節以進行編輯\r\n      ", -1)
+      }, "\n        請選擇或新增章節以進行編輯\n      ", -1)
     ])]))
   ]);
 }
@@ -697,7 +697,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               createElementVNode("button", {
                 type: "button",
                 class: "btn btn-outline-primary btn-sm"
-              }, "\r\n              按此選擇\r\n            ")
+              }, "\n              按此選擇\n            ")
             ], -1))
           ])
         ])
@@ -705,7 +705,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     }), 128))
   ]);
 }
-const TypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-e0d93735"], ["__file", "SectionTypeSelector.vue"]]);
+const TypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-865aad2e"], ["__file", "SectionTypeSelector.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SegmentEditorApp",
   props: {
@@ -812,14 +812,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       createElementVNode("div", _hoisted_3, [
         createElementVNode("div", _hoisted_4, [
           createElementVNode("div", _hoisted_5, [
-            createElementVNode("h4", _hoisted_6, "\r\n              課程章節 (" + toDisplayString($setup.items.length) + ")\r\n            ", 1),
+            createElementVNode("h4", _hoisted_6, "\n              課程章節 (" + toDisplayString($setup.items.length) + ")\n            ", 1),
             _cache[2] || (_cache[2] = createTextVNode()),
             createElementVNode("div", null, [
               createElementVNode("button", {
                 type: "button",
                 class: "btn btn-outline-secondary btn-sm",
                 onClick: $setup.toggleAllOpens
-              }, "\r\n                全體收合/展開\r\n              ")
+              }, "\n                全體收合/展開\n              ")
             ])
           ])
         ]),
@@ -863,7 +863,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           }, {
             default: withCtx(() => [..._cache[3] || (_cache[3] = [
               createElementVNode("span", { class: "fal fa-plus" }, null, -1),
-              createTextVNode("\r\n            新增章節\r\n          ", -1)
+              createTextVNode("\n            新增章節\n          ", -1)
             ])]),
             _: 1
           })
@@ -894,7 +894,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["modelValue"])
   ]);
 }
-const SegmentEditorApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-059e55e9"], ["__file", "SegmentEditorApp.vue"]]);
+const SegmentEditorApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-b2dee490"], ["__file", "SegmentEditorApp.vue"]]);
 function createSegmentEditorApp(props = {}) {
   const app = createApp(
     SegmentEditorApp,

@@ -24,23 +24,23 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     return __returned__;
   }
 });
-const _hoisted_1$6 = { class: "row row-cols-2 gy-3" };
-const _hoisted_2$5 = { class: "c-question-button card border h-100" };
-const _hoisted_3$4 = { class: "card-body d-flex flex-column gap-3" };
-const _hoisted_4$4 = { class: "d-flex align-items-center gap-2" };
-const _hoisted_5$4 = ["onClick"];
-const _hoisted_6$4 = { class: "m-0" };
-const _hoisted_7$2 = { class: "text-muted small" };
-function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$6, [
+const _hoisted_1$2 = { class: "row row-cols-2 gy-3" };
+const _hoisted_2$2 = { class: "c-question-button card border h-100" };
+const _hoisted_3$2 = { class: "card-body d-flex flex-column gap-3" };
+const _hoisted_4$2 = { class: "d-flex align-items-center gap-2" };
+const _hoisted_5$2 = ["onClick"];
+const _hoisted_6$2 = { class: "m-0" };
+const _hoisted_7$1 = { class: "text-muted small" };
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$2, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($setup.questionDefines, (define, key) => {
       return openBlock(), createElementBlock("div", {
         key: define.id,
         class: "col"
       }, [
-        createElementVNode("div", _hoisted_2$5, [
-          createElementVNode("div", _hoisted_3$4, [
-            createElementVNode("div", _hoisted_4$4, [
+        createElementVNode("div", _hoisted_2$2, [
+          createElementVNode("div", _hoisted_3$2, [
+            createElementVNode("div", _hoisted_4$2, [
               createElementVNode("i", {
                 class: normalizeClass(define.icon),
                 style: { "font-size": "2rem" }
@@ -51,17 +51,17 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
                 class: "link-dark text-decoration-none stretched-link",
                 onClick: withModifiers(($event) => $setup.select(key), ["prevent"])
               }, [
-                createElementVNode("h3", _hoisted_6$4, toDisplayString(define.title), 1)
-              ], 8, _hoisted_5$4)
+                createElementVNode("h3", _hoisted_6$2, toDisplayString(define.title), 1)
+              ], 8, _hoisted_5$2)
             ]),
             _cache[1] || (_cache[1] = createTextVNode()),
-            createElementVNode("div", _hoisted_7$2, toDisplayString(define.description), 1),
+            createElementVNode("div", _hoisted_7$1, toDisplayString(define.description), 1),
             _cache[2] || (_cache[2] = createTextVNode()),
             _cache[3] || (_cache[3] = createElementVNode("div", { class: "mt-auto" }, [
               createElementVNode("button", {
                 type: "button",
                 class: "btn btn-outline-primary btn-sm"
-              }, "\r\n              按此選擇\r\n            ")
+              }, "\n              按此選擇\n            ")
             ], -1))
           ])
         ])
@@ -69,7 +69,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     }), 128))
   ]);
 }
-const QuestionTypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$6], ["__scopeId", "data-v-3a690932"], ["__file", "QuestionTypeSelector.vue"]]);
+const QuestionTypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-41ebcfcb"], ["__file", "QuestionTypeSelector.vue"]]);
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "QuestionItem",
   props: {
@@ -108,26 +108,26 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     return __returned__;
   }
 });
-const _hoisted_1$5 = ["data-qn-id"];
-const _hoisted_2$4 = { class: "c-question-item card border" };
-const _hoisted_3$3 = {
+const _hoisted_1$1 = ["data-qn-id"];
+const _hoisted_2$1 = { class: "c-question-item card border" };
+const _hoisted_3$1 = {
   class: "c-question-item__content card-body p-1 d-flex align-items-center gap-2",
   style: { "min-width": "1px" }
 };
-const _hoisted_4$3 = {
+const _hoisted_4$1 = {
   class: "text-nowrap text-muted",
   style: { "min-width": "2em" }
 };
-const _hoisted_5$3 = { class: "text-nowrap me-3" };
-const _hoisted_6$3 = { class: "d-flex align-items-center gap-3 text-nowrap ms-auto" };
-const _hoisted_7$1 = { class: "text-nowrap me-1 d-flex align-items-center" };
-function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_5$1 = { class: "text-nowrap me-3" };
+const _hoisted_6$1 = { class: "d-flex align-items-center gap-3 text-nowrap ms-auto" };
+const _hoisted_7 = { class: "text-nowrap me-1 d-flex align-items-center" };
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: "c-question-item-outside",
     "data-qn-id": $setup.item.id
   }, [
-    createElementVNode("div", _hoisted_2$4, [
-      createElementVNode("div", _hoisted_3$3, [
+    createElementVNode("div", _hoisted_2$1, [
+      createElementVNode("div", _hoisted_3$1, [
         _cache[6] || (_cache[6] = createElementVNode("div", {
           class: "c-question-item__handle handle px-2",
           style: { "cursor": "move", "z-index": "3" }
@@ -135,9 +135,9 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
           createElementVNode("span", { class: "fal fa-bars" })
         ], -1)),
         _cache[7] || (_cache[7] = createTextVNode()),
-        createElementVNode("div", _hoisted_4$3, toDisplayString($setup.props.index + 1) + ".\r\n        ", 1),
+        createElementVNode("div", _hoisted_4$1, toDisplayString($setup.props.index + 1) + ".\n        ", 1),
         _cache[8] || (_cache[8] = createTextVNode()),
-        createElementVNode("div", _hoisted_5$3, toDisplayString($setup.typeToTitle($setup.item.type)), 1),
+        createElementVNode("div", _hoisted_5$1, toDisplayString($setup.typeToTitle($setup.item.type)), 1),
         _cache[9] || (_cache[9] = createTextVNode()),
         createElementVNode("a", {
           href: "#",
@@ -145,9 +145,9 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: withModifiers($setup.editQuestion, ["prevent"])
         }, toDisplayString($setup.item.content || "題目內容未填寫"), 1),
         _cache[10] || (_cache[10] = createTextVNode()),
-        createElementVNode("div", _hoisted_6$3, [
-          createElementVNode("div", _hoisted_7$1, [
-            _cache[2] || (_cache[2] = createElementVNode("div", { class: "me-1" }, "\r\n              分數\r\n            ", -1)),
+        createElementVNode("div", _hoisted_6$1, [
+          createElementVNode("div", _hoisted_7, [
+            _cache[2] || (_cache[2] = createElementVNode("div", { class: "me-1" }, "\n              分數\n            ", -1)),
             _cache[3] || (_cache[3] = createTextVNode()),
             createElementVNode("div", null, [
               withDirectives(createElementVNode("input", {
@@ -175,9 +175,9 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ])
     ])
-  ], 8, _hoisted_1$5);
+  ], 8, _hoisted_1$1);
 }
-const QuestionItem = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$5], ["__file", "QuestionItem.vue"]]);
+const QuestionItem = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__file", "QuestionItem.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionQuizEdit",
   props: {
@@ -327,7 +327,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }),
     _cache[23] || (_cache[23] = createTextVNode()),
     createElementVNode("div", _hoisted_1, [
-      _cache[14] || (_cache[14] = createElementVNode("div", { class: "h6 c-quiz-edit__title" }, "\r\n        測驗內容\r\n      ", -1)),
+      _cache[14] || (_cache[14] = createElementVNode("div", { class: "h6 c-quiz-edit__title" }, "\n        測驗內容\n      ", -1)),
       _cache[15] || (_cache[15] = createTextVNode()),
       $setup.loading ? (openBlock(), createElementBlock("div", _hoisted_2, [
         createVNode($setup["BSpinner"])
@@ -374,7 +374,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: $setup.newQuestion
         }, [..._cache[13] || (_cache[13] = [
           createElementVNode("i", { class: "fas fa-plus" }, null, -1),
-          createTextVNode("\r\n          新增題目\r\n        ", -1)
+          createTextVNode("\n          新增題目\n        ", -1)
         ])])
       ])
     ]),
@@ -393,7 +393,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, {
       title: withCtx(() => [
         createElementVNode("div", _hoisted_4, [
-          _cache[19] || (_cache[19] = createElementVNode("div", null, "\r\n            題目編輯\r\n          ", -1)),
+          _cache[19] || (_cache[19] = createElementVNode("div", null, "\n            題目編輯\n          ", -1)),
           _cache[20] || (_cache[20] = createTextVNode()),
           $setup.questionsSaving ? (openBlock(), createElementBlock("div", _hoisted_5, [
             createVNode($setup["BSpinner"], {
@@ -401,10 +401,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               type: "border",
               class: "me-1"
             }),
-            _cache[17] || (_cache[17] = createTextVNode("\r\n            儲存中...\r\n          ", -1))
+            _cache[17] || (_cache[17] = createTextVNode("\n            儲存中...\n          ", -1))
           ])) : $setup.questionSaved ? (openBlock(), createElementBlock("div", _hoisted_6, [..._cache[18] || (_cache[18] = [
             createElementVNode("i", { class: "fas fa-check text-success" }, null, -1),
-            createTextVNode("\r\n            已儲存\r\n          ", -1)
+            createTextVNode("\n            已儲存\n          ", -1)
           ])])) : createCommentVNode("", true)
         ])
       ]),

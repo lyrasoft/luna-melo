@@ -26,4 +26,14 @@ trait PaymentTrait
     {
         return $this->title;
     }
+
+    public function toArray(LanguageInterface $lang): array
+    {
+        return [
+            'id' => static::getId(),
+            'typeTitle' => static::getTypeTitle($lang),
+            'title' => $this->getTitle($lang),
+            'description' => static::getDescription($lang),
+        ];
+    }
 }

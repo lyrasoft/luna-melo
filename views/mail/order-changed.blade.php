@@ -29,8 +29,8 @@ use Windwalker\Core\Router\SystemUri;
 use function Windwalker\str;
 
 /**
- * @var $item    Order
- * @var $history OrderHistory
+ * @var $item    MeloOrder
+ * @var $history MeloOrderHistory
  */
 
 $item = $order;
