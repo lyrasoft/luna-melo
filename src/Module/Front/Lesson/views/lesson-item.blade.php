@@ -16,6 +16,7 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
+use Lyrasoft\Attachment\Entity\Attachment;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Features\Section\SectionComposer;
 use Lyrasoft\Melo\Features\Section\Video\VideoSection;
@@ -37,12 +38,13 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var Lesson  $item
- * @var Tag     $tag
- * @var Segment $currentSegment
- * @var Segment $chapter
- * @var Segment $section
- * @var User    $teacher
+ * @var Lesson     $item
+ * @var Tag        $tag
+ * @var Segment    $currentSegment
+ * @var Segment    $chapter
+ * @var Segment    $section
+ * @var User       $teacher
+ * @var Attachment[] $attachments
  */
 
 $breadcrumb = $app->service(Breadcrumb::class);
@@ -119,7 +121,7 @@ $meloScript->lessonCart();
                                                 controlsList="nodownload">
                                                 <source src="{{ $currentSegment->src }}" type="video/mp4">
                                                 @if($currentSegment->captionSrc)
-                                                    <track label="English" kind="subtitles" srclang="zh"
+                                                    <track label="中文" kind="subtitles" srclang="zh"
                                                         src="{{ $currentSegment->captionSrc }}"
                                                         default>
                                                 @endif
@@ -329,7 +331,7 @@ $meloScript->lessonCart();
                                         @foreach($attachments as $file)
                                             <div class="c-file-item">
                                                 <div>
-                                                    {{ $file->getTitle() }}
+                                                    {{ $file->title }}
                                                 </div>
                                                 <div>
                                                     <i class="fa-solid fa-arrow-down-to-line"></i>
@@ -352,7 +354,7 @@ $meloScript->lessonCart();
                             <div class="card-body c-lesson-progress-card__body">
                                 @if(!$userService->isLogin())
                                     <div class="d-grid mx-2">
-                                        <a href="{{ $nav->to('login') }}" class="btn btn-primary btn-lg">
+                                        <a href="{{ $nav->to('login')->withReturn() }}" class="btn btn-primary btn-lg">
                                             登入
                                         </a>
                                     </div>

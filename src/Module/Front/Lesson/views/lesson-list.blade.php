@@ -110,7 +110,7 @@ $breadcrumb->push($lang->trans('melo.lesson.search.page.title'));
 
         <div class="c-pagination-content">
             <div class="d-flex justify-content-center">
-                {!! $pagination->render() !!}
+                <x-pagination :pagination="$pagination"></x-pagination>
             </div>
         </div>
     </div>

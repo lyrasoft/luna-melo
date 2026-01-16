@@ -74,21 +74,21 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->id);
                         <div class="text-decoration-line-through">
                             <span>售價</span>
                             <span>
-                                {{ $item->price }}
+                                {{ number_format($item->price) }}
                             </span>
                         </div>
 
                         <h4 class="text-primary">
                             <span>特價</span>
                             <span>
-                                {{ $item->specialPrice }}
+                                {{ number_format($item->specialPrice) }}
                             </span>
                         </h4>
                     @else
                         <h4 class="text-primary">
                             <span>售價</span>
                             <span>
-                                {{ $item->price }}
+                                {{ number_format($item->price) }}
                             </span>
                         </h4>
                     @endif
