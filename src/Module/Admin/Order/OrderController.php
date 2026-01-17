@@ -27,7 +27,7 @@ class OrderController
         $uri = $app->call($controller->saveWithNamespace(...), compact('repository', 'form'));
 
         return match ($app->input('task')) {
-            'save2close' => $nav->to('order_list'),
+            'save2close' => $nav->to('melo_order_list'),
             default => $uri,
         };
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Features;
 
 use Lyrasoft\Luna\Entity\User;
+use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
@@ -13,15 +14,15 @@ use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
-use Lyrasoft\Melo\Enum\UserLessonStatus;
+use Lyrasoft\Melo\Features\Lesson\LessonDispatcher;
 use Lyrasoft\Melo\MeloPackage;
 use Lyrasoft\ShopGo\Entity\OrderHistory;
+use Lyrasoft\ShopGo\Entity\OrderItem;
 use Lyrasoft\Toolkit\Encode\BaseConvert;
 use Random\RandomException;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Mailer\MailerInterface;
-use Windwalker\DI\Attributes\Autowire;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
 use Windwalker\Utilities\Str;
@@ -33,8 +34,9 @@ class OrderService
         protected ApplicationInterface $app,
         protected ORM $orm,
         protected MailerInterface $mailer,
-        #[Autowire]
         protected MeloPackage $melo,
+        protected UserService $userService,
+        protected LessonDispatcher $lessonDispatcher,
     ) {
     }
 
@@ -102,7 +104,7 @@ class OrderService
                 if ($order->state === OrderState::PAID
                     || $order->state === OrderState::FREE
                 ) {
-                    $this->assignLessonToUser($order->id);
+                    $this->assignOrderLessonsToUser($order);
                 }
 
                 if ($order->state === OrderState::CANCELLED) {
@@ -136,7 +138,7 @@ class OrderService
                         'history' => $history,
                         'user' => $user,
                         'order' => $order,
-                        'isAdmin' => false
+                        'isAdmin' => false,
                     ]
                 );
 
@@ -179,33 +181,22 @@ class OrderService
         }
     }
 
-    public function assignLessonToUser($orderId): void
+    /**
+     * @param  MeloOrder  $order
+     * @param  array<OrderItem>  $orderItems
+     *
+     * @return  void
+     */
+    public function assignOrderLessonsToUser(MeloOrder $order, ?array $orderItems = null): void
     {
-        $order = $this->orm->mustFindOne(MeloOrder::class, ['id' => $orderId]);
-        $orderItems = $this->orm->findList(MeloOrderItem::class, ['order_id' => $orderId]);
+        $orderItems ??= $this->orm->from(OrderItem::class)
+            ->where('order_id', $order->id)
+            ->all(MeloOrderItem::class)
+            ->dump();
 
         /** @var MeloOrderItem $orderItem */
         foreach ($orderItems as $orderItem) {
-            $map = new UserLessonMap();
-
-            $map->lessonId = $orderItem->lessonId;
-            $map->userId = $order->userId;
-            $map->status = UserLessonStatus::PROCESS;
-
-            $hasLesson = $this->orm->findOne(
-                UserLessonMap::class,
-                [
-                    'lesson_id' => $orderItem->lessonId,
-                    'user_id' => $order->userId,
-                ]
-            );
-
-            if (!$hasLesson) {
-                $this->orm->createOne(
-                    UserLessonMap::class,
-                    $map
-                );
-            }
+            $this->lessonDispatcher->assignLessonToUser($orderItem->lessonId, $order->userId);
         }
     }
 
@@ -244,6 +235,16 @@ class OrderService
 
         return $orderNo . 'T' . $t;
     }
+
+    public function countUserOrders(?int $userId = null): int
+    {
+        $userId ??= $this->userService->getUser()->id;
+
+        return $this->orm->from(MeloOrder::class)
+            ->where('user_id', $userId)
+            ->count();
+    }
+
     //
     // /**
     //  * createInvoice

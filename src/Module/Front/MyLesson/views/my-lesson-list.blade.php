@@ -52,14 +52,14 @@ $breadcrumb->push($lang->trans('melo.my.lesson.page.title'));
                         <div class="row">
                             @foreach($items as $item)
                                 <div class="col-md-6 col-xl-4 g-4">
-                                    @include('components.lesson.lesson-card', ['item' => $item])
+                                    @include('melo.front.lesson.lesson-card', ['item' => $item])
                                 </div>
                             @endforeach
                         </div>
 
                         <div class="c-pagination-content">
                             <div class="d-flex justify-content-center">
-                                {!! $pagination->render() !!}
+                                <x-pagination :pagination="$pagination" />
                             </div>
                         </div>
                     </div>

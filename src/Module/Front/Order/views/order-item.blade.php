@@ -115,14 +115,15 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                         </div>
                     </div>
 
-                    @if($payment)
+                    @php($orderInfo = $payment?->orderInfo($item, $orderItems))
+                    @if(trim((string) $orderInfo))
                         <div class="card">
                             <h4 class="card-header">
                                 付款資訊
                             </h4>
 
                             <div class="card-body">
-                                {!! $payment->orderInfo($item, $orderItems) !!}
+                                {!! $orderInfo !!}
                             </div>
                         </div>
                     @endif
@@ -147,7 +148,7 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                             {{ $orderItem->title }}
                                         </td>
                                         <td class="text-end">
-                                            {{ number_format($orderItem->total) }}
+                                            {{ numberFormat($orderItem->total, 'TWD $') }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -160,7 +161,7 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                             {{ $total->title }}
                                         </td>
                                         <td class="text-end">
-                                            {{ numberFormat($total->value) }}
+                                            {{ numberFormat($total->value, 'TWD $') }}
                                         </td>
                                     </tr>
                                 @endforeach

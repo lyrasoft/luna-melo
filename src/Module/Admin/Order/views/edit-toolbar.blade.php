@@ -47,7 +47,7 @@ use Windwalker\Core\Router\SystemUri;
 
     {{-- Cancel --}}
     <a class="btn btn-default btn-outline-secondary btn-sm uni-btn-cancel"
-        href="{{ $nav->to('order_list') }}">
+        href="{{ $nav->to('melo_order_list') }}">
         <span class="fa fa-times"></span>
         @lang('unicorn.toolbar.cancel')
     </a>

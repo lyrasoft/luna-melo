@@ -173,11 +173,11 @@ export declare interface Segment {
     [prop: string]: any;
 }
 
-declare function sendAddAction(el: HTMLElement): Promise<any>;
+declare function sendAddAction(el: HTMLElement): Promise<CartItem[]>;
 
 declare function toCartPage(): void;
 
-export declare function useLessonCartButtons(selector?: string): {
+export declare function useLessonCartButtons(selector?: string, quantitySelector?: string): {
     off: typeof off;
     buy: typeof buy;
     toCartPage: typeof toCartPage;

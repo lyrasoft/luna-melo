@@ -27,7 +27,7 @@ use Windwalker\Core\Router\SystemUri;
 use Lyrasoft\Melo\Module\Admin\Order\OrderListView;
 
 /**
- * @var $item Order
+ * @var $item MeloOrder
  */
 
 $workflow = $app->service(OrderWorkflow::class);
@@ -129,7 +129,7 @@ $workflow = $app->service(OrderWorkflow::class);
                         {{-- Title --}}
                         <td>
                             <div>
-                                <a href="{{ $nav->to('order_edit')->id($item->id) }}">
+                                <a href="{{ $nav->to('melo_order_edit')->id($item->id) }}">
                                     {{ $item->no }}
                                 </a>
                             </div>
@@ -140,7 +140,7 @@ $workflow = $app->service(OrderWorkflow::class);
                         </td>
 
                         <td>
-                            {{ $item->payment->getTitle() }}
+                            {{ $item->paymentData->paymentTitle ?: $item->payment }}
                         </td>
 
                         <td>

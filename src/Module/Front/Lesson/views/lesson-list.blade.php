@@ -16,6 +16,9 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
+use Lyrasoft\Luna\Entity\Category;
+use Lyrasoft\Luna\Entity\User;
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Script\MeloScript;
 use Unicorn\Html\Breadcrumb;
 use Windwalker\Core\Application\AppContext;
@@ -24,6 +27,12 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+
+/**
+ * @var $item     Lesson
+ * @var $teacher  User
+ * @var $category Category
+ */
 
 $meloScript = $app->service(MeloScript::class);
 $meloScript->lessonCart();
@@ -57,8 +66,9 @@ $breadcrumb->push($lang->trans('melo.lesson.search.page.title'));
                                 </option>
                                 @foreach($categories as $category)
                                     <option
-                                        value="{{ $category->getId() }}" {{ $categoryId === $category->getId() ? 'selected' : '' }}>
-                                        {{ $category->getTitle() }}
+                                        value="{{ $category->id }}" {{ $categoryId === $category->id ? 'selected' : '' }}>
+                                        {{ str_repeat('－', $category->level - 1) }}
+                                        {{ $category->title }}
                                     </option>
                                 @endforeach
                             </select>
@@ -70,8 +80,8 @@ $breadcrumb->push($lang->trans('melo.lesson.search.page.title'));
                                 </option>
                                 @foreach($teachers as $teacher)
                                     <option
-                                        value="{{ $teacher->getId() }}" {{ $teacherId === $teacher->getId() ? 'selected' : '' }}>
-                                        {{ $teacher->getName() }}
+                                        value="{{ $teacher->id }}" {{ $teacherId === $teacher->id ? 'selected' : '' }}>
+                                        {{ $teacher->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -97,22 +107,22 @@ $breadcrumb->push($lang->trans('melo.lesson.search.page.title'));
         </div>
     </div>
 
-    <div class="c-lesson-cards">
-        <div class="container">
-            <div class="row">
-                @foreach($items as $item)
-                    <div class="col-md-6 col-lg-4 col-xl-3 g-4">
-                        @include('melo.front.lesson.lesson-card', ['item' => $item])
-                    </div>
-                @endforeach
-            </div>
+    <div class="c-lesson-cards container">
+
+        <div class="row">
+            @foreach($items as $item)
+                <div class="col-md-6 col-lg-4 col-xl-3 g-4">
+                    @include('melo.front.lesson.lesson-card', ['item' => $item])
+                </div>
+            @endforeach
         </div>
 
-        <div class="c-pagination-content">
+        <div class="c-pagination-content mt-5">
             <div class="d-flex justify-content-center">
                 <x-pagination :pagination="$pagination"></x-pagination>
             </div>
         </div>
+
     </div>
 
     <div class="l-no-result {{ $total === 0 ?: 'd-none' }}">

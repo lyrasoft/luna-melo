@@ -6,8 +6,6 @@ namespace App\Seeder;
 
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Cart\CartService;
-use Lyrasoft\Melo\Data\CartData;
-use Lyrasoft\Melo\Data\CartItem;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
@@ -18,23 +16,20 @@ use Lyrasoft\Melo\Features\LessonCheckoutService;
 use Lyrasoft\Melo\Features\OrderService;
 use Lyrasoft\Melo\Features\Payment\MeloPaymentInterface;
 use Lyrasoft\Melo\Features\Payment\PaymentComposer;
-use Windwalker\Core\Language\TranslatorTrait;
+use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Seed\AbstractSeeder;
 use Windwalker\Core\Seed\SeedClear;
 use Windwalker\Core\Seed\SeedImport;
 use Windwalker\ORM\EntityMapper;
 
-use function Windwalker\uid;
-
 return new /** Order Seeder */ class extends AbstractSeeder {
-    use TranslatorTrait;
-
     #[SeedImport]
     public function import(
         OrderService $orderService,
         LessonCheckoutService $checkoutService,
         CartService $cartService,
         PaymentComposer $paymentComposer,
+        LangService $lang,
     ): void {
         $faker = $this->faker('zh_TW');
 
@@ -56,8 +51,8 @@ return new /** Order Seeder */ class extends AbstractSeeder {
             $item->userId = (int) $faker->randomElement($userIds);
             $item->invoiceNo = 'T' . $faker->ean8();
             $item->state = $faker->randomElement(OrderState::cases());
-            $item->payment = $payment->getId();
-            $item->paymentData->paymentTitle = $payment->getTitle($this->lang);
+            $item->payment = $payment::getId();
+            $item->paymentData->paymentTitle = $payment->getTitle($lang);
             $item->note = $faker->paragraph();
             $item->invoiceType = $faker->randomElement(InvoiceType::cases());
 
@@ -88,13 +83,17 @@ return new /** Order Seeder */ class extends AbstractSeeder {
 
             $cartData = $cartService->itemsToCartData($cartItems);
 
-            $checkoutService->createOrderItems($item, $cartData->items);
+            $orderItems = $checkoutService->createOrderItems($item, $cartData->items);
             $checkoutService->createOrderTotals($item, $cartData->totals);
 
             $gt = $cartData->totals->get('grand_total');
 
             $item->total = $gt->toFloat();
             $item->no = $orderService->createOrderNo($item);
+
+            if ($item->state === OrderState::PAID || $item->state === OrderState::FREE) {
+                $orderService->assignOrderLessonsToUser($item, $orderItems->dump());
+            }
 
             $mapper->saveOne($item);
         }

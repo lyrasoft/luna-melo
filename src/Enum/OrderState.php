@@ -42,6 +42,6 @@ enum OrderState: string implements EnumTranslatableInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('melo.order.status.' . $this->getKey());
+        return $lang->trans('melo.order.state.' . $this->name);
     }
 }

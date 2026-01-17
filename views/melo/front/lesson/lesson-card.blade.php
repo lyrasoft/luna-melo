@@ -27,6 +27,8 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
+use function Lyrasoft\Melo\numberFormat;
+
 /**
  * @var Lesson $item
  */
@@ -74,21 +76,21 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->id);
                         <div class="text-decoration-line-through">
                             <span>售價</span>
                             <span>
-                                {{ number_format($item->price) }}
+                                {{ numberFormat($item->price, 'TWD $') }}
                             </span>
                         </div>
 
                         <h4 class="text-primary">
                             <span>特價</span>
                             <span>
-                                {{ number_format($item->specialPrice) }}
+                                {{ numberFormat($item->specialPrice, 'TWD $') }}
                             </span>
                         </h4>
                     @else
                         <h4 class="text-primary">
                             <span>售價</span>
                             <span>
-                                {{ number_format($item->price) }}
+                                {{ numberFormat($item->price, 'TWD $') }}
                             </span>
                         </h4>
                     @endif
@@ -102,7 +104,7 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->id);
             @if(!$ownedLesson)
                 <button type="button"
                     class="btn btn-primary position-relative z-3"
-                    data-task="buy"
+                    data-melo-task="buy"
                     data-id="{{ $item->id }}"
                 >
                     立即購買

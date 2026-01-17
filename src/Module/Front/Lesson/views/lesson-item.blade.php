@@ -361,7 +361,7 @@ $meloScript->lessonCart();
                                 @elseif(!$ownedLesson)
                                     <div class="d-grid mx-2">
                                         <button class="btn btn-primary btn-lg"
-                                            data-task="buy"
+                                            data-melo-task="buy"
                                             data-id="{{ $item->id }}"
                                         >
                                             立即購買

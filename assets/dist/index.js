@@ -49,8 +49,8 @@
     console.error("vite-plugin-css-injected-by-js", e);
   }
 })();
-import { delegate, useHttpClient, simpleAlert, route, useMacro } from "@windwalker-io/unicorn-next";
-function useLessonCartButtons(selector = "[data-task=buy]") {
+import { delegate, useHttpClient, simpleAlert, route, useUnicorn, useMacro } from "@windwalker-io/unicorn-next";
+function useLessonCartButtons(selector = "[data-melo-task=buy]", quantitySelector = "") {
   listen(selector);
   return {
     off,
@@ -63,7 +63,7 @@ let isListening = false;
 function buttonClicked(e) {
   buy(e.currentTarget);
 }
-function listen(selector = "[data-task=buy]") {
+function listen(selector = "[data-melo-task=buy]") {
   if (isListening) {
     return;
   }
@@ -87,7 +87,8 @@ async function sendAddAction(el) {
         id: lessonId
       }
     );
-    return res.data;
+    updateCartButton(res.data.data);
+    return res.data.data;
   } catch (e) {
     console.error(e);
     throw e;
@@ -107,6 +108,35 @@ async function buy(el) {
 }
 function toCartPage() {
   location.href = route("melo_cart");
+}
+function updateCartButton(items) {
+  const count = items.length;
+  const u = useUnicorn();
+  u.trigger("melo.cart.update", items, count);
+  document.dispatchEvent(
+    new CustomEvent("melo.cart.update", {
+      detail: {
+        items,
+        count
+      }
+    })
+  );
+  const $cartButtons = document.querySelectorAll("[data-melo-role=cart-button]");
+  for (const $cartButton of $cartButtons) {
+    const $cartQuantity = $cartButton.querySelector("[data-melo-role=cart-quantity]");
+    $cartButton.classList.toggle("h-has-items", count > 0);
+    if ($cartQuantity) {
+      $cartQuantity.textContent = String(count);
+    }
+    $cartButton.dispatchEvent(
+      new CustomEvent("melo.cart.update", {
+        detail: {
+          items,
+          count
+        }
+      })
+    );
+  }
 }
 const sectionEditComponents = {
   video: () => import("./chunks/SectionVideoEdit.js"),

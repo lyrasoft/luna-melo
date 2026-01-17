@@ -86,7 +86,7 @@ class LessonCheckoutService
             $order->state === OrderState::PAID
             || $order->state === OrderState::FREE
         ) {
-            $this->orderService->assignLessonToUser($order->id);
+            $this->orderService->assignOrderLessonsToUser($order, $orderItems->dump());
         }
 
         return $order;

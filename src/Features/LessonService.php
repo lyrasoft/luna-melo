@@ -35,14 +35,13 @@ class LessonService
         $userId = $this->userService->getUser()->id;
 
         return (int) $this->orm->from(Lesson::class, 'lesson')
-            ->selectRaw('COUNT(id) AS count')
             ->whereExists(
                 fn(Query $query) => $query->from(UserLessonMap::class)
                     ->where('user_id', $userId)
-                    ->where('lesson_id', qn('id'))
+                    ->where('lesson_id', qn('lesson.id'))
             )
             ->where('state', 1)
-            ->result();
+            ->count();
     }
 
     public function myLectureCount(): int
@@ -50,10 +49,9 @@ class LessonService
         $userId = $this->userService->getUser()->id;
 
         return (int) $this->orm->from(Lesson::class)
-            ->selectRaw('COUNT(id) AS count')
             ->where('teacher_id', $userId)
             ->where('state', 1)
-            ->result();
+            ->count();
     }
 
     /**

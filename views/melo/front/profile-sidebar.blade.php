@@ -17,6 +17,7 @@ namespace App\View;
  */
 
 use Lyrasoft\Melo\Features\LessonService;
+use Lyrasoft\Melo\Features\OrderService;
 use Unicorn\Legacy\Html\MenuHelper;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -27,56 +28,68 @@ use Windwalker\Core\Router\SystemUri;
 
 $menuHelper = $app->service(MenuHelper::class);
 $lessonService = $app->service(LessonService::class);
+$orderService = $app->service(OrderService::class);
 ?>
 
-<div class="card border-0 shadow rounded-4">
-    <div class="card-body text-center">
-        <img src="{{ $info->avatar }}" class="rounded-pill mb-4" alt="{{ $info->name }}" width="100">
-        <div class="card-title h4">
-            {{ $info->name }}
+<div class="l-profile-sidebar d-flex flex-column gap-4">
+    <div class="card">
+        <div class="card-body text-center">
+            <img src="{{ $info->avatar }}" class="rounded-pill mb-4" alt="{{ $info->name }}" width="100">
+            <div class="card-title h4">
+                {{ $info->name }}
+            </div>
+        </div>
+        <div class="list-group list-group-flush">
+            <a class="d-flex justify-content-between list-group-item list-group-item-action {{ $menuHelper->active('profile_edit') }}"
+                href="{{ $nav->to('profile_edit') }}">
+                <div>
+                    <i class="far fa-user-check fa-fw me-2"></i>
+                    帳號管理
+                </div>
+            </a>
+            <a class="d-flex justify-content-between list-group-item list-group-item-action {{ $menuHelper->active('my_lesson_list') }}"
+                href="{{ $nav->to('my_lesson_list') }}">
+                <div>
+                    <i class="far fa-book-open fa-fw me-2"></i>
+                    我的課程
+                </div>
+                <div>
+                    {{ $lessonService->myLessonCount() }}
+                </div>
+            </a>
+            <a class="d-flex justify-content-between list-group-item list-group-item-action {{ $menuHelper->active('my_lecture_list') }}"
+                href="{{ $nav->to('my_lecture_list') }}">
+                <div>
+                    <i class="far fa-chalkboard fa-fw me-2"></i>
+                    我開的課
+                </div>
+                <div>
+                    {{ $lessonService->myLectureCount() }}
+                </div>
+            </a>
+            <a class="d-flex justify-content-between list-group-item list-group-item-action {{ $menuHelper->active('melo_order_list') }}"
+                href="{{ $nav->to('melo_order_list') }}">
+                <div>
+                    <i class="far fa-files fa-fw me-2"></i>
+                    我的訂單
+                </div>
+                <div>
+                    {{ $orderService->countUserOrders() }}
+                </div>
+            </a>
         </div>
     </div>
-    <div class="list-group list-group-flush">
-        <a class="d-flex justify-content-between list-group-item list-group-item-action {{ $menuHelper->active('profile_edit') }}"
-            href="{{ $nav->to('profile_edit') }}">
-            <div>
-                <i class="far fa-user-check fa-fw me-2"></i>
-                帳號管理
-            </div>
-        </a>
-        <a class="d-flex justify-content-between list-group-item list-group-item-action {{ $menuHelper->active('my_lesson') }}"
-            href="{{ $nav->to('my_lesson_list') }}">
-            <div>
-                <i class="far fa-book-open fa-fw me-2"></i>
-                我的課程
-            </div>
-            <div>
-                {{ $lessonService->myLessonCount() }}
-            </div>
-        </a>
-        <a class="d-flex justify-content-between list-group-item list-group-item-action {{ $menuHelper->active('my_lecture') }}"
-            href="{{ $nav->to('my_lecture_list') }}">
-            <div>
-                <i class="far fa-chalkboard fa-fw me-2"></i>
-                我開的課
-            </div>
-            <div>
-                {{ $lessonService->myLectureCount() }}
-            </div>
-        </a>
-        <a class="d-flex align-items-center list-group-item list-group-item-action"
-            href="{{ $nav->to('logout') }}">
-            <div>
-                <i class="far fa-sign-out fa-fw me-2"></i>
-                登出
-            </div>
-        </a>
+
+    <div class="card">
+        <div class="list-group list-group-flush">
+            <a class="d-flex align-items-center list-group-item list-group-item-action"
+                href="{{ $nav->to('logout') }}">
+                <div>
+                    <i class="far fa-sign-out fa-fw me-2"></i>
+                    登出
+                </div>
+            </a>
+        </div>
     </div>
 
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-
-        </li>
-
-    </ul>
 </div>
