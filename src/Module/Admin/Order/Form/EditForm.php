@@ -7,6 +7,8 @@ namespace Lyrasoft\Melo\Module\Admin\Order\Form;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Enum\Payment;
 use Lyrasoft\Luna\Field\UserModalField;
+use Lyrasoft\Melo\Features\Payment\MeloPaymentInterface;
+use Lyrasoft\Melo\Features\Payment\PaymentComposer;
 use Unicorn\Enum\BasicState;
 use Unicorn\Field\CalendarField;
 use Unicorn\Field\InlineField;
@@ -25,6 +27,10 @@ class EditForm
 {
     use TranslatorTrait;
 
+    public function __construct(protected PaymentComposer $paymentComposer)
+    {
+    }
+
     #[FormDefine]
     #[Fieldset('basic')]
     #[NS('item')]
@@ -38,9 +44,16 @@ class EditForm
             ->label('訂單狀態')
             ->registerOptions(OrderState::getTransItems($this->lang));
 
+        $payments = $this->paymentComposer->getGateways()
+            ->map(
+                function (MeloPaymentInterface $payment) {
+                    return $payment->getTitle($this->lang);
+                }
+            );
+
         $form->add('payment', ListField::class)
             ->label('付款方式')
-            ->registerOptions(Payment::getTransItems($this->lang))
+            ->registerOptions($payments)
             ->disabled(true);
 
         $form->add('created', CalendarField::class)

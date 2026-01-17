@@ -15,6 +15,7 @@ use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Enum\UserLessonStatus;
 use Lyrasoft\Melo\MeloPackage;
+use Lyrasoft\ShopGo\Entity\OrderHistory;
 use Lyrasoft\Toolkit\Encode\BaseConvert;
 use Random\RandomException;
 use Windwalker\Core\Application\ApplicationInterface;
@@ -91,47 +92,58 @@ class OrderService
             return;
         }
 
-        $this->orm->getDb()->transaction(function () use ($order, $historyType, $state, $notify, $message) {
-            $order->state = $state;
+        /** @var OrderHistory $history */
+        $history = $this->orm->getDb()->transaction(function () use ($order, $historyType, $state, $notify, $message) {
+            if ($state) {
+                $order->state = $state;
 
-            $this->orm->updateOne($order);
+                $this->orm->updateOne($order);
 
-            $history = $this->createHistory($order, $state, $historyType, $message, $notify);
+                if ($order->state === OrderState::PAID
+                    || $order->state === OrderState::FREE
+                ) {
+                    $this->assignLessonToUser($order->id);
+                }
 
-            if ($order->state === OrderState::PAID
-                || $order->state === OrderState::FREE
-            ) {
-                $this->assignLessonToUser($order->id);
+                if ($order->state === OrderState::CANCELLED) {
+                    $this->removeUserLesson($order->id);
+                }
             }
 
-            if ($order->state === OrderState::CANCELLED) {
-                $this->removeUserLesson($order->id);
-            }
+            return $this->createHistory($order, $state, $historyType, $message, $notify);
+        });
 
-            if ($notify) {
-                $user = $this->orm->findOne(User::class, ['id' => $order->userId]);
+        if ($notify) {
+            $user = $this->orm->findOne(User::class, ['id' => $order->userId]);
 
+            if ($state) {
                 $subject = sprintf(
-                    '您的訂單 #%s 狀態變更為: : %s',
+                    '您的訂單 #%s 狀態變更為: %s',
                     $order->no,
                     $state->getTitle()
                 );
-
-                $mail = $this->mailer->createMessage($subject)
-                    ->renderBody(
-                        'mail.order-changed',
-                        [
-                            'history' => $history,
-                            'user' => $user,
-                            'order' => $order,
-                        ]
-                    );
-
-                $mail->to($user?->email);
-
-                $mail->send();
+            } else {
+                $subject = sprintf(
+                    '您的訂單 #%s 已更新',
+                    $order->no,
+                );
             }
-        });
+
+            $mail = $this->mailer->createMessage($subject)
+                ->renderBody(
+                    'mail.order-changed',
+                    [
+                        'history' => $history,
+                        'user' => $user,
+                        'order' => $order,
+                        'isAdmin' => false
+                    ]
+                );
+
+            $mail->to($user?->email);
+
+            $mail->send();
+        }
     }
 
     public function removeUserLesson(int $orderId): void

@@ -11,11 +11,14 @@ use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
+use Lyrasoft\Melo\Entity\MeloOrderTotal;
+use Lyrasoft\Melo\Features\Payment\PaymentComposer;
 use Lyrasoft\Melo\Repository\OrderRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Html\HtmlFrame;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\DI\Attributes\Autowire;
@@ -28,16 +31,17 @@ use Windwalker\ORM\ORM;
 )]
 class OrderItemView implements ViewModelInterface
 {
+    use TranslatorTrait;
+
     public function __construct(
         protected ORM $orm,
         #[Autowire]
         protected OrderRepository $repository,
-        #[Service]
-        protected UserService $userService,
-        #[Service]
-        protected AccessService $accessService,
         #[Autowire]
         protected UserRepository $userRepository,
+        protected UserService $userService,
+        protected AccessService $accessService,
+        protected PaymentComposer $paymentComposer,
     ) {
         //
     }
@@ -56,28 +60,31 @@ class OrderItemView implements ViewModelInterface
             throw new AccessDeniedException('請先登入', 403);
         }
 
-        $id = $app->input('id');
+        $no = $app->input('no');
 
         $user = $this->userService->getUser();
 
         /** @var MeloOrder $item */
-        $item = $this->repository->mustGetItem($id);
+        $item = $this->repository->mustGetItem(compact('no'));
 
         if (
-            !$this->accessService->userInRoles($user, ['admin', 'superuser'])
-            && $item->userId !== $user->id
+            $item->userId !== $user->id
+            && !$this->accessService->userInRoles($user, ['admin', 'superuser'])
         ) {
             return new AccessDeniedException('無權限觀看這份訂單', 403);
         }
 
         $view[$item::class] = $item;
 
-        $histories = $this->orm->findList(
-            MeloOrderHistory::class,
-            [
-                'order_id' => $item->id,
-            ]
-        );
+        $histories = $this->orm->from(MeloOrderHistory::class)
+            ->where('order_id', $item->id)
+            ->order('id', 'DESC')
+            ->all(MeloOrderHistory::class);
+
+        $totals = $this->orm->from(MeloOrderTotal::class)
+            ->where('order_id', $item->id)
+            ->order('ordering', 'ASC')
+            ->all(MeloOrderTotal::class);
 
         $orderItems = $this->orm->findList(
             MeloOrderItem::class,
@@ -85,6 +92,9 @@ class OrderItemView implements ViewModelInterface
                 'order_id' => $item->id,
             ]
         );
+
+        $payment = $this->paymentComposer->getGateway($item->payment);
+        $paymentTitle = $item->paymentData->paymentTitle ?: $payment?->getTitle($this->lang);
 
         $userInfo = $this->userRepository->getListSelector()
             ->addFilter('user.id', $user->id)
@@ -95,6 +105,9 @@ class OrderItemView implements ViewModelInterface
             'histories',
             'orderItems',
             'userInfo',
+            'payment',
+            'paymentTitle',
+            'totals',
         );
     }
 

@@ -21,7 +21,10 @@ use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Manager\Logger;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\DI\Attributes\Service;
+use Windwalker\Http\HttpClient;
 use Windwalker\ORM\ORM;
+
+use function Windwalker\ds;
 
 #[Controller]
 class CheckoutController
@@ -62,10 +65,10 @@ class CheckoutController
                     title: $input['invoice_title'] ?? '',
                     vat: $input['invoice_vat'] ?? '',
                     address: new AddressInfo(
-                        city: $input['city'] ?? '',
-                        dist: $input['dist'] ?? '',
-                        zip: $input['zip'] ?? '',
-                        address: $input['address'] ?? '',
+                        city: $input['address']['city'] ?? '',
+                        dist: $input['address']['dist'] ?? '',
+                        zip: $input['address']['zip'] ?? '',
+                        address: $input['address']['address'] ?? '',
                     )
                 );
 
@@ -109,7 +112,6 @@ class CheckoutController
     public function paymentTask(
         AppContext $app,
         ORM $orm,
-        LessonCheckoutService $checkoutService,
         PaymentComposer $paymentComposer
     ) {
         $id = $app->input('id');
@@ -119,13 +121,13 @@ class CheckoutController
         Logger::info('melo/payment-task', print_r($app->input()->dump(), true));
 
         try {
-            $order = $orm->findOne(EventOrder::class, $id);
+            $order = $orm->findOne(MeloOrder::class, $id);
 
             if (!$order) {
                 throw new \RuntimeException('Order not found.');
             }
 
-            $gateway = $paymentService->getGateway($order->payment);
+            $gateway = $paymentComposer->getGateway($order->payment);
 
             if (!$gateway) {
                 throw new \RuntimeException('Gateway not found.');
@@ -133,13 +135,13 @@ class CheckoutController
 
             $http = new HttpClient();
             Logger::info(
-                'event-booking/payment-task',
+                'melo/payment-task',
                 $http->toCurlCmd('POST', $uri, HttpClient::formData($app->input()->dump()))
             );
 
             return $gateway->runTask($app, $order, $task);
         } catch (\Throwable $e) {
-            Logger::info('event-booking/payment-error', $e);
+            Logger::info('melo/payment-error', $e);
 
             return $e->getMessage();
         }

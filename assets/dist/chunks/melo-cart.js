@@ -432,9 +432,9 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         elCounty: "[data-city]",
         elDistrict: "[data-dist]",
         elZipcode: "[data-zip]",
-        countyFieldName: "item[address][city]",
-        districtFieldName: "item[address][dist]",
-        zipcodeFieldName: "item[address][zip]"
+        countyFieldName: "checkout[address][city]",
+        districtFieldName: "checkout[address][dist]",
+        zipcodeFieldName: "checkout[address][zip]"
       });
     });
     watch(() => [invoice.value.address.city, invoice.value.address.dist], async () => {
@@ -454,9 +454,11 @@ const _hoisted_5$1 = { class: "col-lg-6" };
 const _hoisted_6$1 = { class: "col-lg-12" };
 const _hoisted_7$1 = { class: "row gy-3" };
 const _hoisted_8$1 = { class: "col-lg-4" };
-const _hoisted_9$1 = { class: "col-lg-4" };
+const _hoisted_9$1 = ["data-value"];
 const _hoisted_10$1 = { class: "col-lg-4" };
-const _hoisted_11$1 = { class: "col-lg-12" };
+const _hoisted_11$1 = ["data-value"];
+const _hoisted_12$1 = { class: "col-lg-4" };
+const _hoisted_13$1 = { class: "col-lg-12" };
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", null, [
     _cache[15] || (_cache[15] = createElementVNode("div", { class: "mb-3" }, "\n      以下資訊只用於開立發票，並不會在其他頁面顯示。發票一經開立後不可更改，請確認資訊是否都填寫正確喔！\n\n    ", -1)),
@@ -503,6 +505,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               type: "text",
               class: "form-control",
               "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.invoice.name = $event),
+              required: "",
               name: "checkout[invoice_name]",
               placeholder: "請填寫真實姓名"
             }, null, 512), [
@@ -541,8 +544,10 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                       class: "form-select",
                       "data-city": "",
                       name: "checkout[address][city]",
-                      "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $setup.invoice.address.city = $event)
-                    }, null, 512), [
+                      "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $setup.invoice.address.city = $event),
+                      "data-value": $setup.invoice.address.city,
+                      required: ""
+                    }, null, 8, _hoisted_9$1), [
                       [vModelSelect, $setup.invoice.address.city]
                     ])
                   ]),
@@ -550,15 +555,17 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 })
               ]),
               _cache[8] || (_cache[8] = createTextVNode()),
-              createElementVNode("div", _hoisted_9$1, [
+              createElementVNode("div", _hoisted_10$1, [
                 createVNode($setup["FormGroup"], { label: "" }, {
                   default: withCtx(() => [
                     withDirectives(createElementVNode("select", {
                       class: "form-select",
                       "data-dist": "",
                       name: "checkout[address][dist]",
-                      "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $setup.invoice.address.dist = $event)
-                    }, null, 512), [
+                      "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $setup.invoice.address.dist = $event),
+                      "data-value": $setup.invoice.address.dist,
+                      required: ""
+                    }, null, 8, _hoisted_11$1), [
                       [vModelSelect, $setup.invoice.address.dist]
                     ])
                   ]),
@@ -566,7 +573,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 })
               ]),
               _cache[9] || (_cache[9] = createTextVNode()),
-              createElementVNode("div", _hoisted_10$1, [
+              createElementVNode("div", _hoisted_12$1, [
                 createVNode($setup["FormGroup"], { label: "" }, {
                   default: withCtx(() => [
                     withDirectives(createElementVNode("input", {
@@ -590,13 +597,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 })
               ]),
               _cache[10] || (_cache[10] = createTextVNode()),
-              createElementVNode("div", _hoisted_11$1, [
+              createElementVNode("div", _hoisted_13$1, [
                 createVNode($setup["FormGroup"], null, {
                   default: withCtx(() => [
                     withDirectives(createElementVNode("input", {
                       type: "text",
                       class: "form-control",
                       "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $setup.invoice.address.address = $event),
+                      required: "",
                       name: "checkout[address][address]",
                       placeholder: "請填寫地址"
                     }, null, 512), [
@@ -620,6 +628,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "MeloCartApp",
   props: {
     user: {},
+    rememberedData: {},
     payments: {}
   },
   setup(__props, { expose: __expose }) {
@@ -636,18 +645,18 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     });
     const items = ref([]);
     const invoice = ref({
-      vat: "",
-      title: "",
-      name: "",
-      carrier: "",
+      vat: props.rememberedData.invoice_vat || "",
+      title: props.rememberedData.invoice_title || "",
+      name: props.rememberedData.invoice_name || "",
+      carrier: props.rememberedData.invoice_carrier || "",
       address: {
-        city: "",
-        dist: "",
-        zip: "",
-        address: ""
+        city: props.rememberedData.address?.city || "",
+        dist: props.rememberedData.address?.dist || "",
+        zip: props.rememberedData.address?.zip || "",
+        address: props.rememberedData.address?.address || ""
       }
     });
-    const payment = ref(Object.keys(props.payments)[0] ?? "");
+    const payment = ref(props.rememberedData.payment || "");
     const totals = ref();
     const count = computed(() => items.value.length);
     const csrf = data("csrf-token");
@@ -674,7 +683,24 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       );
       loadItems();
     }
-    const __returned__ = { props, items, invoice, payment, totals, count, csrf, checkoutLink, lessonLink, loadItems, deleteItem, formSelector, CartItems, InvoiceForm, get formatPrice() {
+    function submit(e) {
+      if (!count.value) {
+        return;
+      }
+      const btn = e.currentTarget;
+      const form = btn.form;
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      if (!payment.value) {
+        simpleAlert("請選擇付款方式", "", "", "warning");
+        return;
+      }
+      btn.disabled = true;
+      form.requestSubmit();
+    }
+    const __returned__ = { props, items, invoice, payment, totals, count, csrf, checkoutLink, lessonLink, loadItems, deleteItem, formSelector, submit, CartItems, InvoiceForm, get formatPrice() {
       return formatPrice;
     } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
@@ -752,7 +778,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             }, null, 8, ["items"])
           ])) : createCommentVNode("", true)
         ]),
-        _cache[11] || (_cache[11] = createTextVNode()),
+        _cache[13] || (_cache[13] = createTextVNode()),
         createElementVNode("div", _hoisted_10, [
           _cache[7] || (_cache[7] = createElementVNode("div", { class: "card-body border-bottom" }, [
             createElementVNode("h4", { class: "text-secondary m-0" }, "\n              電子發票開立資訊\n            ")
@@ -765,20 +791,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             formSelector: $setup.formSelector
           }, null, 8, ["modelValue"])
         ]),
-        _cache[12] || (_cache[12] = createTextVNode()),
+        _cache[14] || (_cache[14] = createTextVNode()),
         createElementVNode("div", _hoisted_11, [
-          _cache[9] || (_cache[9] = createElementVNode("div", { class: "card-body border-bottom" }, [
+          _cache[11] || (_cache[11] = createElementVNode("div", { class: "card-body border-bottom" }, [
             createElementVNode("h4", { class: "text-secondary m-0" }, "\n              付款方式\n            ")
           ], -1)),
-          _cache[10] || (_cache[10] = createTextVNode()),
+          _cache[12] || (_cache[12] = createTextVNode()),
           createElementVNode("div", _hoisted_12, [
             createElementVNode("div", _hoisted_13, [
               createElementVNode("div", _hoisted_14, [
                 withDirectives(createElementVNode("select", {
                   class: "form-select",
                   "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.payment = $event),
-                  name: "checkout[payment]"
+                  name: "checkout[payment]",
+                  required: ""
                 }, [
+                  _cache[9] || (_cache[9] = createElementVNode("option", { value: "" }, "- 請選擇付款方式 -", -1)),
+                  _cache[10] || (_cache[10] = createTextVNode()),
                   (openBlock(true), createElementBlock(Fragment, null, renderList($props.payments, (payment, key) => {
                     return openBlock(), createElementBlock("option", {
                       key,
@@ -793,41 +822,42 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ])
         ])
       ]),
-      _cache[22] || (_cache[22] = createTextVNode()),
+      _cache[24] || (_cache[24] = createTextVNode()),
       createElementVNode("div", _hoisted_16, [
         createElementVNode("div", _hoisted_17, [
-          _cache[20] || (_cache[20] = createElementVNode("div", { class: "card-body border-bottom" }, [
+          _cache[22] || (_cache[22] = createElementVNode("div", { class: "card-body border-bottom" }, [
             createElementVNode("h4", { class: "text-secondary m-0" }, "\n              訂單明細\n            ")
           ], -1)),
-          _cache[21] || (_cache[21] = createTextVNode()),
+          _cache[23] || (_cache[23] = createTextVNode()),
           createElementVNode("div", _hoisted_18, [
             $setup.count ? (openBlock(), createElementBlock("div", _hoisted_19, [
-              _cache[13] || (_cache[13] = createElementVNode("div", { class: "text-base" }, "\n                總計\n              ", -1)),
-              _cache[14] || (_cache[14] = createTextVNode()),
+              _cache[15] || (_cache[15] = createElementVNode("div", { class: "text-base" }, "\n                總計\n              ", -1)),
+              _cache[16] || (_cache[16] = createTextVNode()),
               createElementVNode("h5", _hoisted_20, toDisplayString($setup.count) + " 堂課\n              ", 1)
             ])) : createCommentVNode("", true),
-            _cache[17] || (_cache[17] = createTextVNode()),
+            _cache[19] || (_cache[19] = createTextVNode()),
             createElementVNode("div", _hoisted_21, [
-              _cache[15] || (_cache[15] = createElementVNode("div", { class: "text-base" }, "\n                小計\n              ", -1)),
-              _cache[16] || (_cache[16] = createTextVNode()),
+              _cache[17] || (_cache[17] = createElementVNode("div", { class: "text-base" }, "\n                小計\n              ", -1)),
+              _cache[18] || (_cache[18] = createTextVNode()),
               createElementVNode("h5", _hoisted_22, toDisplayString($setup.formatPrice($setup.totals?.lesson_total?.price)), 1)
             ]),
-            _cache[18] || (_cache[18] = createTextVNode()),
+            _cache[20] || (_cache[20] = createTextVNode()),
             createElementVNode("div", _hoisted_23, [
               createElementVNode("h3", _hoisted_24, toDisplayString($setup.formatPrice($setup.totals?.grand_total?.price)), 1)
             ]),
-            _cache[19] || (_cache[19] = createTextVNode()),
+            _cache[21] || (_cache[21] = createTextVNode()),
             createElementVNode("div", _hoisted_25, [
               createElementVNode("button", {
-                type: "submit",
-                class: normalizeClass(["btn disable-on-submit", $setup.count ? "btn-primary" : "btn-outline-base disabled"])
+                type: "button",
+                class: normalizeClass(["btn disable-on-submit", $setup.count ? "btn-primary" : "btn-outline-base disabled"]),
+                onClick: $setup.submit
               }, "\n                確定結賬\n              ", 2)
             ])
           ])
         ])
       ])
     ]),
-    _cache[23] || (_cache[23] = createTextVNode()),
+    _cache[25] || (_cache[25] = createTextVNode()),
     createElementVNode("div", _hoisted_26, [
       createElementVNode("input", {
         name: "anticsrf",

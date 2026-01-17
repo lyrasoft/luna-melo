@@ -67,7 +67,7 @@ class TransferPayment implements MeloPaymentInterface
         return $this;
     }
 
-    public function orderInfo(MeloOrder $order, iterable $attends): string
+    public function orderInfo(MeloOrder $order, iterable $items): string
     {
         $handler = $this->getRenderHandler();
 
@@ -80,7 +80,7 @@ class TransferPayment implements MeloPaymentInterface
             [
                 EventOrder::class => $order,
                 'order' => $order,
-                'attends' => $attends,
+                'attends' => $items,
             ]
         );
     }

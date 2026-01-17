@@ -28,7 +28,7 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var $item       Order
+ * @var $item       MeloOrder
  * @var $pagination Pagination
  */
 
@@ -90,7 +90,7 @@ $breadcrumb->push($lang->trans('melo.order.list.page.title'));
                                         @foreach($items as $item)
                                             <tr>
                                                 <td class="align-middle text-center">
-                                                    <a href="{{ $nav->to('melo_order_item', ['id' => $item->id]) }}">
+                                                    <a href="{{ $nav->to('melo_order_item', ['no' => $item->no]) }}">
                                                         <i class="fal fa-file-alt fa-2x"></i>
                                                     </a>
                                                 </td>
@@ -107,7 +107,7 @@ $breadcrumb->push($lang->trans('melo.order.list.page.title'));
                                                 </td>
 
                                                 <td class="align-middle">
-                                                    {{ $item->payment->getTitle($lang) }}
+                                                    {{ $item->paymentData->paymentTitle ?: $item->payment }}
                                                 </td>
 
                                                 <td class="align-middle">

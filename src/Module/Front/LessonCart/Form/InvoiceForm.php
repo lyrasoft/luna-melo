@@ -6,6 +6,8 @@ namespace Lyrasoft\Melo\Module\Front\LessonCart\Form;
 
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\Payment;
+use Lyrasoft\Melo\Features\Payment\MeloPaymentInterface;
+use Lyrasoft\Melo\Features\Payment\PaymentComposer;
 use Unicorn\Field\InlineField;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Form\Attributes\FormDefine;
@@ -17,6 +19,10 @@ use Windwalker\Form\Form;
 class InvoiceForm
 {
     use TranslatorTrait;
+
+    public function __construct(protected PaymentComposer $paymentComposer)
+    {
+    }
 
     #[FormDefine]
     public function main(Form $form): void
@@ -63,7 +69,14 @@ class InvoiceForm
             ->label('地址')
             ->required(true);
 
+        $payments = $this->paymentComposer->getGateways()
+            ->map(
+                function (MeloPaymentInterface $payment) {
+                    return $payment->getTitle($this->lang);
+                }
+            );
+
         $form->add('payment', ListField::class)
-            ->registerFromEnums(Payment::class, $this->lang);
+            ->registerOptions($payments);
     }
 }

@@ -68,11 +68,12 @@ class LessonCartView implements ViewModelInterface
             ->setNamespace('checkout');
 
         $cartItems = $app->state->get('cart.items') ?? [];
+        $checkoutData = $app->state->get('checkout.data') ?? [];
 
         $payments = $this->paymentComposer->getGateways();
         $payments = $payments->map(fn (MeloPaymentInterface $payment) => $payment->toArray($this->lang));
 
-        return compact('cartItems', 'form', 'payments');
+        return compact('cartItems', 'form', 'payments', 'checkoutData');
     }
 
     #[ViewMetadata]

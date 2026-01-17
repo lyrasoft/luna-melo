@@ -9,6 +9,7 @@ use Lyrasoft\Luna\Entity\UserRoleMap;
 use Lyrasoft\Melo\Cart\Price\PriceObject;
 use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Lyrasoft\Melo\Data\CartData;
+use Lyrasoft\Melo\Data\CartItem;
 use Lyrasoft\Melo\Data\CheckoutParams;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
@@ -22,6 +23,7 @@ use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Mailer\MailerInterface;
+use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
@@ -69,8 +71,8 @@ class LessonCheckoutService
 
         $order = $this->prepareOrderNo($order);
 
-        $orderItems = $this->createOrderItems($order, $cartData);
-        $orderTotals = $this->createOrderTotals($order, $cartData['totals']);
+        $orderItems = $this->createOrderItems($order, $cartData->items);
+        $orderTotals = $this->createOrderTotals($order, $cartData->totals);
 
         $this->orderService->createHistory(
             $order,
@@ -90,23 +92,30 @@ class LessonCheckoutService
         return $order;
     }
 
-    public function createOrderItems(MeloOrder $order, array $cartData): \Windwalker\Data\Collection
+    /**
+     * @param  MeloOrder  $order
+     * @param  array<CartItem>  $cartItems
+     *
+     * @return  Collection
+     *
+     * @throws \JsonException
+     * @throws \ReflectionException
+     */
+    public function createOrderItems(MeloOrder $order, array $cartItems): Collection
     {
-        $cartItems = $cartData['items'] ?? [];
-
         $orderItems = collect();
 
-        foreach ($cartItems as $item) {
+        foreach ($cartItems as $cartItem) {
             $orderItem = new MeloOrderItem();
 
             $orderItem->orderId = $order->id;
-            $orderItem->lessonId = (int) $item['id'];
-            $orderItem->title = $item['title'];
-            $orderItem->image = $item['image'];
-            $orderItem->lessonData = $item;
-            $orderItem->price = (float) $item['prices']->get('final')->__toString();
-            $orderItem->total = (float) $item['prices']->get('final')->__toString();
-            $orderItem->priceSet = (array) $item['prices'];
+            $orderItem->lessonId = (int) $cartItem->lesson->id;
+            $orderItem->title = $cartItem->lesson->title;
+            $orderItem->image = $cartItem->lesson->image;
+            $orderItem->lessonData = $cartItem->lesson->dump();
+            $orderItem->price = $cartItem->prices->get('final')->toFloat();
+            $orderItem->total = $cartItem->prices->get('final')->toFloat();
+            $orderItem->priceSet = $cartItem->prices->toArray();
 
             $orderItem = $this->orm->createOne($orderItem);
 
@@ -116,7 +125,7 @@ class LessonCheckoutService
         return $orderItems;
     }
 
-    public function createOrderTotals(MeloOrder $order, PriceSet $totals): \Windwalker\Data\Collection
+    public function createOrderTotals(MeloOrder $order, PriceSet $totals): Collection
     {
         $i = 1;
 
@@ -127,8 +136,8 @@ class LessonCheckoutService
             $orderTotal = new MeloOrderTotal();
             $orderTotal->orderId = $order->id;
             $orderTotal->type = str_starts_with($total->getName(), 'discount')
-                    ? 'discount'
-                    : 'total';
+                ? 'discount'
+                : 'total';
             $orderTotal->code = $total->getName();
             $orderTotal->title = $total->getLabel();
             $orderTotal->value = $total->getPrice()->toFloat();
@@ -181,7 +190,6 @@ class LessonCheckoutService
         return $order;
     }
 
-
     protected function notifyBuyer(MeloOrder $order, CartData $cartData, User $user): void
     {
         $isAdmin = false;
@@ -224,8 +232,8 @@ class LessonCheckoutService
             $this->mailer->createMessage(
                 $this->trans(
                     'melo.mail.new.order.subject.for.admin',
-                    no:       $order->no,
-                    buyer:    $user->name,
+                    no: $order->no,
+                    buyer: $user->name,
                     sitename: $this->melo->config('shop.sitename'),
                 )
             )
@@ -253,6 +261,7 @@ class LessonCheckoutService
         }
 
         $order->paymentNo = $this->paymentComposer->createNo($order);
+        $order->paymentData->paymentTitle = $gateway->getTitle($this->lang);
 
         $this->orm->updateOne($order);
 

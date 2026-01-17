@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Entity;
 
 use Lyrasoft\Melo\Data\InvoiceData;
+use Lyrasoft\Melo\Data\PaymentParams;
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Enum\Payment;
 use Windwalker\ORM\Attributes\AutoIncrement;
 use Windwalker\ORM\Attributes\Cast;
+use Windwalker\ORM\Attributes\JsonObject;
 use Windwalker\ORM\Cast\JsonCast;
 use Windwalker\Core\DateTime\Chronos;
 use Windwalker\ORM\Attributes\CastNullable;
@@ -75,8 +77,11 @@ class MeloOrder implements EntityInterface
     public string $paymentNo = '';
 
     #[Column('payment_data')]
-    #[Cast(JsonCast::class)]
-    public array $paymentData = [];
+    #[JsonObject]
+    public PaymentParams $paymentData {
+        set(PaymentParams|array|null $value) => $this->paymentData = PaymentParams::wrap($value);
+        get => $this->paymentData ??= new PaymentParams();
+    }
 
     #[Column('note')]
     public string $note = '';

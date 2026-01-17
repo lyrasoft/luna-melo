@@ -34,9 +34,9 @@ onMounted(() => {
     elCounty: '[data-city]',
     elDistrict: '[data-dist]',
     elZipcode: '[data-zip]',
-    countyFieldName: 'item[address][city]',
-    districtFieldName: 'item[address][dist]',
-    zipcodeFieldName: 'item[address][zip]',
+    countyFieldName: 'checkout[address][city]',
+    districtFieldName: 'checkout[address][dist]',
+    zipcodeFieldName: 'checkout[address][zip]',
   });
 });
 
@@ -73,6 +73,7 @@ watch(() => [invoice.value.address.city, invoice.value.address.dist], async () =
       <div class="col-lg-6">
         <FormGroup label="收件人">
           <input type="text" class="form-control"  v-model="invoice.name"
+            required
             name="checkout[invoice_name]" placeholder="請填寫真實姓名" />
         </FormGroup>
       </div>
@@ -89,14 +90,18 @@ watch(() => [invoice.value.address.city, invoice.value.address.dist], async () =
           <div class="row gy-3">
             <div class="col-lg-4">
               <FormGroup label="">
-                <select class="form-select" data-city name="checkout[address][city]" v-model="invoice.address.city">
+                <select class="form-select" data-city name="checkout[address][city]" v-model="invoice.address.city"
+                  :data-value="invoice.address.city"
+                  required>
 
                 </select>
               </FormGroup>
             </div>
             <div class="col-lg-4">
               <FormGroup label="">
-                <select class="form-select" data-dist name="checkout[address][dist]" v-model="invoice.address.dist">
+                <select class="form-select" data-dist name="checkout[address][dist]" v-model="invoice.address.dist"
+                  :data-value="invoice.address.dist"
+                  required>
 
                 </select>
               </FormGroup>
@@ -111,6 +116,7 @@ watch(() => [invoice.value.address.city, invoice.value.address.dist], async () =
             <div class="col-lg-12">
               <FormGroup>
                 <input type="text" class="form-control"  v-model="invoice.address.address"
+                  required
                   name="checkout[address][address]" placeholder="請填寫地址" />
               </FormGroup>
             </div>

@@ -8,6 +8,7 @@ import { CartItem, CartTotals, PaymentGateway, PriceObject } from '~melo/types';
 
 const props = defineProps<{
   user: any,
+  rememberedData: Record<string, any>;
   payments: Record<string, PaymentGateway>;
 }>()
 
@@ -23,18 +24,18 @@ onErrorCaptured((e) => {
 
 const items = ref<CartItem[]>([]);
 const invoice = ref({
-  vat: '',
-  title: '',
-  name: '',
-  carrier: '',
+  vat: props.rememberedData.invoice_vat || '',
+  title: props.rememberedData.invoice_title || '',
+  name: props.rememberedData.invoice_name || '',
+  carrier: props.rememberedData.invoice_carrier || '',
   address: {
-    city: '',
-    dist: '',
-    zip: '',
-    address: '',
+    city: props.rememberedData.address?.city || '',
+    dist: props.rememberedData.address?.dist || '',
+    zip: props.rememberedData.address?.zip || '',
+    address: props.rememberedData.address?.address || '',
   },
 });
-const payment = ref<string>(Object.keys(props.payments)[0] ?? '');
+const payment = ref<string>(props.rememberedData.payment || '');
 
 const totals = ref<{
   grand_total: PriceObject,
@@ -86,6 +87,29 @@ async function deleteItem(item: CartItem, i: number) {
 
 // City Selector
 const formSelector = '#checkout-form';
+
+// Submit
+function submit(e: PointerEvent) {
+  if (!count.value) {
+    return;
+  }
+
+  const btn = e.currentTarget as HTMLButtonElement;
+  const form = btn.form!;
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  if (!payment.value) {
+    simpleAlert('請選擇付款方式', '', '', 'warning');
+    return;
+  }
+
+  btn.disabled = true;
+  form.requestSubmit();
+}
 </script>
 
 <template>
@@ -134,7 +158,8 @@ const formSelector = '#checkout-form';
           <div class="card-body">
             <div class="row">
               <div class="col-md-7">
-                <select class="form-select" v-model="payment" name="checkout[payment]">
+                <select class="form-select" v-model="payment" name="checkout[payment]" required>
+                  <option value="">- 請選擇付款方式 -</option>
                   <option v-for="(payment, key) in payments" :key="key" :value="key">
                     {{ payment.title }}
                   </option>
@@ -175,7 +200,8 @@ const formSelector = '#checkout-form';
               </h3>
             </div>
             <div class="d-grid gap-2">
-              <button type="submit" class="btn disable-on-submit"
+              <button type="button" class="btn disable-on-submit"
+                @click="submit"
                 :class="count ? 'btn-primary' : 'btn-outline-base disabled'"
               >
                 確定結賬

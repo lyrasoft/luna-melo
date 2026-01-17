@@ -7,7 +7,7 @@ namespace Lyrasoft\Melo\Data;
 use Windwalker\Data\RecordInterface;
 use Windwalker\Data\RecordTrait;
 
-class AddressInfo implements RecordInterface
+class AddressInfo implements RecordInterface, \Stringable
 {
     use RecordTrait;
 
@@ -17,5 +17,15 @@ class AddressInfo implements RecordInterface
         public string $zip = '',
         public string $address = '',
     ) {
+    }
+
+    public function format(): string
+    {
+        return "{$this->zip} {$this->city}{$this->dist}{$this->address}";
+    }
+
+    public function __toString(): string
+    {
+        return $this->format();
     }
 }

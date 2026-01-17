@@ -16,13 +16,14 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
+use Lyrasoft\Melo\Entity\MeloOrderTotal;
+use Lyrasoft\Melo\Features\Payment\MeloPaymentInterface;
 use Unicorn\Html\Breadcrumb;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\OrderState;
-use Lyrasoft\Melo\Enum\Payment;
 use Lyrasoft\Melo\Module\Front\Order\OrderItemView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -31,10 +32,14 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
+use function Lyrasoft\Melo\numberFormat;
+
 /**
- * @var $item      Order
- * @var $history   OrderHistory
- * @var $orderItem OrderItem
+ * @var $item      MeloOrder
+ * @var $history   MeloOrderHistory
+ * @var $orderItem MeloOrderItem
+ * @var $payment   ?MeloPaymentInterface
+ * @var $totals    MeloOrderTotal[]
  */
 
 $breadcrumb = $app->service(Breadcrumb::class);
@@ -59,13 +64,11 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                     @include('melo.front.profile-sidebar', ['info' => $userInfo])
                 </div>
 
-                <div class="col-lg-9">
-                    <div class="card mb-4">
-                        <div class="card-body border-bottom">
-                            <h4 class="text-secondary mb-0">
-                                訂單資訊
-                            </h4>
-                        </div>
+                <div class="col-lg-9 d-flex flex-column gap-4">
+                    <div class="card">
+                        <h4 class="card-header">
+                            訂單資訊
+                        </h4>
 
                         <div class="card-body">
                             <div class="row">
@@ -87,7 +90,7 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                             付款方式
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->payment->getTitle($lang) }}
+                                            {{ $paymentTitle }}
                                         </dd>
                                     </dl>
                                 </div>
@@ -108,81 +111,68 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                         </dd>
                                     </dl>
                                 </div>
-
-                                @if($item->payment === Payment::ATM && $item->state === OrderState::PENDING)
-                                    <div class="col-md-6">
-                                        <dt class="mb-2">
-                                            付款資訊
-                                        </dt>
-
-                                        <dl class="row">
-                                            <dt class="col-4">
-                                                銀行代碼
-                                            </dt>
-                                            <dd class="col-8">
-                                                {{ $item->paymentData['bank_code'] ?? '' }}
-                                            </dd>
-                                            <dt class="col-4">
-                                                銀行帳號
-                                            </dt>
-                                            <dd class="col-8">
-                                                {{ $item->paymentData['bank_account'] ?? '' }}
-                                            </dd>
-                                            <dt class="col-4">
-                                                付款期限
-                                            </dt>
-                                            <dd class="col-8">
-                                                {{ $chronos->toLocalFormat($item->expiredOn, 'Y-m-d') }}
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                @endif
-
-                                <div class="col-12">
-                                    <dt>
-                                        課程
-                                    </dt>
-
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <tbody>
-                                            @foreach ($orderItems as $orderItem)
-                                                <tr>
-                                                    <td>
-                                                        <img src="{{ $orderItem->image }}"
-                                                            width="150px"
-                                                            alt="{{ $orderItem->title }}"
-                                                        >
-                                                    </td>
-                                                    <td class="fw-bold">
-                                                        {{ $orderItem->title }}
-                                                    </td>
-                                                    <td class="text-end">
-                                                        {{ number_format($orderItem->total) }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                            </tbody>
-                                            <tfoot>
-                                            <tr>
-                                                <td></td>
-                                                <td class="text-end">總計 :</td>
-                                                <td class="text-end">
-                                                    {{ number_format($item->total) }}
-                                                </td>
-                                            </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card std-card mb-4">
-                        <div class="card-body border-bottom">
-                            <h4 class="text-secondary mb-0">發票資訊</h4>
+                    @if($payment)
+                        <div class="card">
+                            <h4 class="card-header">
+                                付款資訊
+                            </h4>
+
+                            <div class="card-body">
+                                {!! $payment->orderInfo($item, $orderItems) !!}
+                            </div>
                         </div>
+                    @endif
+
+                    <div class="card">
+                        <h4 class="card-header">
+                            訂單項目
+                        </h4>
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                @foreach ($orderItems as $orderItem)
+                                    <tr>
+                                        <td>
+                                            <img src="{{ $orderItem->image }}"
+                                                width="150px"
+                                                alt="{{ $orderItem->title }}"
+                                            >
+                                        </td>
+                                        <td class="fw-bold">
+                                            {{ $orderItem->title }}
+                                        </td>
+                                        <td class="text-end">
+                                            {{ number_format($orderItem->total) }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                                <tfoot>
+                                @foreach ($totals as $total)
+                                    <tr>
+                                        <td></td>
+                                        <td class="text-end">
+                                            {{ $total->title }}
+                                        </td>
+                                        <td class="text-end">
+                                            {{ numberFormat($total->value) }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card std-card">
+                        <h4 class="card-header">
+                            發票資訊
+                        </h4>
 
                         <div class="card-body">
                             <div class="row">
@@ -199,26 +189,26 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                                 統一編號
                                             </dt>
                                             <dd class="col-8">
-                                                {{ $item->invoiceData['invoice_vat'] ?? '' }}
+                                                {{ $item->invoiceData->vat }}
                                             </dd>
                                             <dt class="col-4">
                                                 發票抬頭
                                             </dt>
                                             <dd class="col-8">
-                                                {{ $item->invoiceData['invoice_title'] ?? '' }}
+                                                {{ $item->invoiceData->title }}
                                             </dd>
                                         @endif
                                         <dt class="col-4">
                                             收件人
                                         </dt>
                                         <dd class="col-8">
-                                            {{ $item->invoiceData['invoice_name'] ?? '' }}
+                                            {{ $item->invoiceData->name }}
                                         </dd>
                                         <dt class="col-4">
                                             寄送地址
                                         </dt>
                                         <dd class="col-8">
-                                            {{ implode('', $item->invoiceData['address'] ?? []) }}
+                                            {{ $item->invoiceData->address }}
                                         </dd>
                                     </dl>
                                 </div>
@@ -226,10 +216,10 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                         </div>
                     </div>
 
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h4 class="text-secondary mb-0">訂單歷史訊息</h4>
-                        </div>
+                    <div class="card">
+                        <h4 class="card-header">
+                            訂單歷史記錄
+                        </h4>
 
                         <div class="table-responsive">
                             <table class="table">

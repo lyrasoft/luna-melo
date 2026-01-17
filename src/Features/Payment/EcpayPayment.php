@@ -8,6 +8,7 @@ use Ecpay\Sdk\Factories\Factory;
 use Ecpay\Sdk\Response\VerifiedArrayResponse;
 use Ecpay\Sdk\Services\CheckMacValueService;
 use Ecpay\Sdk\Services\UrlService;
+use Lyrasoft\Melo\Data\CartItem;
 use Lyrasoft\Melo\Data\CheckoutParams;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
@@ -77,8 +78,8 @@ class EcpayPayment implements MeloPaymentInterface
             ->full();
         
         $desc = array_map(
-            static function (MeloOrderItem $item) {
-                return $item->title;
+            static function (CartItem $item) {
+                return $item->lesson->title;
             },
             $params->cartData->items
         );
@@ -92,7 +93,7 @@ class EcpayPayment implements MeloPaymentInterface
             'TradeDesc' => UrlService::ecpayUrlEncode('Lesson Checkout'),
             'ItemName' => implode("#", $desc),
             'ReturnURL' => $this->replaceWebhookUrl($notify->task('receivePaid')),
-            'ClientBackURL' => $notify->task('returnBack'),
+            'ClientBackURL' => (string) $notify->task('returnBack'),
             'ChoosePayment' => $this->type->value,
             'EncryptType' => 1,
 
@@ -106,7 +107,7 @@ class EcpayPayment implements MeloPaymentInterface
             $order->expiredOn = chronos('+7days');
         }
 
-        $order->paymentData['input'] = $input;
+        $order->paymentData->input = $input;
 
         $this->orm->updateOne($order);
 
@@ -124,7 +125,7 @@ class EcpayPayment implements MeloPaymentInterface
         $systemUri = $this->app->retrieve(SystemUri::class);
 
         if ($tunnel = env('ECPAY_WEBHOOK_URL')) {
-            $url = $tunnel . Str::removeLeft($url, $systemUri->root());
+            $url = Str::ensureRight($tunnel, '/') . Str::removeLeft($url, $systemUri->root());
         }
 
         return $url;
@@ -165,8 +166,7 @@ class EcpayPayment implements MeloPaymentInterface
             return '0|No order';
         }
 
-        $params = &$order->params;
-        $params['payment_notify_error'] = null;
+        $order->params['payment_notify_error'] = null;
 
         try {
             if ((string) $res['RtnCode'] === '1') {
@@ -211,11 +211,11 @@ class EcpayPayment implements MeloPaymentInterface
     public function returnBack(AppContext $app, Navigator $nav): RouteUri
     {
         $id = (string) $app->input('id');
-        $order = $this->orm->mustFindOne(EventOrder::class, $id);
+        $order = $this->orm->mustFindOne(MeloOrder::class, $id);
 
         // $app->state->forget('checkout.data');
 
-        return $nav->to('event_order_item')
+        return $nav->to('melo_order_item')
             ->var('no', $order->no);
     }
 
@@ -225,22 +225,22 @@ class EcpayPayment implements MeloPaymentInterface
 
         $id = (string) $app->input('id');
 
-        $order = $orm->mustFindOne(EventOrder::class, $id);
+        $order = $orm->mustFindOne(MeloOrder::class, $id);
 
-        $order->paymentParams->info = $app->input()->dump();
+        $order->paymentData->info = $app->input()->dump();
 
         $orm->updateOne($order);
 
         return '1|OK';
     }
 
-    public function orderInfo(MeloOrder $order, iterable $attends): string
+    public function orderInfo(MeloOrder $order, iterable $items): string
     {
         $payment = $this;
 
         return $this->app->retrieve(RendererService::class)->render(
             'melo.ecpay.ecpay-order-info',
-            compact('order', 'attends', 'payment')
+            compact('order', 'items', 'payment')
         );
     }
 
@@ -288,9 +288,9 @@ class EcpayPayment implements MeloPaymentInterface
     protected function getEnvCredentials(): array
     {
         return [
-            env("EVENT_ECPAY_MERCHANT_ID", '2000132'),
-            env("EVENT_ECPAY_HASH_KEY", '5294y06JbISpM5x9'),
-            env("EVENT_ECPAY_HASH_IV", 'v77hoKGq4kWxNNIS'),
+            env("MELO_ECPAY_MERCHANT_ID", '2000132'),
+            env("MELO_ECPAY_HASH_KEY", '5294y06JbISpM5x9'),
+            env("MELO_ECPAY_HASH_IV", 'v77hoKGq4kWxNNIS'),
         ];
     }
 }

@@ -15,18 +15,19 @@ use Lyrasoft\Melo\Cart\Price\PriceObject;
 use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Brick\Math\Exception\MathException;
 use Lyrasoft\Melo\Data\CartData;
+use Lyrasoft\Melo\Data\CartItem;
 use Lyrasoft\Melo\Entity\Lesson;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\DI\Attributes\Autowire;
+use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
 
+use function Windwalker\uid;
 use function Windwalker\where;
 
-/**
- * The CartService class.
- */
+#[Service]
 class CartService
 {
     use TranslatorTrait;
@@ -43,18 +44,28 @@ class CartService
 
     public function getData(): CartData
     {
-        $lessons = $this->getItems();
+        $cartItems = $this->getItems();
 
+        return $this->itemsToCartData($cartItems);
+    }
+
+    /**
+     * @param  array<CartItem>  $cartItems
+     *
+     * @return  CartData
+     */
+    public function itemsToCartData(array $cartItems): CartData
+    {
         $productTotal = new PriceObject('lesson_total', 0, '小計');
-        $grandTotal   = new PriceObject('grand_total', 0, '總計');
+        $grandTotal = new PriceObject('grand_total', 0, '總計');
 
         $totalPrices = new PriceSet();
         $totalPrices->set($productTotal);
         $totalPrices->set($grandTotal);
-        
-        foreach ($lessons as $lesson) {
-            $totalPrices->plus('lesson_total', $lesson['totals']->get('total'));
-            $totalPrices->plus('grand_total', $lesson['totals']->get('final_total'));
+
+        foreach ($cartItems as $cartItem) {
+            $totalPrices->plus('lesson_total', $cartItem->totals->get('total'));
+            $totalPrices->plus('grand_total', $cartItem->totals->get('final_total'));
         }
 
         if ($totalPrices->get('grand_total')->lt('0')) {
@@ -62,15 +73,15 @@ class CartService
         }
 
         return new CartData(
-            items: $lessons,
+            items: $cartItems,
             totals: $totalPrices
         );
     }
 
     /**
-     * @throws MathException
+     * @return  array<CartItem>
      */
-    public function getItems()
+    public function getItems(): array
     {
         $cartStorage = $this->app->service(CartStorage::class);
 
@@ -81,30 +92,39 @@ class CartService
             ->where('lesson.state', 1)
             ->all(Lesson::class);
 
-        $lessons = [];
+        $cartItems = [];
 
         foreach ($items as $item) {
-            $item = $this->prepareCartItem($item);
-            $item['hash'] = array_flip($ids)[$item['id']];
+            $item = $this->lessonToCartItem($item);
 
-            $lessons[] = $item;
+            $cartItems[] = $item;
         }
 
-        return $lessons;
+        return $cartItems;
     }
 
     /**
      * @throws MathException
      */
-    public function prepareCartItem(Lesson $lesson): ?array
+    public function lessonToCartItem(Lesson $lesson): CartItem
     {
-        return $this->preparePrices($lesson);
+        [$prices, $totals] = $this->preparePrices($lesson);
+
+        return new CartItem(
+            uid: uid(),
+            hash: sha1((string) $lesson->id),
+            lesson: $lesson,
+            prices: $prices,
+            totals: $totals,
+        );
     }
 
     /**
-     * @throws MathException
+     * @param  Lesson  $lesson
+     *
+     * @return  array{ PriceSet, PriceSet }
      */
-    public function preparePrices(Lesson $lesson): ?array
+    public function preparePrices(Lesson $lesson): array
     {
         $prices = new PriceSet();
 
@@ -121,14 +141,11 @@ class CartService
             $prices->set(new PriceObject('final', $originPrice));
         }
 
-        $item = $lesson->dump(true);
+        $totals = new PriceSet();
 
-        $item['prices'] = $prices;
-        $item['totals'] = new PriceSet();
+        $totals->set(new PriceObject('total', $prices->get('final')->getPrice()));
+        $totals->set(new PriceObject('final_total', $prices->get('final')->getPrice()));
 
-        $item['totals']->set(new PriceObject('total', $prices->get('final')->getPrice()));
-        $item['totals']->set(new PriceObject('final_total', $prices->get('final')->getPrice()));
-
-        return $item;
+        return [$prices, $totals];
     }
 }

@@ -37,7 +37,6 @@ class MeloOrderItem implements EntityInterface
     public string $image = '';
 
     #[Column('lesson_data')]
-    #[Cast(JsonCast::class)]
     public array $lessonData = [];
 
     #[Column('price')]
