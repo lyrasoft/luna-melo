@@ -37,7 +37,9 @@
                 "Lyrasoft\\Melo\\MeloPackage"
             ],
             "assets": {
-                "link": "assets/"
+                "vendors": {
+                    "@lyrasoft/melo": "portal:./vendor/lyrasoft/melo/assets"
+                }
             },
             "modules": [
                 "src/Module"
