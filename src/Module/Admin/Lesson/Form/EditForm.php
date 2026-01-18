@@ -54,8 +54,9 @@ class EditForm
             ->option($this->trans('unicorn.select.placeholder'), '')
             ->required(true);
 
-        $form->add('sub_category_id', ListField::class)
+        $form->add('sub_category_id', CategoryListField::class)
             ->label('次分類')
+            ->categoryType('lesson')
             ->multiple(true);
 
         $form->add('tags', TagListField::class)

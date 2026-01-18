@@ -19,6 +19,7 @@ use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Features\LessonService;
 use Psr\Cache\InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewModel;
@@ -62,10 +63,10 @@ class LessonItemView implements ViewModelInterface
      * @param  AppContext  $app   The web app context.
      * @param  View        $view  The view object.
      *
-     * @return  \Psr\Http\Message\ResponseInterface|array
+     * @return  ResponseInterface|array
      * @throws InvalidArgumentException
      */
-    public function prepare(AppContext $app, View $view): \Psr\Http\Message\ResponseInterface|array
+    public function prepare(AppContext $app, View $view): ResponseInterface|array
     {
         $id = (int) $app->input('id');
         $segmentId = (int) $app->input('segment_id');
@@ -80,13 +81,34 @@ class LessonItemView implements ViewModelInterface
             ->order('ordering', 'ASC')
             ->all(Segment::class);
 
+        if ($chapters->count() === 0) {
+            $app->addMessage('沒有可用章節', 'warning');
+
+            return $this->nav->redirect('lesson_list');
+        }
+
         if (!$segmentId) {
-            $segmentId = $this->orm->from(Segment::class)
+            $segment = $this->orm->from(Segment::class)
                 ->where('lesson_id', $item->id)
-                ->where('parent_id', $chapters[0]->getId())
+                ->where('parent_id', $chapters[0]->id)
                 ->order('ordering', 'ASC')
-                ->get(Segment::class)
-                ?->getId();
+                ->get(Segment::class);
+
+            if (!$segment) {
+                $app->addMessage('沒有可用章節', 'warning');
+
+                return $this->nav->redirect(
+                    $this->nav->to(
+                        'lesson_item',
+                        [
+                            'id' => $item->id,
+                            'segment_id' => (int) $segmentId,
+                        ]
+                    ),
+                );
+            }
+
+            $segmentId = $segment->id;
 
             return $this->nav->redirect(
                 $this->nav->to(

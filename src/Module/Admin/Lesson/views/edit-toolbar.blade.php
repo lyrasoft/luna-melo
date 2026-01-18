@@ -45,6 +45,14 @@ use Windwalker\Core\Router\SystemUri;
         @lang('unicorn.toolbar.save2close')
     </button>
 
+    @if ($item)
+        <a href="{{ $nav->to('front::lesson_item')->id($item->id) }}" target="_blank"
+            class="btn btn-outline-primary btn-sm uni-btn-preview">
+            <i class="fa fa-eye"></i>
+            預覽
+        </a>
+    @endif
+
     {{-- Cancel --}}
     <a class="btn btn-default btn-outline-secondary btn-sm uni-btn-cancel"
         href="{{ $nav->to('lesson_list') }}">

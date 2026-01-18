@@ -31,7 +31,7 @@ class LessonRepository implements ManageRepositoryInterface, ListRepositoryInter
 
         $selector->from(Lesson::class)
             ->leftJoin(Category::class, 'category', 'category.id', 'lesson.category_id')
-            ->leftJoin(User::class, 'teacher', 'teacher.id', 'lesson.created_by');
+            ->leftJoin(User::class, 'teacher', 'teacher.id', 'lesson.teacher_id');
 
         return $selector;
     }

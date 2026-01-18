@@ -7,7 +7,6 @@ import {
   useKeepAlive,
   useTomSelect,
 } from '@windwalker-io/unicorn-next';
-import { useListDependent } from '../../../../../../../windwalker/unicorn/assets/src/composable';
 
 const formSelector = '#admin-form';
 

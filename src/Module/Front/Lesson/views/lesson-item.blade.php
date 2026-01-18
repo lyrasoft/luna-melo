@@ -385,6 +385,7 @@ $meloScript->lessonCart();
                                 <div class="card-body c-lesson-teacher-card__body">
                                     <div class="text-center mb-4">
                                         <img class="img-fluid c-teacher-avatar"
+                                            style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%;"
                                             src="{{ $teacher?->avatar }}"
                                             alt="{{ $teacher?->name }}"
                                         >

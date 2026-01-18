@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Lesson;
 
+use Lyrasoft\Luna\Services\TagService;
 use Lyrasoft\Melo\Entity\LessonCategoryMap;
 use Lyrasoft\Melo\Module\Admin\Lesson\Form\EditForm;
 use Lyrasoft\Melo\Repository\LessonRepository;
@@ -16,6 +17,7 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\DI\Attributes\Autowire;
+use Windwalker\DI\Attributes\Inject;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\ORM;
@@ -28,15 +30,16 @@ class LessonController
         CrudController $controller,
         Navigator $nav,
         #[Autowire] LessonRepository $repository,
-        #[Service(FileUploadManager::class, 'image')]
+        #[Inject(tag: 'image')]
         FileUploadService $fileUploadService,
         ORM $orm,
+        TagService $tagService,
     ): mixed {
         $form = $app->make(EditForm::class);
 
         $controller->afterSave(
-            function (AfterSaveEvent $event) use ($fileUploadService, $repository, $app, $orm) {
-                $data = $event->getData();
+            function (AfterSaveEvent $event) use ($tagService, $fileUploadService, $repository, $app, $orm) {
+                $data = $event->data;
 
                 $data['image'] = $fileUploadService->handleFileIfUploaded(
                     $app->file('item')['image'] ?? null,
@@ -49,7 +52,7 @@ class LessonController
                 $existsAttachments = (array) $app->input('attachments');
 
                 foreach ($existsAttachments as $i => $id) {
-                    $orm->updateWhere(
+                    $orm->updateBulk(
                         Attachment::class,
                         [
                             'ordering' => $i + 1,
@@ -90,40 +93,38 @@ class LessonController
                 }
 
                 // categories
-                $items = $app->input('item');
+                $item = $app->input('item');
 
                 $categoryMapper = $orm->mapper(LessonCategoryMap::class);
 
-                $categoryMapper->flush(
-                    [
-                        [
-                            'lesson_id' => (int) $data['id'],
-                            'category_id' => (int) $items['category_id'],
-                            'is_primary' => 1,
-                        ],
-                    ],
-                    [
-                        'lesson_id' => (int) $data['id'],
-                        'is_primary' => 1,
-                    ]
-                );
+                $maps = [];
 
-                $subCategoryItems = [];
+                $maps[] = $mainMap = new LessonCategoryMap();
+                $mainMap->lessonId = (int) $data['id'];
+                $mainMap->categoryId = (int) $item['category_id'];
+                $mainMap->isPrimary = true;
 
-                foreach ($app->input('item')['sub_category_id'] as $sub) {
-                    $subCategoryItems[] = [
-                        'lesson_id' => (int) $data['id'],
-                        'category_id' => (int) $sub,
-                        'is_primary' => 0,
-                    ];
+                foreach ($item['sub_category_id'] as $sub) {
+                    $map = new LessonCategoryMap();
+                    $map->lessonId = (int) $data['id'];
+                    $map->categoryId = (int) $sub;
+                    $map->isPrimary = false;
+
+                    $maps[] = $map;
                 }
 
                 $categoryMapper->flush(
-                    $subCategoryItems,
+                    $maps,
                     [
                         'lesson_id' => (int) $data['id'],
-                        'is_primary' => 0,
                     ]
+                );
+
+                // Tags
+                $tagService->flushTagMapsFromInput(
+                    'lesson',
+                    (int) $data['id'],
+                    $item['tags'] ?? []
                 );
             }
         );

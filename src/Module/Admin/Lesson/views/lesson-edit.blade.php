@@ -32,15 +32,15 @@ use Windwalker\Form\Form;
  * @var $item Lesson
  */
 
-$formService = $app->service(FormScript::class)
-    ->listDependent(
-        '#input-item-sub_category_id',
-        '#input-item-category_id',
-        $nav->to('category_ajax_list')->var('type', 'lesson'),
-        [
-            'default_value' => $subCategoryIds,
-        ]
-    );
+// $formService = $app->service(FormScript::class)
+//     ->listDependent(
+//         '#input-item-sub_category_id',
+//         '#input-item-category_id',
+//         $nav->to('category_ajax_list')->var('type', 'lesson'),
+//         [
+//             'default_value' => $subCategoryIds,
+//         ]
+//     );
 
 ?>
 

@@ -4,14 +4,9 @@
   .l-lesson-item {
 
     &__main {
-      //margin-bottom: 60px;
     }
 
     &__content {
-      //border-radius: 20px;
-      //margin-bottom: 32px;
-      //overflow: hidden;
-      //box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
     }
 
     &__section {
@@ -76,38 +71,9 @@
     }
 
     &__card {
-      //border-radius: 20px;
-      //background: white;
-      //box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
-      //border: none;
-
-      //> .card-body {
-      //  padding: 0;
-      //}
     }
 
     .c-lesson-detail-card {
-      //overflow: hidden;
-      //
-      //&__title {
-      //  padding: 20px 30px 16px;
-      //}
-      //
-      //&__content {
-      //  border-top: 1px solid $gray-200;
-      //  padding: 20px;
-      //}
-
-      //.c-lesson-detail-chapter {
-      //  border-top: 1px solid $gray-200;
-      //  background-color: $gray-100;
-      //  padding: 16px 32px;
-      //}
-      //
-      //.c-lesson-detail-section {
-      //  border-top: 1px solid $gray-300;
-      //  padding: 16px 32px 16px 40px;
-      //}
 
       .c-homework-item {
         border-top: 1px solid $gray-200;
@@ -136,36 +102,6 @@
           background-color: $secondary;
         }
       }
-    }
-
-    .c-lesson-teacher-card {
-      border-radius: 20px;
-      background: white;
-      box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
-      border: none;
-
-      > .card-body {
-        padding: 20px;
-      }
-
-      .c-teacher-avatar {
-        width: 160px;
-        height: 160px;
-        border-radius: 99rem;
-        border: 2px solid $secondary;
-        overflow: hidden;
-      }
-    }
-
-    .c-lesson-progress-card {
-      //border-radius: 20px;
-      //background: white;
-      //box-shadow: 0 4px 8px 0 rgba(53, 54, 55, 0.12);
-      //border: none;
-      //
-      //> .card-body {
-      //  padding: 20px;
-      //}
     }
   }
 

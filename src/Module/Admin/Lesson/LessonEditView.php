@@ -95,6 +95,7 @@ class LessonEditView implements ViewModelInterface
             $form->fill(
                 [
                     'item' => [
+                        'sub_category_id' => $subCategoryIds,
                         'tags' => $tagIds
                     ]
                 ]
