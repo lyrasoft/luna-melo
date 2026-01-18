@@ -1,14 +1,14 @@
-import { computed, readonly, toRef, toValue, defineComponent, mergeModels, useSlots, useAttrs, useModel, inject, useTemplateRef, createBlock, openBlock, mergeProps, unref, withCtx, withDirectives, createElementBlock, createCommentVNode, createElementVNode, vModelCheckbox, normalizeClass, renderSlot, provide, Fragment, renderList, createTextVNode, toDisplayString, vModelRadio, normalizeStyle, ref, onMounted, nextTick, toRefs, watch, createVNode, TransitionGroup, withModifiers } from "vue";
+import { computed, readonly, toRef, toValue, defineComponent, mergeModels, useSlots, useAttrs, useModel, inject, useTemplateRef, createBlock, openBlock, mergeProps, unref, withCtx, withDirectives, createElementBlock, createCommentVNode, createElementVNode, vModelCheckbox, normalizeClass, renderSlot, provide, Fragment, renderList, createTextVNode, toDisplayString, vModelRadio, normalizeStyle, ref, onMounted, nextTick, createVNode, TransitionGroup, withModifiers, watch } from "vue";
 import { a as useFileDialog, u as useCurrentElement } from "./index.js";
-import { useHttpClient, route, deleteConfirm, data, sleep } from "@windwalker-io/unicorn-next";
+import { useHttpClient, route, uid, deleteConfirm, data, simpleAlert, sleep } from "@windwalker-io/unicorn-next";
 import { u as useDefaults, h as useId, A as checkboxGroupKey, B as useFocus, x as isEmptySlot, C as _sfc_main$6, D as radioGroupKey, e as useToNumber, E as isVisible } from "./index-BSgsF2PB.js";
 import { u as useAriaInvalid, b as useStateClass, n as normalizeInput, c as useFormInput, _ as _sfc_main$9, a as _sfc_main$a } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
 import { a as _sfc_main$7, _ as _sfc_main$8 } from "./classes-BW_GpXTu.js";
 import { VueDraggable } from "vue-draggable-plus";
 import { v as vBTooltip, s as sleepMax } from "./timing.js";
-import { u as useDebounceFn } from "./index2.js";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
 import { u as useFileUploader } from "./useFileUploader.js";
+import { u as useDebounceFn } from "./index2.js";
 const getClasses = (items) => computed(() => {
   const resolvedItems = toValue(items);
   return {
@@ -695,29 +695,27 @@ function useQuestionPresenter() {
 }
 const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   __name: "OptionEdit",
-  props: {
-    item: {},
+  props: /* @__PURE__ */ mergeModels({
     index: {}
-  },
-  emits: ["delete", "save", "setAnswer"],
+  }, {
+    "modelValue": {
+      required: true
+    },
+    "modelModifiers": {}
+  }),
+  emits: /* @__PURE__ */ mergeModels(["delete", "save", "setAnswer"], ["update:modelValue"]),
   setup(__props, { expose: __expose, emit: __emit }) {
     __expose();
     const props = __props;
     const emit = __emit;
-    const { item } = toRefs(props);
+    const item = useModel(__props, "modelValue");
     function deleteOption() {
       emit("delete", item.value.id);
     }
-    const save = useDebounceFn(() => {
-      emit("save", item.value);
-    }, 300);
-    watch(item, () => {
-      save();
-    }, { deep: true });
     function setIsAnswer() {
       emit("setAnswer", props.index, item.value.isAnswer);
     }
-    const __returned__ = { props, emit, item, deleteOption, save, setIsAnswer, get BFormCheckbox() {
+    const __returned__ = { props, emit, item, deleteOption, setIsAnswer, get BFormCheckbox() {
       return _sfc_main$1$2;
     }, get BFormTextarea() {
       return _sfc_main$4;
@@ -754,8 +752,8 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         _cache[6] || (_cache[6] = createTextVNode()),
         createElementVNode("div", _hoisted_4$1, [
           createVNode($setup["BFormTextarea"], {
-            modelValue: $setup.item.title,
-            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.item.title = $event),
+            modelValue: $setup.item.text,
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.item.text = $event),
             placeholder: "輸入選項內容",
             rows: "2"
           }, null, 8, ["modelValue"])
@@ -795,73 +793,16 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const OptionEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__file", "OptionEdit.vue"]]);
 function useOptionController() {
-  async function getOptions(questionId) {
-    const { get } = await useHttpClient();
-    const res = await get(
-      route("@ajax_option/prepare"),
-      {
-        params: {
-          questionId
-        }
-      }
-    );
-    return res.data.data;
-  }
-  async function reorder(orders = {}) {
-    const { post } = await useHttpClient();
-    await post(
-      route("@ajax_option/reorder"),
-      {
-        orders
-      }
-    );
-  }
-  function createEmptyOption(questionId) {
+  function createEmptyOption() {
     return {
-      questionId,
-      title: "",
-      isAnswer: false,
-      state: 1,
-      ordering: 0
+      id: uid(),
+      text: "",
+      value: "",
+      isAnswer: false
     };
   }
-  async function save(data2, isNew = 0) {
-    const { post } = await useHttpClient();
-    const res = await post(
-      route("@ajax_option/save"),
-      {
-        data: data2,
-        isNew
-      }
-    );
-    return res.data.data;
-  }
-  async function saveMultiple(options) {
-    const { post } = await useHttpClient();
-    const res = await post(
-      route("@ajax_option/saveMultiple"),
-      {
-        options
-      }
-    );
-    return res.data.data;
-  }
-  async function deleteOption(id) {
-    const { post } = await useHttpClient();
-    await post(
-      route("delete_option"),
-      {
-        id
-      }
-    );
-  }
   return {
-    getOptions,
-    reorder,
-    createEmptyOption,
-    save,
-    saveMultiple,
-    deleteOption
+    createEmptyOption
   };
 }
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
@@ -874,64 +815,31 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     },
     "modelModifiers": {}
   }),
-  emits: /* @__PURE__ */ mergeModels(["saving", "saved"], ["update:modelValue"]),
+  emits: /* @__PURE__ */ mergeModels(["saving", "saved", "reorder"], ["update:modelValue"]),
   setup(__props, { expose: __expose, emit: __emit }) {
     __expose();
     const props = __props;
     const emit = __emit;
     const options = useModel(__props, "modelValue");
     const {
-      save: saveOption,
-      reorder: reorderOptions,
-      deleteOption: remove,
-      getOptions,
-      createEmptyOption,
-      saveMultiple
+      createEmptyOption
     } = useOptionController();
     onMounted(() => {
-      prepareOptions();
     });
-    async function prepareOptions() {
-      options.value = await getOptions(props.question.id);
-    }
     async function reorder() {
-      autoSave = false;
-      const orders = {};
-      options.value.forEach((item, i) => {
-        orders[item.id] = i + 1;
-      });
-      await reorderOptions(orders);
-      autoSave = true;
+      emit("reorder");
     }
     async function createOption() {
-      const option = createEmptyOption(props.question.id);
-      option.ordering = options.value.length + 1;
-      const newItem = await saveOption(option, 1);
-      options.value.push(newItem);
-    }
-    let autoSave = true;
-    async function autoSaveOption(option) {
-      if (!autoSave) {
-        return;
-      }
-      const start = Date.now();
-      emit("saving");
-      try {
-        await saveOption(option, 0);
-      } finally {
-        await sleepMax(start, 500);
-        emit("saved");
-      }
+      const option = createEmptyOption();
+      options.value.push(option);
     }
     async function deleteOption(id) {
       const v = await deleteConfirm("確定要刪除這個選項嗎？");
       if (v) {
         options.value = options.value.filter((item) => item.id !== id);
-        await remove(id);
       }
     }
     async function setAnswer(index, currentAnswer) {
-      autoSave = false;
       if (props.question.type === "select") {
         options.value.forEach((item) => {
           item.isAnswer = false;
@@ -947,19 +855,10 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       }
       const start = Date.now();
       emit("saving");
-      try {
-        await saveMultiple(options.value);
-      } finally {
-        autoSave = true;
-      }
       await sleepMax(start, 500);
       emit("saved");
     }
-    const __returned__ = { props, emit, options, saveOption, reorderOptions, remove, getOptions, createEmptyOption, saveMultiple, prepareOptions, reorder, createOption, get autoSave() {
-      return autoSave;
-    }, set autoSave(v) {
-      autoSave = v;
-    }, autoSaveOption, deleteOption, setAnswer, get BButton() {
+    const __returned__ = { props, emit, options, createEmptyOption, reorder, createOption, deleteOption, setAnswer, get BButton() {
       return _sfc_main$7;
     }, get VueDraggable() {
       return VueDraggable;
@@ -985,13 +884,13 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
             (openBlock(true), createElementBlock(Fragment, null, renderList($setup.options, (element, index) => {
               return openBlock(), createBlock($setup["OptionEdit"], {
                 style: { "animation-duration": "300ms" },
-                item: element,
+                "model-value": element,
+                "onUpdate:modelValue": ($event) => $setup.options[index] = $event,
                 key: element.id,
                 index,
-                onSave: $setup.autoSaveOption,
                 onDelete: $setup.deleteOption,
                 onSetAnswer: $setup.setAnswer
-              }, null, 8, ["item", "index"]);
+              }, null, 8, ["model-value", "onUpdate:modelValue", "index"]);
             }), 128))
           ]),
           _: 1
@@ -1057,6 +956,11 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         const url = await uploadImage(file, props.dest);
         image.value = url;
         emit("uploaded", url);
+      } catch (e) {
+        if (e instanceof Error) {
+          simpleAlert(`上傳失敗`, e.message, "warning");
+        }
+        throw e;
       } finally {
         loading.value = false;
       }
@@ -1077,7 +981,6 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       dragging.value = false;
     }
     function onDrop(e) {
-      console.log(e);
       dragging.value = false;
       const file = e.dataTransfer?.files?.[0];
       if (!file) {
@@ -1182,13 +1085,15 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         ])]),
         _cache[12] || (_cache[12] = createTextVNode()),
         createElementVNode("div", null, [
-          createElementVNode("button", {
+          withDirectives((openBlock(), createElementBlock("button", {
             type: "button",
             class: "btn btn-outline-primary btn-sm",
             onClick: $setup.paste
           }, [..._cache[11] || (_cache[11] = [
             createElementVNode("i", { class: "fas fa-paste" }, null, -1)
-          ])])
+          ])])), [
+            [$setup["vBTooltip"], "從剪貼簿貼上圖片檔案"]
+          ])
         ]),
         _cache[13] || (_cache[13] = createTextVNode()),
         _cache[14] || (_cache[14] = createElementVNode("span", { class: "small text-muted" }, "或拖拉檔案至上方", -1))
@@ -1223,6 +1128,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const { scoreLimit } = useQuestionPresenter();
     const options = ref([]);
     const hasOptions = computed(() => question.value.type === "select" || question.value.type === "multiple");
+    if (hasOptions.value) {
+      options.value = question.value.params.options ?? [];
+    }
+    watch(options, () => {
+      question.value.params.options = options.value;
+    }, { deep: true });
     const el = useCurrentElement();
     onMounted(async () => {
       await sleep(300);

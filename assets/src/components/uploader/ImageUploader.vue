@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useFileDialog } from '@vueuse/core';
-import { data, route } from '@windwalker-io/unicorn-next';
+import { data, route, simpleAlert } from '@windwalker-io/unicorn-next';
 import { BButton, BSpinner, vBTooltip } from 'bootstrap-vue-next';
 import { ref } from 'vue';
 import { useFileUploader } from '~melo/features/file/useFileUploader';
@@ -56,6 +56,12 @@ async function upload(file: File) {
     image.value = url;
 
     emit('uploaded', url);
+  } catch (e) {
+    if (e instanceof Error) {
+      simpleAlert(`上傳失敗`, e.message, 'warning');
+    }
+
+    throw e;
   } finally {
     loading.value = false;
   }
@@ -84,8 +90,6 @@ function onDragEnd() {
 }
 
 function onDrop(e: DragEvent) {
-  console.log(e);
-  
   dragging.value = false;
 
   const file = e.dataTransfer?.files?.[0];
@@ -159,6 +163,7 @@ function onDrop(e: DragEvent) {
         <!-- Add div to avoid tooltip container break layout -->
         <div>
           <button type="button" class="btn btn-outline-primary btn-sm"
+            v-b-tooltip="'從剪貼簿貼上圖片檔案'"
             @click="paste">
             <i class="fas fa-paste"></i>
           </button>

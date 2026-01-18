@@ -44,13 +44,6 @@ class Question implements EntityInterface
     #[Column('type')]
     public string $type = '';
 
-    /**
-     * @deprecated  Use type check instead
-     */
-    #[Column('is_multiple')]
-    #[Cast('bool', 'int')]
-    public bool $isMultiple = false;
-
     #[Column('title')]
     public string $title = '';
 

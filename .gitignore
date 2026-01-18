@@ -20,6 +20,7 @@ composer.lock
 # JS #
 /yarn.lock
 /node_modules
+.yarn
 
 # Test #
 phpunit.xml

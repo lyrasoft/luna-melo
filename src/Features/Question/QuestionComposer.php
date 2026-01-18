@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Question;
 
+use Lyrasoft\Melo\Entity\Question;
 use Lyrasoft\Melo\MeloPackage;
+use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Database\ORMAwareTrait;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
@@ -15,7 +17,7 @@ class QuestionComposer
     use ORMAwareTrait;
     use InstanceCacheTrait;
 
-    public function __construct(protected MeloPackage $melo)
+    public function __construct(protected ApplicationInterface $app, protected MeloPackage $melo)
     {
     }
 
@@ -46,6 +48,30 @@ class QuestionComposer
 
                 return $defines;
             }
+        );
+    }
+
+    public function getQnInstance(Question $question): AbstractQuestion
+    {
+        $defines = $this->getDefines();
+        $qnDefine = $defines[$question->type] ?? null;
+
+        if (!$qnDefine) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Question type %s not found. Available types: %s',
+                    $question->type,
+                    implode(', ', array_keys($defines))
+                )
+            );
+        }
+
+        return $this->app->make(
+            $qnDefine,
+            [
+                Question::class => $question,
+                'data' => $question
+            ]
         );
     }
 }

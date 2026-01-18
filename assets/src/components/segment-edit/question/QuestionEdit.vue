@@ -7,7 +7,7 @@ import OptionList from '~melo/components/segment-edit/question/OptionList.vue';
 import { useQuestionController } from '~melo/features/question/useQuestionController';
 import { useQuestionPresenter } from '~melo/features/question/useQuestionPresenter';
 import { sleepMax } from '~melo/shared/timing';
-import { MeloOption, Question } from '~melo/types';
+import { QnOption, Question, SelectQnParams } from '~melo/types';
 import ImageUploader from '../../uploader/ImageUploader.vue';
 
 const props = defineProps<{
@@ -24,8 +24,16 @@ const emit = defineEmits<{
 
 const { scoreLimit } = useQuestionPresenter();
 
-const options = ref<MeloOption[]>([]);
+const options = ref<QnOption[]>([]);
 const hasOptions = computed(() => question.value.type === 'select' || question.value.type === 'multiple');
+
+if (hasOptions.value) {
+  options.value = (question.value.params as SelectQnParams).options as QnOption[] ?? [];
+}
+
+watch(options, () => {
+  question.value.params.options = options.value;
+}, { deep: true });
 
 const el = useCurrentElement<HTMLDivElement>();
 

@@ -1,4 +1,4 @@
-export interface Question {
+export interface Question<Params = any> {
   id?: number;
   lessonId: number;
   segmentId: number;
@@ -15,6 +15,6 @@ export interface Question {
   modified: string | null;
   createdBy: number;
   modifiedBy: number;
-  params: any;
+  params: Params;
   [prop: string]: any;
 }

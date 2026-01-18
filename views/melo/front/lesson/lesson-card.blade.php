@@ -42,7 +42,7 @@ $lessonService = $app->service(LessonService::class);
 $ownedLesson = $lessonService->checkUserHasLesson($item->id);
 ?>
 
-<div class="card h-100 border-0 shadow">
+<div class="card h-100">
     <div class="card-img-top ratio ratio-4x3">
         <img src="{{ $item->image }}"
             class="img-fluid object-fit-cover rounded-top"
@@ -103,7 +103,7 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->id);
 
             @if(!$ownedLesson)
                 <button type="button"
-                    class="btn btn-primary position-relative z-3"
+                    class="btn btn-primary position-relative text-nowrap z-3"
                     data-melo-task="buy"
                     data-id="{{ $item->id }}"
                 >

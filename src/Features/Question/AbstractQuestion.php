@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Question;
 
+use Lyrasoft\Melo\Data\Question\BaseQnParams;
 use Lyrasoft\Melo\Entity\Question;
 use Windwalker\Core\Asset\AssetService;
+use Windwalker\Data\RecordInterface;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
 abstract class AbstractQuestion
@@ -32,5 +34,10 @@ abstract class AbstractQuestion
         public protected(set) Question $data
     ) {
         //
+    }
+
+    public function getParams(): RecordInterface
+    {
+        return BaseQnParams::wrap($this->data->params);
     }
 }

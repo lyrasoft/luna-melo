@@ -1,6 +1,5 @@
-import { useLoading } from '@lyrasoft/ts-toolkit/vue';
 import { ApiReturn, route, useHttpClient } from '@windwalker-io/unicorn-next';
-import { MeloOption, Question } from '~melo/types';
+import { Question } from '~melo/types';
 
 export function useQuestionController() {
   async function getQuestions(quizId: number) {

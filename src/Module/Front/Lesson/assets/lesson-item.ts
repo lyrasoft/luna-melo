@@ -1,4 +1,4 @@
-import { MeloOption, Question, useLessonCartButtons, UserSegmentMap } from '@lyrasoft/melo';
+import { MeloOption, QnOption, Question, useLessonCartButtons, UserSegmentMap } from '@lyrasoft/melo';
 import { data, domready, uid, useHttpClient } from '@windwalker-io/unicorn-next';
 import { Modal } from 'bootstrap';
 import dayjs from 'dayjs';
@@ -179,7 +179,8 @@ await domready(async () => {
         const optionsForQuestion: [MeloOption[]] = res.data.data.optionsForQuestion;
         const questionList = document.querySelector<HTMLDivElement>('.c-question-list');
 
-        questions.forEach((question: Question, index: number) => {
+        for (const question of questions) {
+          const index1: number = questions.indexOf(question);
           let quizItem = document.createElement('div');
           quizItem.className = 'c-quiz-item';
 
@@ -199,7 +200,7 @@ await domready(async () => {
             <div class="card c-question-item__card">
                 <div class="card-body c-question-item__card-body">
                     <div class="h6 mb-1">
-                        第 ${index + 1} 題（${questionTypeName}）:<br>
+                        第 ${index1 + 1} 題（${questionTypeName}）:<br>
                         ${question.title}
                     </div>
                     <div class="mb-3">
@@ -209,7 +210,9 @@ await domready(async () => {
           `;
 
           if (['select', 'multiple'].indexOf(question.type) !== -1) {
-            optionsForQuestion[question.id!]?.forEach((option: MeloOption) => {
+            const options = question.params.options as QnOption[] ?? [];
+
+            for (const option of options) {
               const optionUid = uid();
 
               quizItemHtml += `
@@ -217,11 +220,11 @@ await domready(async () => {
                     <input id="input-option-${optionUid}-${option.id}" class="form-check-input" type="${question.type === 'multiple' ? 'checkbox' : 'radio'}"
                         name="item[quiz][${question.id}][]" value="${option.id}">
                     <label class="form-check-label" for="input-option-${optionUid}-${option.id}">
-                        ${option.title}
+                        ${option.text}
                     </label>
                 </div>
               `;
-            });
+            }
           } else if (question.type === 'boolean') {
             quizItemHtml += `
               <div class="form-check mb-2">
@@ -244,7 +247,7 @@ await domready(async () => {
           quizItem.innerHTML += quizItemHtml;
 
           questionList!.appendChild(quizItem);
-        });
+        }
 
         quizModal.show();
       }

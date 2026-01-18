@@ -11,18 +11,16 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Front\Lesson;
 
-use Lyrasoft\Melo\Entity\MeloOption;
 use Lyrasoft\Melo\Entity\Question;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserAnswer;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
-use Lyrasoft\Melo\Enum\QuestionType;
-use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Melo\Enum\UserSegmentStatus;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Features\Question\Boolean\BooleanQuestion;
 use Lyrasoft\Melo\Features\Question\MultiSelect\MultiSelectQuestion;
+use Lyrasoft\Melo\Features\Question\QuestionComposer;
 use Lyrasoft\Melo\Features\Question\Select\SelectQuestion;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
 use Psr\Cache\InvalidArgumentException;
@@ -37,6 +35,8 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
+
+use function Windwalker\depth;
 
 /**
  * The LessonController class.
@@ -152,6 +152,7 @@ class LessonController
         AppContext $app,
         ORM $orm,
         UserService $userService,
+        QuestionComposer $questionComposer,
     ): void {
         $item = $app->input('item');
         $segmentId = (int) $item['segment_id'];
@@ -178,19 +179,13 @@ class LessonController
             ->order('question.ordering', 'ASC')
             ->all(Question::class);
 
-        $ids = $questions->column('id')->dump();
-
-        $optionGroup = $orm->from(MeloOption::class)
-            ->where('question_id', $ids ?: [0])
-            ->order('ordering', 'ASC')
-            ->all(MeloOption::class)
-            ->groupBy(fn(MeloOption $option) => $option->questionId ?? 0);
-
         $userAnswers = [];
         $segmentScore = 0;
 
         /** @var Question $question */
         foreach ($questions as $question) {
+            $qnInstance = $questionComposer->getQnInstance($question);
+
             $userAnswer = $orm->createEntity(UserAnswer::class);
             $isCorrect = false;
             $value = [];
@@ -210,19 +205,23 @@ class LessonController
             }
 
             if ($question->type === SelectQuestion::id()) {
-                foreach ($optionGroup[$question->id] as $option) {
+                /** @var SelectQuestion $qnInstance */
+                $options = $qnInstance->getParams()->options;
+                
+                foreach ($options as $option) {
                     if ($option->isAnswer) {
-                        $isCorrect = (int) $userQuizzes[$question->id][0] === $option->getId();
+                        $isCorrect = (int) $userQuizzes[$question->id][0] === $option->id;
                     }
                 }
                 $value = $userQuizzes[$question->id];
             }
 
             if ($question->type === MultiSelectQuestion::id()) {
+                /** @var MultiSelectQuestion $qnInstance */
+                $options = $qnInstance->getParams()->options;
                 $corrects = [];
 
-                /** @var MeloOption $option */
-                foreach ($optionGroup[$question->id] as $option) {
+                foreach ($options as $option) {
                     if ($option->isAnswer) {
                         $corrects[] = in_array($option->id, $userQuizzes[$question->id] ?? [], false);
                     } else {
@@ -294,29 +293,8 @@ class LessonController
             $questions[] = $orm->toEntity(Question::class, $question);
         }
 
-        $ids = $prepareQuestions->column('id')->dump();
-
-        $optionGroup = $orm->from(MeloOption::class)
-            ->where('question_id', $ids ?: [0])
-            ->order('ordering', 'ASC')
-            ->all()
-            ->groupBy('question_id');
-
-        $optionsForQuestion = [];
-
-        foreach ($optionGroup as $k => $options) {
-            foreach ($options as $option) {
-                unset($option['is_answer']);
-
-                $option = $orm->toEntity(MeloOption::class, $option);
-
-                $optionsForQuestion[$k][] = $option;
-            }
-        }
-
         return compact(
             'questions',
-            'optionsForQuestion'
         );
     }
 }

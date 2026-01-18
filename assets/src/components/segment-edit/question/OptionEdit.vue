@@ -1,33 +1,32 @@
 <script setup lang="ts">
-import { useDebounceFn } from '@vueuse/core';
 import { BFormCheckbox, BFormTextarea, vBTooltip } from 'bootstrap-vue-next';
-import { toRefs, watch } from 'vue';
-import { MeloOption } from '~melo/types';
+import { QnOption } from '~melo/types';
 
 const props = defineProps<{
-  item: MeloOption;
   index: number;
 }>();
 
 const emit = defineEmits<{
-  'delete': [optionId: number];
-  'save': [option: MeloOption];
+  'delete': [optionId: string];
+  'save': [option: QnOption];
   'setAnswer': [index: number, isAnswer: boolean];
 }>();
 
-const { item } = toRefs(props);
+const item = defineModel<QnOption>({
+  required: true
+});
 
 function deleteOption() {
   emit('delete', item.value.id!);
 }
 
-const save = useDebounceFn(() => {
-  emit('save', item.value);
-}, 300);
+// const save = useDebounceFn(() => {
+//   emit('save', item.value);
+// }, 300);
 
-watch(item, () => {
-  save();
-}, { deep: true });
+// watch(item, () => {
+//   save();
+// }, { deep: true });
 
 function setIsAnswer() {
   emit('setAnswer', props.index, item.value.isAnswer);
@@ -47,7 +46,7 @@ function setIsAnswer() {
 
         <div class="text-nowrap flex-grow-1">
           <BFormTextarea
-            v-model="item.title"
+            v-model="item.text"
             placeholder="輸入選項內容"
             rows="2"
           />

@@ -36,6 +36,7 @@
     },
     "dependencies": {
         "dayjs": "^1.11.19",
-        "plyr": "^3.8.4"
+        "plyr": "^3.8.4",
+        "sweetalert": "^2.1.2"
     }
 }

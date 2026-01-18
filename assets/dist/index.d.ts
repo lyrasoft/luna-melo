@@ -1,5 +1,8 @@
 import { App } from 'vue';
 
+export declare interface BaseQnParams extends QnParams {
+}
+
 declare function buy(el: HTMLElement): Promise<void>;
 
 export declare interface CartItem {
@@ -78,17 +81,6 @@ export declare interface Lesson {
     [prop: string]: any;
 }
 
-export declare interface MeloOption {
-    id?: number;
-    questionId: number;
-    title: string;
-    isAnswer: boolean;
-    state: any;
-    ordering: number;
-    params: any;
-    [prop: string]: any;
-}
-
 declare type ModuleImportCallback = () => Promise<any>;
 
 declare type ModuleImportCallback_2 = () => Promise<any>;
@@ -109,7 +101,16 @@ export declare interface PriceObject {
     price: number;
 }
 
-export declare interface Question {
+export declare interface QnOption {
+    id: string;
+    text: string;
+    value: string;
+    isAnswer: boolean;
+}
+
+export declare type QnParams = Record<string, any>;
+
+export declare interface Question<Params = any> {
     id?: number;
     lessonId: number;
     segmentId: number;
@@ -126,7 +127,7 @@ export declare interface Question {
     modified: string | null;
     createdBy: number;
     modifiedBy: number;
-    params: any;
+    params: Params;
     [prop: string]: any;
 }
 
@@ -171,6 +172,10 @@ export declare interface Segment {
     params: any;
     children?: Segment[];
     [prop: string]: any;
+}
+
+export declare interface SelectQnParams extends BaseQnParams {
+    options: QnOption[];
 }
 
 declare function sendAddAction(el: HTMLElement): Promise<CartItem[]>;
