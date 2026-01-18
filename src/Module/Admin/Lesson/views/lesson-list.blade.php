@@ -164,7 +164,7 @@ $workflow = $app->service(BasicStateWorkflow::class);
                         </td>
 
                         <td class="text-nowrap">
-                            {{ $item->teacher->name }}
+                            {{ $item->author?->name }}
                         </td>
 
                         <td class="text-nowrap">

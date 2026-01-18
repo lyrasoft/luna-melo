@@ -68,7 +68,7 @@ class LessonListView implements ViewModelInterface
             ]
         );
 
-        $items = $this->lessonRepository->getListSelector()
+        $items = $this->lessonRepository->getFrontListSelector()
             ->addFilter('lesson.state', 1)
             ->tapIf(
                 (bool) $category,
