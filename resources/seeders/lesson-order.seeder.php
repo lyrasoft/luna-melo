@@ -92,7 +92,7 @@ return new /** Order Seeder */ class extends AbstractSeeder {
             $item->no = $orderService->createOrderNo($item);
 
             if ($item->state === OrderState::PAID || $item->state === OrderState::FREE) {
-                $orderService->assignOrderLessonsToUser($item, $orderItems->dump());
+                $orderService->assignLessonsToOrderBuyer($item, $orderItems->dump());
             }
 
             $mapper->saveOne($item);

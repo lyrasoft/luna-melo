@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo;
 
 use Lyrasoft\Melo\Entity\Lesson;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\Question;
 use Lyrasoft\Melo\Entity\Segment;
-use Lyrasoft\ShopGo\Entity\Order;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Package\AbstractPackage;
@@ -62,7 +62,19 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
 
         // Modules
         $installer->installMVCModules(Lesson::class);
-        $installer->installMVCModules(Order::class);
+        $installer->installMVCModules(MeloOrder::class);
+        $installer->installModules(
+            [
+                static::path("src/Entity/MeloOrderItem.php") => '@source/Entity',
+                static::path("src/Entity/MeloOrderHistory.php") => '@source/Entity',
+                static::path("src/Entity/MeloOrderTotal.php") => '@source/Entity',
+            ],
+            [
+                'Lyrasoft\\Melo\\Entity' => 'App\\Entity',
+                'Lyrasoft\\Melo\\Repository' => 'App\\Repository',
+            ],
+            ['modules', 'melo_order_model']
+        );
         $installer->installMVCModules(Question::class, ['Admin']);
         $installer->installMVCModules(Segment::class, ['Admin']);
         $installer->installMVCModules('Student', ['Admin']);

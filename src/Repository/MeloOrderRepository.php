@@ -17,7 +17,7 @@ use Unicorn\Repository\ManageRepositoryTrait;
 use Unicorn\Selector\ListSelector;
 
 #[Repository(entityClass: MeloOrder::class)]
-class OrderRepository implements ManageRepositoryInterface, ListRepositoryInterface
+class MeloOrderRepository implements ManageRepositoryInterface, ListRepositoryInterface
 {
     use ManageRepositoryTrait;
     use ListRepositoryTrait;

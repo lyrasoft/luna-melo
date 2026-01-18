@@ -57,10 +57,10 @@ return new /** 2023121810510008_OrderInit */ class extends AbstractMigration {
                 $schema->integer('lesson_id');
                 $schema->varchar('title');
                 $schema->varchar('image');
-                $schema->json('lesson_data')->nullable(true);
                 $schema->decimal('price')->length('20,4');
                 $schema->decimal('total')->length('20,4');
                 $schema->json('price_set');
+                $schema->json('snapshots');
                 $schema->json('options')->nullable(true);
                 $schema->json('params')->nullable(true);
 

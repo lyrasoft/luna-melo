@@ -8,7 +8,7 @@ use Lyrasoft\Luna\Repository\UserRepository;
 use Lyrasoft\Luna\User\Exception\AccessDeniedException;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Entity\MeloOrder;
-use Lyrasoft\Melo\Repository\OrderRepository;
+use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
@@ -31,7 +31,7 @@ class OrderListView implements ViewModelInterface
     public function __construct(
         protected Navigator $nav,
         #[Autowire]
-        protected OrderRepository $repository,
+        protected MeloOrderRepository $repository,
         #[Service]
         protected UserService $userService,
         #[Autowire]

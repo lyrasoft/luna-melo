@@ -16,8 +16,6 @@ use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Features\Lesson\LessonDispatcher;
 use Lyrasoft\Melo\MeloPackage;
-use Lyrasoft\ShopGo\Entity\OrderHistory;
-use Lyrasoft\ShopGo\Entity\OrderItem;
 use Lyrasoft\Toolkit\Encode\BaseConvert;
 use Random\RandomException;
 use Windwalker\Core\Application\ApplicationInterface;
@@ -94,8 +92,8 @@ class OrderService
             return;
         }
 
-        /** @var OrderHistory $history */
-        $history = $this->orm->getDb()->transaction(function () use ($order, $historyType, $state, $notify, $message) {
+        /** @var MeloOrderHistory $history */
+        $history = $this->orm->transaction(function () use ($order, $historyType, $state, $notify, $message) {
             if ($state) {
                 $order->state = $state;
 
@@ -104,7 +102,7 @@ class OrderService
                 if ($order->state === OrderState::PAID
                     || $order->state === OrderState::FREE
                 ) {
-                    $this->assignOrderLessonsToUser($order);
+                    $this->assignLessonsToOrderBuyer($order);
                 }
 
                 if ($order->state === OrderState::CANCELLED) {
@@ -183,13 +181,13 @@ class OrderService
 
     /**
      * @param  MeloOrder  $order
-     * @param  array<OrderItem>  $orderItems
+     * @param  array<MeloOrderItem>  $orderItems
      *
      * @return  void
      */
-    public function assignOrderLessonsToUser(MeloOrder $order, ?array $orderItems = null): void
+    public function assignLessonsToOrderBuyer(MeloOrder $order, ?array $orderItems = null): void
     {
-        $orderItems ??= $this->orm->from(OrderItem::class)
+        $orderItems ??= $this->orm->from(MeloOrderItem::class)
             ->where('order_id', $order->id)
             ->all(MeloOrderItem::class)
             ->dump();

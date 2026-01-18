@@ -13,7 +13,7 @@ use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Lyrasoft\Melo\Features\Payment\PaymentComposer;
-use Lyrasoft\Melo\Repository\OrderRepository;
+use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
@@ -36,7 +36,7 @@ class OrderItemView implements ViewModelInterface
     public function __construct(
         protected ORM $orm,
         #[Autowire]
-        protected OrderRepository $repository,
+        protected MeloOrderRepository $repository,
         #[Autowire]
         protected UserRepository $userRepository,
         protected UserService $userService,

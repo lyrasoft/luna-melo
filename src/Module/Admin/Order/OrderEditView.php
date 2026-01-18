@@ -7,7 +7,7 @@ namespace Lyrasoft\Melo\Module\Admin\Order;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Module\Admin\Order\Form\EditForm;
-use Lyrasoft\Melo\Repository\OrderRepository;
+use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Lyrasoft\Contact\Entity\Contact;
 use Lyrasoft\Luna\Entity\User;
 use Windwalker\Core\Application\AppContext;
@@ -37,7 +37,7 @@ class OrderEditView implements ViewModelInterface
         protected ORM $orm,
         protected FormFactory $formFactory,
         protected Navigator $nav,
-        #[Autowire] protected OrderRepository $repository
+        #[Autowire] protected MeloOrderRepository $repository
     ) {
     }
 

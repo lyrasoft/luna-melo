@@ -86,7 +86,7 @@ class LessonCheckoutService
             $order->state === OrderState::PAID
             || $order->state === OrderState::FREE
         ) {
-            $this->orderService->assignOrderLessonsToUser($order, $orderItems->dump());
+            $this->orderService->assignLessonsToOrderBuyer($order, $orderItems->dump());
         }
 
         return $order;
@@ -112,7 +112,7 @@ class LessonCheckoutService
             $orderItem->lessonId = (int) $cartItem->lesson->id;
             $orderItem->title = $cartItem->lesson->title;
             $orderItem->image = $cartItem->lesson->image;
-            $orderItem->lessonData = $cartItem->lesson->dump();
+            $orderItem->snapshots = $cartItem->lesson->dump();
             $orderItem->price = $cartItem->prices->get('final')->toFloat();
             $orderItem->total = $cartItem->prices->get('final')->toFloat();
             $orderItem->priceSet = $cartItem->prices->toArray();

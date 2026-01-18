@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Module\Admin\Order;
 
 use Lyrasoft\Melo\Module\Admin\Order\Form\EditForm;
-use Lyrasoft\Melo\Repository\OrderRepository;
+use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
 use Windwalker\Core\Application\AppContext;
@@ -20,7 +20,7 @@ class OrderController
         AppContext $app,
         CrudController $controller,
         Navigator $nav,
-        #[Autowire] OrderRepository $repository,
+        #[Autowire] MeloOrderRepository $repository,
     ): mixed {
         $form = $app->make(EditForm::class);
 
@@ -34,7 +34,7 @@ class OrderController
 
     public function delete(
         AppContext $app,
-        #[Autowire] OrderRepository $repository,
+        #[Autowire] MeloOrderRepository $repository,
         CrudController $controller
     ): mixed {
         return $app->call([$controller, 'delete'], compact('repository'));
@@ -42,7 +42,7 @@ class OrderController
 
     public function filter(
         AppContext $app,
-        #[Autowire] OrderRepository $repository,
+        #[Autowire] MeloOrderRepository $repository,
         GridController $controller
     ): mixed {
         return $app->call([$controller, 'filter'], compact('repository'));
@@ -50,7 +50,7 @@ class OrderController
 
     public function batch(
         AppContext $app,
-        #[Autowire] OrderRepository $repository,
+        #[Autowire] MeloOrderRepository $repository,
         GridController $controller
     ): mixed {
         $task = $app->input('task');
@@ -65,7 +65,7 @@ class OrderController
 
     public function copy(
         AppContext $app,
-        #[Autowire] OrderRepository $repository,
+        #[Autowire] MeloOrderRepository $repository,
         GridController $controller
     ): mixed {
         return $app->call([$controller, 'copy'], compact('repository'));

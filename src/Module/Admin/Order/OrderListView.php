@@ -6,7 +6,7 @@ namespace Lyrasoft\Melo\Module\Admin\Order;
 
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Module\Admin\Order\Form\GridForm;
-use Lyrasoft\Melo\Repository\OrderRepository;
+use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
@@ -40,7 +40,7 @@ class OrderListView implements ViewModelInterface, FilterAwareViewModelInterface
     public function __construct(
         protected ORM $orm,
         #[Autowire]
-        protected OrderRepository $repository,
+        protected MeloOrderRepository $repository,
         protected FormFactory $formFactory
     ) {
     }
