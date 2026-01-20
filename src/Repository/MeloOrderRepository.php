@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Repository;
 
+use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\Repository;
@@ -26,7 +27,13 @@ class MeloOrderRepository implements ManageRepositoryInterface, ListRepositoryIn
     {
         $selector = $this->createSelector();
 
-        $selector->from(MeloOrder::class);
+        $selector->from(MeloOrder::class)
+            ->leftJoin(
+                User::class,
+                'buyer',
+                'buyer.id',
+                'melo_order.user_id'
+            );
 
         return $selector;
     }

@@ -7,6 +7,7 @@ namespace Lyrasoft\Melo\Module\Admin\Order;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Module\Admin\Order\Form\GridForm;
 use Lyrasoft\Melo\Repository\MeloOrderRepository;
+use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
@@ -36,6 +37,7 @@ class OrderListView implements ViewModelInterface, FilterAwareViewModelInterface
 {
     use TranslatorTrait;
     use FilterAwareViewModelTrait;
+    use ORMAwareViewModelTrait;
 
     public function __construct(
         protected ORM $orm,
@@ -106,7 +108,11 @@ class OrderListView implements ViewModelInterface, FilterAwareViewModelInterface
         return [
             'order.id',
             'order.title',
-            'order.alias',
+            'order.no',
+            'order.invoice_no',
+            'order.payment_no',
+            'order.note',
+            'order.search_index',
         ];
     }
 

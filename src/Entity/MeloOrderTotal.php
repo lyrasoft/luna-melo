@@ -15,7 +15,7 @@ use Windwalker\ORM\EntityInterface;
 use Windwalker\ORM\EntityTrait;
 use Windwalker\ORM\Metadata\EntityMetadata;
 
-#[Table('melo_order_totals', 'order_total')]
+#[Table('melo_order_totals', 'melo_order_total')]
 #[\AllowDynamicProperties]
 class MeloOrderTotal implements EntityInterface
 {

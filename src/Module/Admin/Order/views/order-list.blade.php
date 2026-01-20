@@ -16,6 +16,7 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
+use App\Entity\User;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Workflow\OrderWorkflow;
 use Windwalker\Core\Application\AppContext;
@@ -87,6 +88,10 @@ $workflow = $app->service(OrderWorkflow::class);
                         </x-sort>
                     </th>
 
+                    <th>
+                        購買者
+                    </th>
+
                     <th class="text-nowrap">
                         <x-sort field="order.created">
                             下單時間
@@ -109,6 +114,10 @@ $workflow = $app->service(OrderWorkflow::class);
 
                 <tbody>
                 @forelse($items as $i => $item)
+                    @php
+                        $buyer = $vm->tryEntity(User::class, $item->snapshots['user'] ?? $item->buyer);
+                        $buyerName = $item->invoiceData->name ?: $buyer?->name;
+                    @endphp
                     <tr>
                         {{-- Checkbox --}}
                         <td>
@@ -141,6 +150,10 @@ $workflow = $app->service(OrderWorkflow::class);
 
                         <td>
                             {{ $item->paymentData->paymentTitle ?: $item->payment }}
+                        </td>
+
+                        <td>
+                            {{ $buyerName }}
                         </td>
 
                         <td>

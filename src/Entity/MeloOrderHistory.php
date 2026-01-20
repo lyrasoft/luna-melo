@@ -23,7 +23,7 @@ use Windwalker\ORM\Metadata\EntityMetadata;
 
 // phpcs:disable
 // todo: remove this when phpcs supports 8.4
-#[Table('melo_order_histories', 'order_history')]
+#[Table('melo_order_histories', 'melo_order_history')]
 #[\AllowDynamicProperties]
 class MeloOrderHistory implements EntityInterface
 {

@@ -26,11 +26,12 @@ use Windwalker\ORM\Attributes\PK;
 use Windwalker\ORM\Attributes\Table;
 use Windwalker\ORM\EntityInterface;
 use Windwalker\ORM\EntityTrait;
+use Windwalker\ORM\Event\BeforeSaveEvent;
 use Windwalker\ORM\Metadata\EntityMetadata;
 
 // phpcs:disable
 // todo: remove this when phpcs supports 8.4
-#[Table('melo_orders', 'order')]
+#[Table('melo_orders', 'melo_order')]
 #[\AllowDynamicProperties]
 class MeloOrder implements EntityInterface
 {
@@ -141,5 +142,25 @@ class MeloOrder implements EntityInterface
     public static function setup(EntityMetadata $metadata): void
     {
         //
+    }
+
+    #[BeforeSaveEvent]
+    public static function beforeSave(BeforeSaveEvent $event): void
+    {
+        /** @var static $item */
+        $item = $event->tempEntity;
+
+        $event->data['search_index'] = implode(
+            '',
+            array_map(
+                static fn ($v) => "[$v]",
+                [
+                    $item->snapshots['user']['name'] ?? '',
+                    $item->snapshots['user']['username'] ?? '',
+                    $item->snapshots['user']['email'] ?? '',
+                    ...$item->invoiceData->dump(),
+                ]
+            )
+        );
     }
 }
