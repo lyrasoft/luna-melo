@@ -85,6 +85,31 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
         $installer->installMVCModules('LessonCart', ['Front'], false);
         $installer->installMVCModules('MyLecture', ['Front'], false);
         $installer->installMVCModules('MyLesson', ['Front'], false);
+
+        $folders = [
+            'types',
+            'shared',
+        ];
+
+        foreach ($folders as $folder) {
+            $installer->installFiles(
+                static::path("assets/src/$folder/**/*"),
+                "resources/assets/src/melo/$folder",
+                ['melo_vue', 'melo_vue_base']
+            );
+        }
+
+        $installer->installFiles(
+            static::path('assets/src/modules/segment-editor/**/*'),
+            'resources/assets/src/melo/modules/segment-editor',
+            ['melo_vue', 'melo_vue_segment_editor']
+        );
+
+        $installer->installFiles(
+            static::path('assets/src/modules/cart/**/*'),
+            'resources/assets/src/melo/modules/cart',
+            ['melo_vue', 'melo_vue_cart']
+        );
     }
 
     public function config(string $name, ?string $delimiter = '.'): mixed

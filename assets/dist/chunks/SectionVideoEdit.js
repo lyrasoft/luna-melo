@@ -2199,7 +2199,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32);
 }
-const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-3d4fffba"], ["__file", "FileUploader.vue"]]);
+const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-bcfbb26f"], ["__file", "FileUploader.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionVideoEdit",
   props: {
@@ -2569,7 +2569,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }))
   ]);
 }
-const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f84ed627"], ["__file", "SectionVideoEdit.vue"]]);
+const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-b7d7df9b"], ["__file", "SectionVideoEdit.vue"]]);
 export {
   SectionVideoEdit as default
 };

@@ -706,7 +706,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     }), 128))
   ]);
 }
-const TypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-865aad2e"], ["__file", "SectionTypeSelector.vue"]]);
+const TypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-3c2724e8"], ["__file", "SectionTypeSelector.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SegmentEditorApp",
   props: {
@@ -895,7 +895,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["modelValue"])
   ]);
 }
-const SegmentEditorApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-b2dee490"], ["__file", "SegmentEditorApp.vue"]]);
+const SegmentEditorApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-c334bc53"], ["__file", "SegmentEditorApp.vue"]]);
 var sweetalert_min$1 = { exports: {} };
 var sweetalert_min = sweetalert_min$1.exports;
 var hasRequiredSweetalert_min;

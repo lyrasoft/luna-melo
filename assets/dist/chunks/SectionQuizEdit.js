@@ -69,7 +69,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }), 128))
   ]);
 }
-const QuestionTypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-41ebcfcb"], ["__file", "QuestionTypeSelector.vue"]]);
+const QuestionTypeSelector = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-71ff6089"], ["__file", "QuestionTypeSelector.vue"]]);
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "QuestionItem",
   props: {
