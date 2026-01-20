@@ -95,7 +95,7 @@ class OrderListView implements ViewModelInterface, FilterAwareViewModelInterface
      */
     public function getDefaultOrdering(): string
     {
-        return 'order.id DESC';
+        return 'melo_order.id DESC';
     }
 
     /**
@@ -106,13 +106,13 @@ class OrderListView implements ViewModelInterface, FilterAwareViewModelInterface
     public function getSearchFields(): array
     {
         return [
-            'order.id',
-            'order.title',
-            'order.no',
-            'order.invoice_no',
-            'order.payment_no',
-            'order.note',
-            'order.search_index',
+            'melo_order.id',
+            'melo_order.title',
+            'melo_order.no',
+            'melo_order.invoice_no',
+            'melo_order.payment_no',
+            'melo_order.note',
+            'melo_order.search_index',
         ];
     }
 
