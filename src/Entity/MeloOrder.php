@@ -104,6 +104,10 @@ class MeloOrder implements EntityInterface
         set(\DateTimeInterface|string|null $value) => $this->expiredOn = Chronos::tryWrap($value);
     }
 
+    #[Column('snapshots')]
+    #[JsonObject]
+    public array $snapshots = [];
+
     #[Column('search_index')]
     public string $searchIndex = '';
 

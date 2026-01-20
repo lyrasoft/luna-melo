@@ -38,7 +38,7 @@ return new /** Order Seeder */ class extends AbstractSeeder {
         /** @var EntityMapper<MeloOrderItem> $itemMapper */
         $itemMapper = $this->orm->mapper(MeloOrderItem::class);
         $lessons = $this->orm->findList(Lesson::class)->all();
-        $userIds = $this->orm->findColumn(User::class, 'id')->dump(true);
+        $users = $this->orm->findList(User::class, 'id')->all()->dump();
         /** @var MeloPaymentInterface[] $payments */
         $payments = $paymentComposer->getGateways()->dump();
 
@@ -48,13 +48,18 @@ return new /** Order Seeder */ class extends AbstractSeeder {
             /** @var MeloPaymentInterface $payment */
             $payment = $faker->randomElement($payments);
 
-            $item->userId = (int) $faker->randomElement($userIds);
+            /** @var User $user */
+            $user = $faker->randomElement($users);
+            unset($user->password);
+
+            $item->userId = $user->id;
             $item->invoiceNo = 'T' . $faker->ean8();
             $item->state = $faker->randomElement(OrderState::cases());
             $item->payment = $payment::getId();
             $item->paymentData->paymentTitle = $payment->getTitle($lang);
             $item->note = $faker->paragraph();
             $item->invoiceType = $faker->randomElement(InvoiceType::cases());
+            $item->snapshots['user'] = $user;
 
             if ($item->state === OrderState::CANCELLED) {
                 $item->cancelledAt = $faker->dateTimeThisYear();

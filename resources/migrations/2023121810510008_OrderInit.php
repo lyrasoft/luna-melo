@@ -35,6 +35,7 @@ return new /** 2023121810510008_OrderInit */ class extends AbstractMigration {
                 $schema->datetime('paid_at')->nullable(true);
                 $schema->datetime('cancelled_at')->nullable(true);
                 $schema->datetime('expired_on')->nullable(true);
+                $schema->json('snapshots');
                 $schema->longtext('search_index');
                 $schema->datetime('created')->nullable(true);
                 $schema->datetime('modified')->nullable(true);

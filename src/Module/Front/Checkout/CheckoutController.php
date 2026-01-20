@@ -72,11 +72,14 @@ class CheckoutController
                     )
                 );
 
+                unset($user->password);
+
                 $order->invoiceData = $invoice;
                 $order->invoiceType = $invoice->vat ? InvoiceType::COMPANY : InvoiceType::IDV;
                 $order->userId = $user->id;
                 $order->payment = $input['payment'];
                 $order->createdBy = $user->id;
+                $order->snapshots['user'] = $user;
 
                 $cartData = $cartService->getData();
 
