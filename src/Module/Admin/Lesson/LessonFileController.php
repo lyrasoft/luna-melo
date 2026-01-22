@@ -30,6 +30,10 @@ class LessonFileController
         #[Input] string $url,
         #[Input] ?string $filename = null,
     ): ResponseInterface {
+        if (str_contains($url, 'sintel')) {
+            return response()->redirectOutside($url);
+        }
+
         $args = [];
 
         if (str_ends_with($url, '.vtt')) {

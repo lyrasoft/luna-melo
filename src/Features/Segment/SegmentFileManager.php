@@ -25,6 +25,11 @@ class SegmentFileManager
             throw new \RuntimeException('Only S3 url is allowed to delete.');
         }
 
+        // Ignore test files
+        if (str_contains($url, 'sintel')) {
+            return;
+        }
+
         $field = StrNormalize::toSnakeCase($field);
 
         $count = $this->orm->from(Segment::class)
