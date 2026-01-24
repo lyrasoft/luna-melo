@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Entity;
 
+use Windwalker\Core\Router\Navigator;
+use Windwalker\Core\Router\RouteUri;
 use Windwalker\ORM\Attributes\AutoIncrement;
 use Lyrasoft\Luna\Attributes\Slugify;
 use Unicorn\Enum\BasicState;
@@ -137,5 +139,18 @@ class Lesson implements EntityInterface
     public static function setup(EntityMetadata $metadata): void
     {
         //
+    }
+
+    public function makeLink(Navigator $nav, ?int $segmentId = null): RouteUri
+    {
+        $link = $nav->to('front::lesson_item')
+            ->id($this->id)
+            ->alias($this->alias);
+
+        if ($segmentId) {
+            $link = $link->var('segment_id', $segmentId);
+        }
+
+        return $link;
     }
 }

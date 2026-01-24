@@ -19,6 +19,7 @@ namespace App\View;
 use Lyrasoft\Luna\Entity\Category;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Entity\Lesson;
+use Lyrasoft\Melo\Module\Front\Lesson\LessonListView;
 use Lyrasoft\Melo\Script\MeloScript;
 use Unicorn\Html\Breadcrumb;
 use Windwalker\Core\Application\AppContext;

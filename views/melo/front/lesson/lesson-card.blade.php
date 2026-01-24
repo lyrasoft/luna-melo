@@ -50,7 +50,7 @@ $ownedLesson = $lessonService->checkUserHasLesson($item->id);
     </div>
 
     <div class="card-body d-flex flex-column">
-        <a href="{{ $nav->to('lesson_item', ['id' => $item->id]) }}" class="stretched-link">
+        <a href="{{ $item->makeLink($nav) }}" class="stretched-link">
             <h4>
                 {{ $item->title }}
             </h4>

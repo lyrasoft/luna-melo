@@ -23,6 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Router\Exception\RouteNotFoundException;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
@@ -63,16 +64,31 @@ class LessonItemView implements ViewModelInterface
      * @param  AppContext  $app   The web app context.
      * @param  View        $view  The view object.
      *
-     * @return  ResponseInterface|array
+     * @return  mixed
      * @throws InvalidArgumentException
      */
-    public function prepare(AppContext $app, View $view): ResponseInterface|array
+    public function prepare(AppContext $app, View $view): mixed
     {
         $id = (int) $app->input('id');
+        $alias = $app->input('alias');
         $segmentId = (int) $app->input('segment_id');
 
         /** @var Lesson $item */
-        $item = $this->repository->mustGetItem(['id' => $id,]);
+        if ($id) {
+            $item = $this->repository->mustGetItem(['id' => $id]);
+        } elseif ($alias) {
+            $item = $this->repository->mustGetItem(['alias' => $alias]);
+        } else {
+            throw new RouteNotFoundException('Lesson not found');
+        }
+
+        $canonicalLink = $item->makeLink($this->nav, $segmentId);
+        $view->getHtmlFrame()->addCanonical($canonicalLink->full());
+
+        if ($item->alias !== $alias) {
+            return $canonicalLink;
+        }
+
         $user = $this->userService->getUser();
 
         $chapters = $this->orm->from(Segment::class)
@@ -97,28 +113,12 @@ class LessonItemView implements ViewModelInterface
             if (!$segment) {
                 $app->addMessage('沒有可用章節', 'warning');
 
-                return $this->nav->redirect(
-                    $this->nav->to(
-                        'lesson_item',
-                        [
-                            'id' => $item->id,
-                            'segment_id' => (int) $segmentId,
-                        ]
-                    ),
-                );
+                return $this->nav->to('lesson_list');
             }
 
             $segmentId = $segment->id;
 
-            return $this->nav->redirect(
-                $this->nav->to(
-                    'lesson_item',
-                    [
-                        'id' => $item->id,
-                        'segment_id' => (int) $segmentId,
-                    ]
-                )
-            );
+            return $item->makeLink($this->nav, $segmentId);
         }
 
         $currentSegment = $this->orm->mustFindOne(

@@ -23,3 +23,9 @@ export async function createMeloCartApp(props: Record<string, any>) {
 
   return createMeloCartApp(props);
 }
+
+export async function createLessonHomeworksApp(props: Record<string, any>) {
+  const { createLessonHomeworksApp } = await import('~melo/modules/lesson-homeworks/lesson-homeworks');
+
+  return createLessonHomeworksApp(props);
+}

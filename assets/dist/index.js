@@ -177,7 +177,12 @@ async function createMeloCartApp(props) {
   const { createMeloCartApp: createMeloCartApp2 } = await import("./chunks/melo-cart.js");
   return createMeloCartApp2(props);
 }
+async function createLessonHomeworksApp(props) {
+  const { createLessonHomeworksApp: createLessonHomeworksApp2 } = await import("./chunks/lesson-homeworks.js");
+  return createLessonHomeworksApp2(props);
+}
 export {
+  createLessonHomeworksApp,
   createMeloCartApp,
   createSegmentEditorApp,
   useLessonCartButtons,

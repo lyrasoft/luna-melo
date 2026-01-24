@@ -109,7 +109,7 @@ class LessonService
 
         $user = $this->userService->getCurrentUser();
 
-        $exist = (bool) $this->orm->from(MeloOrder::class)
+        $exist = (bool) $this->orm->from(MeloOrder::class, 'order')
             ->where('user_id', $user->id)
             ->whereExists(
                 fn (Query $query) => $query->from(MeloOrderItem::class)

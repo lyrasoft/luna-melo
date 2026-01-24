@@ -1,4 +1,11 @@
-import { MeloOption, QnOption, Question, useLessonCartButtons, UserSegmentMap } from '@lyrasoft/melo';
+import {
+  createLessonHomeworksApp,
+  MeloOption,
+  QnOption,
+  Question,
+  useLessonCartButtons,
+  UserSegmentMap
+} from '@lyrasoft/melo';
 import { data, domready, uid, useHttpClient } from '@windwalker-io/unicorn-next';
 import { Modal } from 'bootstrap';
 import dayjs from 'dayjs';
@@ -15,127 +22,13 @@ const totalAssignment: number = data('totalAssignment');
 const lessonSectionOrder: number[] = data('lessonSectionOrder');
 
 await domready(async () => {
-  const { get, post } = await useHttpClient();
-
-  // prepare init assignments
-  const res = await get(
-    '@ajax_lesson/prepareStudentAssignments',
-    {
-      params: {
-        lesson_id: lessonId,
-        limit: 5,
-        offset: 0,
-      }
-    }
-  );
-
-  let assignments: UserSegmentMap[] = res.data.data;
-
-  let nextOffset: number = assignments.length;
-
-  const homeworkList = document.querySelector<HTMLDivElement>('.c-homework-list');
-
-  appendStudentAssignmentList(assignments);
-
-  // get more assignments
-  const getMoreAssignments = document.querySelector<HTMLAnchorElement>('.j-get-student-assignments');
-
-  toggleMoreButton();
-
-  getMoreAssignments!.addEventListener('click', async () => {
-    const res = await get(
-      '@ajax_lesson/prepareStudentAssignments',
-      {
-        params: {
-          lesson_id: lessonId,
-          limit: 5,
-          offset: nextOffset,
-        }
-      }
-    );
-
-    assignments = res.data.data;
-
-    nextOffset = nextOffset + assignments.length;
-
-    appendStudentAssignmentList(res.data.data);
-
-    toggleMoreButton();
+  createLessonHomeworksApp({
+    lessonId,
+    totalAssignment,
+    lessonSectionOrder,
+  }).then((app) => {
+    app.mount('lesson-homeworks-app');
   });
-
-  function appendStudentAssignmentList(assignments: UserSegmentMap[]) {
-    if (totalAssignment <= 0) {
-      let homeworkItem = document.createElement('div');
-      homeworkItem.className = 'c-homework-item justify-content-center';
-
-      homeworkItem.innerHTML += `
-        <div class="text-muted py-4">
-            本課程無作業要上傳唷！
-        </div>
-      `;
-
-      homeworkList!.appendChild(homeworkItem);
-
-      return;
-    }
-
-    assignments.forEach((assignment: UserSegmentMap) => {
-      let homeworkItem = document.createElement('div');
-      homeworkItem.className = 'c-homework-item';
-
-      const sectionName: string = getSectionName(lessonSectionOrder, assignment.segmentId);
-
-      // Todo: Should convert timezone from backend
-      const date = dayjs.utc(assignment.assignmentUploadTime)
-        .tz('Asia/Taipei')
-        .format('yyyy-MM-dd');
-
-      // Append the avatar section
-      homeworkItem.innerHTML += `
-        <div class="c-homework-item__avatar">
-            <img width="40" height="40" class="img-fluid rounded-circle"
-                src="${assignment.user.avatar}" alt="${assignment.user.name}">
-        </div>
-      `;
-
-      // Append the details section
-      homeworkItem.innerHTML += `
-        <div>
-            <div class="pb-1 mb-3">
-                ${assignment.user.name}｜<span class="c-homework-item__date">${date}</span>
-            </div>
-
-            <div class="pb-1 mb-3 text-muted">
-                ${sectionName}
-            </div>
-
-            <div class="d-flex">
-                <div class="me-3 pe-1">
-                    <img width="100" src="./assets/images/lesson/homework.png" alt="作業縮圖">
-                </div>
-                <div class="text-muted">
-                    ${assignment.description}
-                </div>
-            </div>
-        </div>
-      `;
-
-      homeworkList!.appendChild(homeworkItem);
-    });
-  }
-
-  function toggleMoreButton() {
-    if (totalAssignment <= 0) {
-      getMoreAssignments!.classList.add('d-none');
-      return;
-    }
-
-    if (nextOffset + 1 >= totalAssignment) {
-      getMoreAssignments!.classList.add('d-none');
-    } else {
-      getMoreAssignments!.classList.remove('d-none');
-    }
-  }
 
   // modal
   const homeworkModal = Modal.getOrCreateInstance('#homework-modal');

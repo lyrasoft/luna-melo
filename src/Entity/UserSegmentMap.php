@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Entity;
 
-use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Melo\Enum\UserSegmentStatus;
 use Lyrasoft\Melo\Workflow\HomeworkStatusWorkflow;
+use Windwalker\Core\DateTime\Chronos;
+use Windwalker\Core\DateTime\ServerTimeCast;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\ORM\Attributes\AutoIncrement;
 use Windwalker\ORM\Attributes\Cast;
-use Windwalker\Core\DateTime\Chronos;
 use Windwalker\ORM\Attributes\CastNullable;
-use Windwalker\Core\DateTime\ServerTimeCast;
-use Windwalker\ORM\Attributes\CreatedTime;
 use Windwalker\ORM\Attributes\Column;
+use Windwalker\ORM\Attributes\CreatedTime;
+use Windwalker\ORM\Attributes\CurrentTime;
 use Windwalker\ORM\Attributes\EntitySetup;
+use Windwalker\ORM\Attributes\JsonObject;
 use Windwalker\ORM\Attributes\PK;
 use Windwalker\ORM\Attributes\Table;
 use Windwalker\ORM\EntityInterface;
@@ -70,12 +71,27 @@ class UserSegmentMap implements EntityInterface
     #[Cast('bool', 'int')]
     public bool $frontShow = false;
 
+    #[Column('details')]
+    #[JsonObject]
+    public array $details = [];
+
     #[Column('created')]
     #[CastNullable(ServerTimeCast::class)]
     #[CreatedTime]
     public ?Chronos $created = null {
         set(\DateTimeInterface|string|null $value) => $this->created = Chronos::tryWrap($value);
     }
+
+    #[Column('modified')]
+    #[CastNullable(ServerTimeCast::class)]
+    #[CurrentTime]
+    public ?Chronos $modified = null {
+        set(\DateTimeInterface|string|null $value) => $this->modified = Chronos::tryWrap($value);
+    }
+
+    #[Column('params')]
+    #[JsonObject]
+    public array $params = [];
 
     #[EntitySetup]
     public static function setup(EntityMetadata $metadata, #[Autowire] HomeworkStatusWorkflow $workflow): void

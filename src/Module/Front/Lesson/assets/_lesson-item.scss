@@ -73,36 +73,36 @@
     &__card {
     }
 
-    .c-lesson-detail-card {
-
-      .c-homework-item {
-        border-top: 1px solid $gray-200;
-        padding: 32px 20px;
-        display: flex;
-        gap: 20px;
-
-        &__avatar {
-          min-width: 40px;
-        }
-
-        &__date {
-          color: $gray-500;
-        }
-      }
-
-      .c-file-item {
-        border-top: 1px solid $gray-200;
-        display: flex;
-        justify-content: space-between;
-        padding: 16px 30px;
-        overflow: hidden;
-
-        &:hover {
-          color: white;
-          background-color: $secondary;
-        }
-      }
-    }
+    //.c-lesson-detail-card {
+    //
+    //  .c-homework-item {
+    //    border-top: 1px solid $gray-200;
+    //    padding: 32px 20px;
+    //    display: flex;
+    //    gap: 20px;
+    //
+    //    &__avatar {
+    //      min-width: 40px;
+    //    }
+    //
+    //    &__date {
+    //      color: $gray-500;
+    //    }
+    //  }
+    //
+    //  .c-file-item {
+    //    border-top: 1px solid $gray-200;
+    //    display: flex;
+    //    justify-content: space-between;
+    //    padding: 16px 30px;
+    //    overflow: hidden;
+    //
+    //    &:hover {
+    //      color: white;
+    //      background-color: $secondary;
+    //    }
+    //  }
+    //}
   }
 
   .c-quiz-item {

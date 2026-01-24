@@ -179,6 +179,7 @@ $meloScript->lessonCart();
                                                     'melo.front.lesson.section-item',
                                                     [
                                                         'item' => $section,
+                                                        'lesson' => $item,
                                                         'index' => $j + 1,
                                                         'sectionOrderName' => $typeSections,
                                                         'chapterIndex' => $i + 1,
@@ -305,18 +306,7 @@ $meloScript->lessonCart();
                             <div class="tab-pane fade card l-lesson-item__card c-lesson-detail-card"
                                 id="lesson-homework" role="tabpanel" aria-labelledby="lesson-homework-tab"
                             >
-                                <div class="card-body c-lesson-detail-card__body">
-                                    <h4 class="card-title c-lesson-detail-card__title">
-                                        作業上傳
-                                    </h4>
-
-                                    <div class="c-homework-list"></div>
-
-                                    <a href="javascript://"
-                                        class="d-block link-secondary border-top py-4 text-center j-get-student-assignments">
-                                        查看更多 <i class="fa-solid fa-chevron-down"></i>
-                                    </a>
-                                </div>
+                                <x-homework-list />
                             </div>
 
                             <div class="tab-pane fade card l-lesson-item__card c-lesson-detail-card"

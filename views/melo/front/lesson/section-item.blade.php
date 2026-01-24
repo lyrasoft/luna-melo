@@ -16,8 +16,8 @@ namespace App\view;
  * @var $lang      LangService     The language translation service.
  */
 
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\Segment;
-use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
 use Lyrasoft\Melo\Features\Section\Quiz\QuizSection;
@@ -31,6 +31,7 @@ use Windwalker\Core\Router\SystemUri;
 
 /**
  * @var Segment $item
+ * @var Lesson  $lesson
  */
 
 $isActive ??= false;
@@ -48,13 +49,7 @@ if (!$app->service(UserService::class)->isLogin()) {
 }
 
 if ($item->type === VideoSection::id()) {
-    $link = $nav->to(
-        'lesson_item',
-        [
-            'id' => $item->lessonId,
-            'segment_id' => $item->id
-        ]
-    );
+    $link = $lesson->makeLink($nav, $item->id);
 }
 
 $format = 'i:s';
