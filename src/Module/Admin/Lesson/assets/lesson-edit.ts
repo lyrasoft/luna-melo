@@ -7,6 +7,7 @@ import {
   useKeepAlive,
   useTomSelect,
 } from '@windwalker-io/unicorn-next';
+import { useAttachment } from '@lyrasoft/attachment';
 
 const formSelector = '#admin-form';
 
@@ -41,3 +42,7 @@ useTomSelect('#input-item-sub_category_id', {
     };
   },
 });
+
+// Attachments
+useAttachment();
+

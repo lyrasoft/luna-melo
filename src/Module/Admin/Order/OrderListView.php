@@ -15,7 +15,6 @@ use Windwalker\Core\Form\FormFactory;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\View\Contract\FilterAwareViewModelInterface;
-use Windwalker\Core\View\SortableViewModelInterface;
 use Windwalker\Core\View\Traits\FilterAwareViewModelTrait;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;

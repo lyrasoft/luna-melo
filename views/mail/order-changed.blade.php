@@ -91,12 +91,20 @@ $melo = $app->service(MeloPackage::class);
         訂購時間：{{ $item->created->format('Y-m-d H:i:s') }}
     </p>
 
-    <p>
-        訂購狀態:
-        <span class="c-order-state text-{{ $history->state->getColor() }}">
-            {{ $history->state->getTitle($lang) }}
-        </span>
-    </p>
+    @if ($history->state)
+        <p>
+            訂購狀態:
+            <span class="c-order-state text-{{ $history->state->getColor() }}">
+                {{ $history->state->getTitle($lang) }}
+            </span>
+        </p>
+    @endif
+
+    @if ($history->message)
+        <blockquote>
+            {!! html_escape($history->message, true) !!}
+        </blockquote>
+    @endif
 
     <br />
     <br />

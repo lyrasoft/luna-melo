@@ -80,7 +80,8 @@ use Windwalker\Form\Form;
                         <x-attachment-field
                             :items="$attachments"
                             :insertBtn="false"
-                            :accept="'pdf,jpg'"
+                            accept=".pdf,.jpg,.zip,.png"
+                            multiple
                         >
                         </x-attachment-field>
                     </div>

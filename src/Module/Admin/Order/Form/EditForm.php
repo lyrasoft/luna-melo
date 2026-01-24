@@ -4,22 +4,16 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Order\Form;
 
-use Lyrasoft\Melo\Enum\OrderState;
-use Lyrasoft\Melo\Enum\Payment;
-use Lyrasoft\Luna\Field\UserModalField;
-use Lyrasoft\Melo\Features\Payment\MeloPaymentInterface;
+use Lyrasoft\Melo\Data\AddressInfo;
+use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Features\Payment\PaymentComposer;
-use Unicorn\Enum\BasicState;
-use Unicorn\Field\CalendarField;
 use Unicorn\Field\InlineField;
-use Unicorn\Field\SwitcherField;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Form\Attributes\Fieldset;
 use Windwalker\Form\Attributes\FormDefine;
 use Windwalker\Form\Attributes\NS;
 use Windwalker\Form\Field\HiddenField;
 use Windwalker\Form\Field\ListField;
-use Windwalker\Form\Field\TextareaField;
 use Windwalker\Form\Field\TextField;
 use Windwalker\Form\Form;
 
@@ -27,80 +21,70 @@ class EditForm
 {
     use TranslatorTrait;
 
-    public function __construct(protected PaymentComposer $paymentComposer)
+    public function __construct(protected PaymentComposer $paymentComposer, protected ?AddressInfo $address = null)
     {
     }
 
     #[FormDefine]
-    #[Fieldset('basic')]
     #[NS('item')]
-    public function basic(Form $form): void
+    public function main(Form $form): void
     {
-        $form->add('no', TextField::class)
-            ->label('訂單編號')
-            ->disabled(true);
-
-        $form->add('state', ListField::class)
-            ->label('訂單狀態')
-            ->registerOptions(OrderState::getTransItems($this->lang));
-
-        $payments = $this->paymentComposer->getGateways()
-            ->map(
-                function (MeloPaymentInterface $payment) {
-                    return $payment->getTitle($this->lang);
-                }
-            );
-
-        $form->add('payment', ListField::class)
-            ->label('付款方式')
-            ->registerOptions($payments)
-            ->disabled(true);
-
-        $form->add('created', CalendarField::class)
-            ->label('購買時間')
-            ->disabled(true);
-
         $form->add('id', HiddenField::class);
     }
 
     #[FormDefine]
-    #[Fieldset('meta')]
-    #[NS('user')]
-    public function meta(Form $form): void
+    #[Fieldset('invoice')]
+    #[NS('item')]
+    public function invoice(Form $form): void
     {
-        $form->add('name', TextField::class)
-            ->label('訂購人')
+        $form->add('invoice_no', TextField::class)
+            ->label('發票編號')
             ->disabled(true);
 
-        $form->add('phone', TextField::class)
-            ->label('電話')
-            ->disabled(true);
+        $form->add('invoice_type', ListField::class)
+            ->label('發票類型')
+            ->registerFromEnums(InvoiceType::class);
 
-        $form->add('username', TextField::class)
-            ->label('帳號')
-            ->disabled(true);
+        $form->add('invoice_data/name', TextField::class)
+            ->label('購買人')
+            ->showon(['item/invoice_type' => InvoiceType::IDV]);
 
-        $form->add('email', TextField::class)
-            ->label('信箱')
-            ->disabled(true);
-    }
+        $form->add('invoice_data/carrier', TextField::class)
+            ->label('載具編號')
+            ->pattern('^/[\dA-Z0-9+-\.]{7}$')
+            ->showon(['item/invoice_type' => InvoiceType::IDV]);
 
-    #[FormDefine]
-    #[Fieldset('remit')]
-    #[NS('remit')]
-    public function remit(Form $form): void
-    {
-        $form->add('time', CalendarField::class)
-            ->label('匯款時間')
-            ->disabled(true);
+        $form->add('invoice_data/vat', TextField::class)
+            ->label('統編')
+            ->pattern('[0-9]{8}')
+            ->showon(['item/invoice_type' => InvoiceType::COMPANY]);
 
-        $form->add('account', TextField::class)
-            ->label('匯款帳號後五碼')
-            ->disabled(true);
+        $form->add('invoice_data/title', TextField::class)
+            ->label('抬頭')
+            ->showon(['item/invoice_type' => InvoiceType::COMPANY]);
 
-        $form->add('note', TextareaField::class)
-            ->label('備註')
-            ->rows(5)
-            ->disabled(true);
+        $form->add('invoice_data/address', InlineField::class)
+            ->label('地址')
+            ->asGroup(true)
+            ->addFilter('trim')
+            ->widths(4, 4, 4, 'calc(100% + .75rem)')
+            ->configureForm(
+                function (Form $form) {
+                    $form->add('city', ListField::class)
+                        ->label('縣市')
+                        ->attr('data-value', $this->address?->city ?? '');
+
+                    $form->add('dist', ListField::class)
+                        ->label('鄉鎮市區')
+                        ->attr('data-value', $this->address?->dist ?? '');
+
+                    $form->add('zip', TextField::class)
+                        ->label('郵遞區號')
+                        ->readonly(true);
+
+                    $form->add('address', TextField::class)
+                        ->placeholder('街道地址');
+                }
+            );
     }
 }

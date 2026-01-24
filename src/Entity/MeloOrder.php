@@ -59,7 +59,7 @@ class MeloOrder implements EntityInterface
     }
 
     #[Column('invoice_data')]
-    #[Cast(InvoiceData::class)]
+    #[JsonObject]
     public InvoiceData $invoiceData {
         set(InvoiceData|array|null $value) => $this->invoiceData = InvoiceData::wrap($value);
         get => $this->invoiceData ??= new InvoiceData();

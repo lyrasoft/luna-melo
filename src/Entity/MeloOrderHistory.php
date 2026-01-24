@@ -42,9 +42,9 @@ class MeloOrderHistory implements EntityInterface
     }
 
     #[Column('state')]
-    #[Cast(OrderState::class)]
-    public OrderState $state {
-        set(OrderState|string $value) => $this->state = OrderState::wrap($value);
+    #[CastNullable(OrderState::class)]
+    public ?OrderState $state = null {
+        set(OrderState|string|null $value) => $this->state = OrderState::tryWrap($value);
     }
 
     #[Column('notify')]

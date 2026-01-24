@@ -35,11 +35,6 @@ enum OrderState: string implements EnumTranslatableInterface
     #[Color('secondary')]
     case CANCELLED = 'cancelled';
 
-    public static function preprocessValue(mixed $value): mixed
-    {
-        return $value ?: self::PENDING;
-    }
-
     public function trans(LanguageInterface $lang, ...$args): string
     {
         return $lang->trans('melo.order.state.' . $this->name);

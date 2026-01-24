@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Order;
 
+use Lyrasoft\Melo\Cart\Price\PriceObject;
+use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
+use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Lyrasoft\Melo\Module\Admin\Order\Form\EditForm;
 use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Lyrasoft\Contact\Entity\Contact;
@@ -32,6 +36,7 @@ use Windwalker\ORM\ORM;
 class OrderEditView implements ViewModelInterface
 {
     use TranslatorTrait;
+    use OrderItemViewTrait;
 
     public function __construct(
         protected ORM $orm,
@@ -67,43 +72,18 @@ class OrderEditView implements ViewModelInterface
         )
             ?->dump(true);
 
-        $remit = $this->orm->findOne(
-            Contact::class,
-            [
-                'type' => 'remittance',
-                [
-                    'details ->> order_no', '=', $item->no
-                ]
-            ]
-        );
-
         $form = $this->formFactory
-            ->create(EditForm::class)
-            ->fill(
-                [
-                    'item' => $this->repository->getState()->getAndForget('edit.data')
-                        ?: $this->orm->extractEntity($item)
-                ]
-            )
-            ->fill(
-                [
-                    'user' => array_merge($user, ['phone' => $user['params']['phone'] ?? '']),
-                    'remit' => [
-                        'time' => $remit?->details['time'] ?? null,
-                        'account' => $remit?->details['account'],
-                        'note' => $remit?->content
-                    ]
-                ]
-            );
+            ->create(EditForm::class, address: $item->invoiceData->address)
+            ->fillTo('item', $this->orm->extractEntity($item))
+            ->fillTo('item', $this->repository->getState()->getAndForget('edit.data'));
 
-        $orderItems = $this->orm->findList(
-            MeloOrderItem::class,
-            [
-                'order_id' => $item?->id,
-            ]
-        );
+        $orderItems = $this->getOrderItems($item->id);
 
-        return compact('form', 'id', 'item', 'orderItems');
+        $histories = $this->getHistories($item->id);
+
+        $totals = $this->getTotalPriceSet($item->id);
+
+        return compact('form', 'id', 'item', 'orderItems', 'histories', 'totals');
     }
 
     #[ViewMetadata]

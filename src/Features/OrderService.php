@@ -64,7 +64,6 @@ class OrderService
         $history = new MeloOrderHistory();
 
         $history->type = $type;
-        $history->createdBy = 0;
         $history->state = $state;
         $history->orderId = $orderId;
         $history->message = $message;
@@ -75,7 +74,7 @@ class OrderService
 
     public function changeState(
         MeloOrder|int $order,
-        OrderState|null $state,
+        OrderState|null $to,
         OrderHistoryType $historyType,
         string $message = '',
         bool $notify = false,
@@ -88,14 +87,10 @@ class OrderService
             throw new ValidateFailException('Order not found.');
         }
 
-        if ($order->state === $state) {
-            return;
-        }
-
         /** @var MeloOrderHistory $history */
-        $history = $this->orm->transaction(function () use ($order, $historyType, $state, $notify, $message) {
-            if ($state) {
-                $order->state = $state;
+        $history = $this->orm->transaction(function () use ($order, $historyType, $to, $notify, $message) {
+            if ($to && $order->state !== $to) {
+                $order->state = $to;
 
                 $this->orm->updateOne($order);
 
@@ -110,17 +105,17 @@ class OrderService
                 }
             }
 
-            return $this->createHistory($order, $state, $historyType, $message, $notify);
+            return $this->createHistory($order, $to, $historyType, $message, $notify);
         });
 
         if ($notify) {
             $user = $this->orm->findOne(User::class, ['id' => $order->userId]);
 
-            if ($state) {
+            if ($to) {
                 $subject = sprintf(
                     '您的訂單 #%s 狀態變更為: %s',
                     $order->no,
-                    $state->getTitle()
+                    $to->getTitle()
                 );
             } else {
                 $subject = sprintf(

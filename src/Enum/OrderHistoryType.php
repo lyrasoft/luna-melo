@@ -14,7 +14,7 @@ enum OrderHistoryType: string implements EnumTranslatableInterface
 {
     use EnumTranslatableTrait;
 
-    #[Title('一般會員')]
+    #[Title('使用者')]
     case MEMBER = 'member';
 
     #[Title('管理者')]

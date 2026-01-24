@@ -9,6 +9,7 @@ use Lyrasoft\Luna\Field\TagListField;
 use Lyrasoft\Luna\Field\UserModalField;
 use Unicorn\Field\ButtonRadioField;
 use Unicorn\Field\CalendarField;
+use Unicorn\Field\FileDragField;
 use Unicorn\Field\SingleImageDragField;
 use Unicorn\Field\SwitcherField;
 use Unicorn\Field\TinymceEditorField;
@@ -179,5 +180,7 @@ class EditForm
                     'height' => 400,
                 ]
             );
+
+        $form->add('file123', FileDragField::class);
     }
 }

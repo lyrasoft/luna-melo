@@ -8,11 +8,14 @@ use Lyrasoft\Luna\Access\AccessService;
 use Lyrasoft\Luna\Repository\UserRepository;
 use Lyrasoft\Luna\User\Exception\AccessDeniedException;
 use Lyrasoft\Luna\User\UserService;
+use Lyrasoft\Melo\Cart\Price\PriceObject;
+use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Lyrasoft\Melo\Features\Payment\PaymentComposer;
+use Lyrasoft\Melo\Module\Admin\Order\OrderItemViewTrait;
 use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
@@ -32,6 +35,7 @@ use Windwalker\ORM\ORM;
 class OrderItemView implements ViewModelInterface
 {
     use TranslatorTrait;
+    use OrderItemViewTrait;
 
     public function __construct(
         protected ORM $orm,
@@ -76,25 +80,13 @@ class OrderItemView implements ViewModelInterface
 
         $view[$item::class] = $item;
 
-        $histories = $this->orm->from(MeloOrderHistory::class)
-            ->where('order_id', $item->id)
-            ->order('id', 'DESC')
-            ->all(MeloOrderHistory::class);
+        $orderItems = $this->getOrderItems($item->id);
 
-        $totals = $this->orm->from(MeloOrderTotal::class)
-            ->where('order_id', $item->id)
-            ->order('ordering', 'ASC')
-            ->all(MeloOrderTotal::class);
+        $histories = $this->getHistories($item->id);
 
-        $orderItems = $this->orm->findList(
-            MeloOrderItem::class,
-            [
-                'order_id' => $item->id,
-            ]
-        );
+        $totals = $this->getTotalPriceSet($item->id);
 
         $payment = $this->paymentComposer->getGateway($item->payment);
-        $paymentTitle = $item->paymentData->paymentTitle ?: $payment?->getTitle($this->lang);
 
         $userInfo = $this->userRepository->getListSelector()
             ->addFilter('user.id', $user->id)
@@ -106,7 +98,6 @@ class OrderItemView implements ViewModelInterface
             'orderItems',
             'userInfo',
             'payment',
-            'paymentTitle',
             'totals',
         );
     }
