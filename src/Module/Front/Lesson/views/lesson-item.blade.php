@@ -379,7 +379,7 @@ $meloScript->lessonCart();
     </div>
 
 {{--    @include('melo.front.lesson.homework-modal')--}}
-    @include('melo.front.lesson.quiz-modal')
+{{--    @include('melo.front.lesson.quiz-modal')--}}
 
     <div class="l-segment-hiddens">
         @foreach($chapters as $i => $chapter)

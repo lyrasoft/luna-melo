@@ -152,9 +152,9 @@ function useSectionEditComponents(id, component) {
   return sectionEditComponents;
 }
 const questionEditComponents = {
-  boolean: () => import("./chunks/QuestionEdit.js").then((n) => n.c),
-  select: () => import("./chunks/QuestionEdit.js").then((n) => n.c),
-  multiple: () => import("./chunks/QuestionEdit.js").then((n) => n.c)
+  boolean: () => import("./chunks/QuestionEdit.js").then((n) => n.b),
+  select: () => import("./chunks/QuestionEdit.js").then((n) => n.b),
+  multiple: () => import("./chunks/QuestionEdit.js").then((n) => n.b)
 };
 function useQuestionEditComponents(id, component) {
   if (typeof id === "object") {
@@ -181,14 +181,19 @@ async function createLessonHomeworksApp(props) {
   const { createLessonHomeworksApp: createLessonHomeworksApp2 } = await import("./chunks/lesson-homeworks.js");
   return createLessonHomeworksApp2(props);
 }
-async function createSectionHomeworkApp(props) {
+async function createSectionHomeworkApp(props = {}) {
   const { createSectionHomeworkApp: createSectionHomeworkApp2 } = await import("./chunks/section-homework.js");
   return createSectionHomeworkApp2(props);
+}
+async function createSectionQuizApp(props = {}) {
+  const { createSectionQuizApp: createSectionQuizApp2 } = await import("./chunks/section-quiz.js");
+  return createSectionQuizApp2(props);
 }
 export {
   createLessonHomeworksApp,
   createMeloCartApp,
   createSectionHomeworkApp,
+  createSectionQuizApp,
   createSegmentEditorApp,
   useLessonCartButtons,
   useMeloFrontLessons,

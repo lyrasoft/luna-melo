@@ -175,11 +175,9 @@ class LessonController
         ORM $orm,
         UserService $userService,
         QuestionComposer $questionComposer,
+        #[Input('segment_id'), Filter('int')] int $segmentId,
+        #[Input('quiz')] array $userQuizzes,
     ): void {
-        $item = $app->input('item');
-        $segmentId = (int) $item['segment_id'];
-        $userQuizzes = $item['quiz'] ?? null;
-
         if (!$userService->isLogin()) {
             throw new ValidateFailException('請先登入');
         }
@@ -190,11 +188,7 @@ class LessonController
 
         $user = $userService->getCurrentUser();
 
-        $segment = $orm->findOne(Segment::class, ['id' => $segmentId]);
-
-        if (!$segment) {
-            throw new ValidateFailException('找不到這個章節');
-        }
+        $segment = $orm->mustFindOne(Segment::class, ['id' => $segmentId]);
 
         $questions = $orm->from(Question::class)
             ->where('question.segment_id', $segment->id)
@@ -209,8 +203,6 @@ class LessonController
             $qnInstance = $questionComposer->getQnInstance($question);
 
             $userAnswer = $orm->createEntity(UserAnswer::class);
-            $isCorrect = false;
-            $value = [];
 
             if (!array_key_exists($question->id, $userQuizzes)) {
                 throw new \RuntimeException(
@@ -221,46 +213,15 @@ class LessonController
                 );
             }
 
-            if ($question->type === BooleanQuestion::id()) {
-                $isCorrect = (int) $userQuizzes[$question->id] === (int) $question->answer;
-                $value = [$userQuizzes[$question->id]];
-            }
-
-            if ($question->type === SelectQuestion::id()) {
-                /** @var SelectQuestion $qnInstance */
-                $options = $qnInstance->getParams()->options;
-                
-                foreach ($options as $option) {
-                    if ($option->isAnswer) {
-                        $isCorrect = (int) $userQuizzes[$question->id][0] === $option->id;
-                    }
-                }
-                $value = $userQuizzes[$question->id];
-            }
-
-            if ($question->type === MultiSelectQuestion::id()) {
-                /** @var MultiSelectQuestion $qnInstance */
-                $options = $qnInstance->getParams()->options;
-                $corrects = [];
-
-                foreach ($options as $option) {
-                    if ($option->isAnswer) {
-                        $corrects[] = in_array($option->id, $userQuizzes[$question->id] ?? [], false);
-                    } else {
-                        $corrects[] = !in_array($option->id, $userQuizzes[$question->id] ?? [], false);
-                    }
-                }
-
-                $isCorrect = !in_array(false, $corrects, true);
-                $value = $userQuizzes[$question->id] ?? [];
-            }
+            $value = $userQuizzes[$question->id];
+            $isCorrect = $qnInstance->isAnswerCorrect($value);
 
             $userAnswer->userId = $user->id;
             $userAnswer->lessonId = $segment->lessonId;
             $userAnswer->questionId = $question->id;
             $userAnswer->questionType = $question->type;
             $userAnswer->isCorrect = $isCorrect;
-            $userAnswer->value = $value ?? [];
+            $userAnswer->value = (array) $value;
             $userAnswer->score = $isCorrect ? $question->score : 0;
 
             $userAnswers[] = $userAnswer;
@@ -300,7 +261,7 @@ class LessonController
         AppContext $app,
         ORM $orm,
     ): array {
-        $segmentId = (int) $app->input('segment_id');
+        $segmentId = (int) $app->input('id');
 
         $questions = [];
 
@@ -312,7 +273,13 @@ class LessonController
         foreach ($prepareQuestions as $question) {
             unset($question['answer']);
 
-            $questions[] = $orm->toEntity(Question::class, $question);
+            $questions[] = $qn = $orm->toEntity(Question::class, $question);
+
+            if ($qn->params['options'] ?? null) {
+                foreach ($qn->params['options'] as &$option) {
+                    unset($option['isAnswer']);
+                }
+            }
         }
 
         return compact(

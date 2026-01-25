@@ -7,6 +7,7 @@ import { a as _sfc_main$7, _ as _sfc_main$8 } from "./classes-BW_GpXTu.js";
 import { VueDraggable } from "vue-draggable-plus";
 import { v as vBTooltip, s as sleepMax } from "./timing.js";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
+import { u as useQuestionPresenter } from "./useQuestionPresenter.js";
 import { u as useFileUploader } from "./useFileUploader.js";
 import { u as useDebounceFn } from "./index2.js";
 const getClasses = (items) => computed(() => {
@@ -662,37 +663,6 @@ function useQuestionController() {
     createEmptyQuestion
   };
 }
-function useQuestionPresenter() {
-  const defines = inject("question.defines");
-  function getDefines() {
-    return defines || {};
-  }
-  function typeToTitle(type) {
-    return defines?.[type]?.title || type;
-  }
-  function typeToDescription(type) {
-    return defines?.[type]?.description || "";
-  }
-  function typeToIcon(type) {
-    return defines?.[type]?.icon || "fas fa-question-circle";
-  }
-  function scoreLimit(score) {
-    if (score > 100) {
-      return 100;
-    }
-    if (score < 1) {
-      return 1;
-    }
-    return score;
-  }
-  return {
-    getDefines,
-    typeToTitle,
-    typeToDescription,
-    typeToIcon,
-    scoreLimit
-  };
-}
 const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   __name: "OptionEdit",
   props: /* @__PURE__ */ mergeModels({
@@ -1332,9 +1302,8 @@ const QuestionEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
 export {
   QuestionEdit as Q,
   _sfc_main$5 as _,
-  useQuestionController as a,
-  _sfc_main$1$1 as b,
-  QuestionEdit$1 as c,
-  useQuestionPresenter as u
+  _sfc_main$1$1 as a,
+  QuestionEdit$1 as b,
+  useQuestionController as u
 };
 //# sourceMappingURL=QuestionEdit.js.map

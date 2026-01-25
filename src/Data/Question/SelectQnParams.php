@@ -16,7 +16,9 @@ class SelectQnParams implements RecordInterface
      * @param  array<QnOption>  $options
      */
     public function __construct(
-        public array $options = [],
+        public array $options = [] {
+            set(array $value) => array_map(fn ($o) => QnOption::wrap($o), $value);
+        },
     ) {
     }
 }

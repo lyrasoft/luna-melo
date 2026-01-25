@@ -10,6 +10,8 @@ use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\SegmentType;
+use Lyrasoft\Melo\Features\Question\QuestionComposer;
+use Lyrasoft\Melo\Features\Section\AbstractSection;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
 use Lyrasoft\Melo\Repository\LessonRepository;
 use Lyrasoft\Attachment\Entity\Attachment;
@@ -22,7 +24,9 @@ use Psr\Cache\InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\Exception\RouteNotFoundException;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\View\View;
@@ -42,6 +46,8 @@ use function Windwalker\where;
 )]
 class LessonItemView implements ViewModelInterface
 {
+    use TranslatorTrait;
+
     /**
      * Constructor.
      */
@@ -52,6 +58,8 @@ class LessonItemView implements ViewModelInterface
         protected LessonRepository $repository,
         protected UserService $userService,
         protected UnicornScript $uniScript,
+        protected QuestionComposer $questionComposer,
+        protected AssetService $asset,
         #[Service]
         protected LessonService $lessonService,
     ) {
@@ -230,6 +238,8 @@ class LessonItemView implements ViewModelInterface
         $this->uniScript->data('totalAssignment', $totalAssignment);
         $this->uniScript->data('lessonSectionOrder', $lessonSectionOrder);
 
+        $this->uniScript->data('question.defines', $this->getQuestionDefines());
+
         $this->uniScript->addRoute('@ajax_lesson');
 
         return compact(
@@ -262,5 +272,29 @@ class LessonItemView implements ViewModelInterface
         }
 
         return null;
+    }
+
+    /**
+     * @return  array|array[]
+     */
+    public function getQuestionDefines(): array
+    {
+        $defines = $this->questionComposer->getDefines();
+
+        return array_map(
+            function (string $className) {
+                /** @var class-string<AbstractSection> $className */
+
+                return [
+                    'id' => $className::id(),
+                    'icon' => $className::icon(),
+                    'title' => $className::title($this->lang),
+                    'description' => $className::description($this->lang),
+                    'vueComponentUrl' => $className::adminVueComponentUrl($this->asset),
+                    'vueComponentName' => $className::adminVueComponentName(),
+                ];
+            },
+            $defines
+        );
     }
 }

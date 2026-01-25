@@ -30,8 +30,14 @@ export async function createLessonHomeworksApp(props: Record<string, any>) {
   return createLessonHomeworksApp(props);
 }
 
-export async function createSectionHomeworkApp(props: Record<string, any>) {
+export async function createSectionHomeworkApp(props: Record<string, any> = {}) {
   const { createSectionHomeworkApp } = await import('~melo/modules/section-homework/section-homework');
 
   return createSectionHomeworkApp(props);
+}
+
+export async function createSectionQuizApp(props: Record<string, any> = {}) {
+  const { createSectionQuizApp } = await import('~melo/modules/section-quiz/section-quiz');
+
+  return createSectionQuizApp(props);
 }

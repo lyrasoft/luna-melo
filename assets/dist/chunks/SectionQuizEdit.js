@@ -4,10 +4,11 @@ import "./index-BSgsF2PB.js";
 import { u as useSegmentEditor, _ as _sfc_main$4 } from "./useSegmentEditor.js";
 import { _ as _sfc_main$3 } from "./classes-BW_GpXTu.js";
 import { _ as _sfc_main$6, a as _sfc_main$7 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
-import { u as useQuestionPresenter, a as useQuestionController, Q as QuestionEdit, _ as _sfc_main$5, b as _sfc_main$1$1 } from "./QuestionEdit.js";
+import { u as useQuestionController, Q as QuestionEdit, _ as _sfc_main$5, a as _sfc_main$1$1 } from "./QuestionEdit.js";
 import { VueDraggable } from "vue-draggable-plus";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
 import { deleteConfirm } from "@windwalker-io/unicorn-next";
+import { u as useQuestionPresenter } from "./useQuestionPresenter.js";
 import { u as useDebounceFn } from "./index2.js";
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "QuestionTypeSelector",

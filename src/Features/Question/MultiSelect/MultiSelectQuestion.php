@@ -31,6 +31,24 @@ class MultiSelectQuestion extends AbstractQuestion
         return '提供多個選項供使用者選擇。';
     }
 
+    public function isAnswerCorrect(mixed $value): bool
+    {
+        $value = (array) $value;
+        $results = [];
+
+        $options = $this->getOptions();
+
+        foreach ($options as $option) {
+            if ($option->isAnswer) {
+                $results[] = in_array($option->text, $value, true);
+            } else {
+                $results[] = !in_array($option->text, $value, true);
+            }
+        }
+
+        return !in_array(false, $results, true);
+    }
+
     public function getParams(): SelectQnParams
     {
         return SelectQnParams::wrap($this->data->params);

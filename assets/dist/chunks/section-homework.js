@@ -234,7 +234,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SectionHomeworkApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "SectionHomeworkApp.vue"]]);
-async function createSectionHomeworkApp(props) {
+async function createSectionHomeworkApp(props = {}) {
   const app = createApp(SectionHomeworkApp, props);
   return app;
 }

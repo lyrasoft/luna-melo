@@ -1,8 +1,12 @@
-import { inject } from 'vue';
+import { inject, provide } from 'vue';
 import { QuestionDefine } from '~melo/types';
 
 export function useQuestionPresenter() {
-  const defines = inject<Record<string, QuestionDefine>>('question.defines');
+  const defines = inject<Record<string, QuestionDefine>>('question.defines', {});
+
+  function provideDefines(defines: Record<string, QuestionDefine>) {
+    provide('question.defines', defines);
+  }
 
   function getDefines() {
     return defines || {};
@@ -33,6 +37,7 @@ export function useQuestionPresenter() {
   }
 
   return {
+    provideDefines,
     getDefines,
     typeToTitle,
     typeToDescription,

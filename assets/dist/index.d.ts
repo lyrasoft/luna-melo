@@ -52,7 +52,9 @@ export declare function createLessonHomeworksApp(props: Record<string, any>): Pr
 
 export declare function createMeloCartApp(props: Record<string, any>): Promise<App<Element>>;
 
-export declare function createSectionHomeworkApp(props: Record<string, any>): Promise<App<Element>>;
+export declare function createSectionHomeworkApp(props?: Record<string, any>): Promise<App<Element>>;
+
+export declare function createSectionQuizApp(props?: Record<string, any>): Promise<App<Element>>;
 
 export declare function createSegmentEditorApp(props: Record<string, any>): Promise<App<Element>>;
 

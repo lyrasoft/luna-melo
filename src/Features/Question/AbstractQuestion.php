@@ -9,6 +9,7 @@ use Lyrasoft\Melo\Entity\Question;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Data\RecordInterface;
 use Windwalker\Utilities\Contract\LanguageInterface;
+use Windwalker\Utilities\TypeCast;
 
 abstract class AbstractQuestion
 {
@@ -30,10 +31,25 @@ abstract class AbstractQuestion
         return null;
     }
 
+    public static function frontVueComponentUrl(AssetService $asset): ?string
+    {
+        return null;
+    }
+
+    public static function frontVueComponentName(): ?string
+    {
+        return null;
+    }
+
     public function __construct(
         public protected(set) Question $data
     ) {
         //
+    }
+
+    public function isAnswerCorrect(mixed $value): bool
+    {
+        return (string) $this->data->answer === TypeCast::tryString($value);
     }
 
     public function getParams(): RecordInterface
