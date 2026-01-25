@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features;
 
+use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
@@ -101,13 +102,14 @@ class LessonService
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function checkUserHasLesson(
-        int $lessonId
+        int $lessonId,
+        ?User $user = null
     ): bool {
         if (!$this->userService->isLogin()) {
             return false;
         }
 
-        $user = $this->userService->getCurrentUser();
+        $user ??= $this->userService->getCurrentUser();
 
         $exist = (bool) $this->orm->from(MeloOrder::class, 'order')
             ->where('user_id', $user->id)

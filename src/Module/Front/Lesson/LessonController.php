@@ -23,6 +23,7 @@ use Lyrasoft\Melo\Features\Question\MultiSelect\MultiSelectQuestion;
 use Lyrasoft\Melo\Features\Question\QuestionComposer;
 use Lyrasoft\Melo\Features\Question\Select\SelectQuestion;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
+use Lyrasoft\Melo\Features\Segment\SegmentFinder;
 use Psr\Cache\InvalidArgumentException;
 use Unicorn\Attributes\Ajax;
 use Unicorn\Controller\AjaxControllerTrait;
@@ -30,9 +31,12 @@ use Unicorn\Upload\FileUploadManager;
 use Unicorn\Upload\FileUploadService;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
+use Windwalker\Core\Attributes\Filter;
 use Windwalker\Core\Attributes\Method;
+use Windwalker\Core\Attributes\Request\Input;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Form\Exception\ValidateFailException;
+use Windwalker\DI\Attributes\Inject;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
 
@@ -45,6 +49,24 @@ use function Windwalker\depth;
 class LessonController
 {
     use AjaxControllerTrait;
+
+    #[Ajax]
+    public function getSegment(
+        SegmentFinder $segmentFinder,
+        ORM $orm,
+        UserService $userService,
+        #[Input, Filter('int')] int $id
+    ): Segment {
+        $segment = $orm->mustFindOne(Segment::class, $id);
+
+        $user = $userService->getUser();
+
+        // if (!$segmentFinder->isAccessible($segment, $user)) {
+        //     throw new ValidateFailException('您無權限查看此章節內容');
+        // }
+
+        return $segment;
+    }
 
     #[Ajax]
     #[Method('GET')]
@@ -85,7 +107,7 @@ class LessonController
         ChronosService $chronosService,
     ): object {
         $item = $app->input('item');
-        $file = $app->file('homework_file');
+        $file = $app->file('item')['homework_file'] ?? null;
 
         if (!$userService->isLogin()) {
             throw new ValidateFailException('請先登入');

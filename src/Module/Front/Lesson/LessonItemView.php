@@ -128,6 +128,7 @@ class LessonItemView implements ViewModelInterface
                 'id' => $segmentId,
             ]
         );
+        $currentChapter = null;
 
         $tags = $this->orm->from(Tag::class)
             ->whereExists(
@@ -145,6 +146,10 @@ class LessonItemView implements ViewModelInterface
                 ->where('parent_id', $chapter->id)
                 ->order('ordering', 'ASC')
                 ->all(Segment::class);
+
+            if ($chapter->id === $currentSegment->parentId) {
+                $currentChapter = $chapter;
+            }
 
             $chapter->sections = $sections;
         }
@@ -231,6 +236,7 @@ class LessonItemView implements ViewModelInterface
             'item',
             'tags',
             'chapters',
+            'currentChapter',
             'currentSegment',
             'totalChapter',
             'totalSection',

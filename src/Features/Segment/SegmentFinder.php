@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Segment;
 
+use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Entity\Segment;
+use Lyrasoft\Melo\Features\LessonService;
 use Windwalker\Core\Database\ORMAwareTrait;
 use Windwalker\Data\Collection;
 
@@ -16,6 +18,10 @@ use function Windwalker\collect;
 class SegmentFinder
 {
     use ORMAwareTrait;
+
+    public function __construct(protected LessonService $lessonService)
+    {
+    }
 
     /**
      * @param  int  $lessonId
@@ -43,5 +49,18 @@ class SegmentFinder
         }
         
         return $chapters->values();
+    }
+
+    public function isAccessible(Segment $segment, User $user): bool
+    {
+        if (!$segment->parentId) {
+            return false;
+        }
+
+        if ($this->lessonService->checkUserHasLesson($segment->lessonId, $user)) {
+            return true;
+        }
+
+        return $segment->preview;
     }
 }

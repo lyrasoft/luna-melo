@@ -6,6 +6,7 @@ namespace Lyrasoft\Melo\Features\Section;
 
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\MeloPackage;
+use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Database\ORMAwareTrait;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
@@ -16,7 +17,7 @@ class SectionComposer
     use ORMAwareTrait;
     use InstanceCacheTrait;
 
-    public function __construct(protected MeloPackage $melo)
+    public function __construct(protected MeloPackage $melo, protected ApplicationInterface $app)
     {
     }
 
@@ -70,5 +71,26 @@ class SectionComposer
     public function mustGetDefine(string|Segment $section): string
     {
         return $this->getDefine($section);
+    }
+
+    public function makeInstance(Segment $segment): AbstractSection
+    {
+        $className = $this->getDefine($segment);
+
+        if (!$className) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Section define for type %s not found.',
+                    $segment->type
+                )
+            );
+        }
+
+        return $this->app->make(
+            $className,
+            [
+                'data' => $segment,
+            ]
+        );
     }
 }

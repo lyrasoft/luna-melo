@@ -10,6 +10,8 @@ use Windwalker\Utilities\Contract\LanguageInterface;
 
 class HomeworkSection extends AbstractSection
 {
+    public static $hiddenContentRendered = false;
+
     public static function id(): string
     {
         return 'homework';

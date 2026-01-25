@@ -181,9 +181,14 @@ async function createLessonHomeworksApp(props) {
   const { createLessonHomeworksApp: createLessonHomeworksApp2 } = await import("./chunks/lesson-homeworks.js");
   return createLessonHomeworksApp2(props);
 }
+async function createSectionHomeworkApp(props) {
+  const { createSectionHomeworkApp: createSectionHomeworkApp2 } = await import("./chunks/section-homework.js");
+  return createSectionHomeworkApp2(props);
+}
 export {
   createLessonHomeworksApp,
   createMeloCartApp,
+  createSectionHomeworkApp,
   createSegmentEditorApp,
   useLessonCartButtons,
   useMeloFrontLessons,

@@ -17,6 +17,8 @@ namespace App\View;
  */
 
 use Lyrasoft\Attachment\Entity\Attachment;
+use Lyrasoft\Melo\Data\SectionContent;
+use Lyrasoft\Melo\Data\SectionMenuItem;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Features\Section\SectionComposer;
 use Lyrasoft\Melo\Features\Section\Video\VideoSection;
@@ -34,16 +36,18 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
+use Windwalker\Core\Renderer\RendererService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var Lesson     $item
- * @var Tag        $tag
- * @var Segment    $currentSegment
- * @var Segment    $chapter
- * @var Segment    $section
- * @var User       $teacher
+ * @var Lesson       $item
+ * @var Tag          $tag
+ * @var Segment      $currentSegment
+ * @var Segment      $chapter
+ * @var Segment      $section
+ * @var Segment      $sectionSegment
+ * @var User         $teacher
  * @var Attachment[] $attachments
  */
 
@@ -52,9 +56,17 @@ $breadcrumb = $app->service(Breadcrumb::class);
 $breadcrumb->push($lang->trans('melo.lesson.search.page.title'), $nav->to('lesson_list'));
 $breadcrumb->push($item->title);
 
+$rendererService = $app->service(RendererService::class);
 $videoService = $app->service(VideoService::class);
 $userService = $app->service(UserService::class);
 $sectionComposer = $app->service(SectionComposer::class);
+$currentSectionInstance = $sectionComposer->makeInstance($currentSegment);
+$sectionContent = new SectionContent(
+    lesson: $item,
+    chapter: $currentChapter,
+    section: $currentSegment,
+);
+$sectionTypeIndexes = [];
 
 $format = 'i分鐘s秒';
 
@@ -108,31 +120,7 @@ $meloScript->lessonCart();
                     <div class="row g-0">
                         <div class="col-lg-8">
                             <div class="l-lesson-item__section">
-                                @if($currentSegment->type === VideoSection::id())
-                                    <div class="film" id="attend-video">
-                                        @if($videoService->isCloudVideo($currentSegment->src))
-                                            <div id="section-player" data-plyr-provider="youtube"
-                                                data-plyr-embed-id="{{ $videoService->getYoutubeEmbedId($currentSegment->src) }}"
-                                                width="100%" height="450">
-                                            </div>
-                                        @else
-                                            <video class="rounded" id="section-player" width="100%" height="450"
-                                                controls preload="metadata" crossorigin="anonymous"
-                                                controlsList="nodownload">
-                                                <source src="{{ $currentSegment->src }}" type="video/mp4">
-                                                @if($currentSegment->captionSrc)
-                                                    <track label="中文" kind="subtitles" srclang="zh"
-                                                        src="{{ $currentSegment->captionSrc }}"
-                                                        default>
-                                                @endif
-                                            </video>
-                                        @endif
-                                    </div>
-                                @else
-                                    <div class="l-lesson-item__img"
-                                        style="background-image: url({{ $item->image }});">
-                                    </div>
-                                @endif
+                                {!! $currentSectionInstance->renderContent($rendererService, $sectionContent) !!}
                             </div>
                         </div>
 
@@ -162,30 +150,23 @@ $meloScript->lessonCart();
                                         <div
                                             class="c-section-list collapse {{ $vm->activeChapter($chapters, $currentSegment) === $i ? 'show' : '' }}"
                                             id="chapter-{{ $chapter->id }}-collapse">
-                                                <?php
-                                                $typeSections = [
-                                                    'video' => [],
-                                                    'homework' => [],
-                                                    'quiz' => [],
-                                                ];
-                                                ?>
+                                            @foreach($chapter->sections as $j => $sectionSegment)
+                                                @php
+                                                    $section = $sectionComposer->makeInstance($sectionSegment);
+                                                    $sectionTypeIndexes[$sectionSegment->type] ??= 0;
 
-                                            @foreach($chapter->sections as $j => $section)
-                                                    <?php
-                                                    $typeSections[$section->type][] = $section->id;
-                                                    ?>
+                                                    $menuItem = new SectionMenuItem(
+                                                        lesson: $item,
+                                                        chapter: $chapter,
+                                                        chapterIndex: $i + 1,
+                                                        section: $sectionSegment,
+                                                        sectionIndex: $j + 1,
+                                                        typeIndex: ++$sectionTypeIndexes[$sectionSegment->type],
+                                                        isActive: $sectionSegment->id === $currentSegment->id
+                                                    );
+                                                @endphp
 
-                                                @include(
-                                                    'melo.front.lesson.section-item',
-                                                    [
-                                                        'item' => $section,
-                                                        'lesson' => $item,
-                                                        'index' => $j + 1,
-                                                        'sectionOrderName' => $typeSections,
-                                                        'chapterIndex' => $i + 1,
-                                                        'isActive' => $section->id === $currentSegment->id
-                                                    ]
-                                                )
+                                                {!! $section->renderSectionMenuItem($rendererService, $menuItem) !!}
                                             @endforeach
                                         </div>
                                     @endforeach
@@ -397,6 +378,29 @@ $meloScript->lessonCart();
         </div>
     </div>
 
-    @include('melo.front.lesson.homework-modal')
+{{--    @include('melo.front.lesson.homework-modal')--}}
     @include('melo.front.lesson.quiz-modal')
+
+    <div class="l-segment-hiddens">
+        @foreach($chapters as $i => $chapter)
+            <div class="l-chapter-hidden" data-chapter-hidden-id="{{ $chapter->id }}">
+                @foreach($chapter->sections as $j => $sectionSegment)
+                    @php
+                        $section = $sectionComposer->makeInstance($sectionSegment);
+                        $sectionTypeIndexes[$sectionSegment->type] ??= 0;
+
+                        $content = new SectionContent(
+                            lesson: $item,
+                            chapter: $chapter,
+                            section: $sectionSegment,
+                        );
+                    @endphp
+
+                    <div class="l-section-hidden" data-section-hidden-id="{{ $sectionSegment->id }}">
+                        {!! $section->renderHiddenContent($rendererService, $content) !!}
+                    </div>
+                @endforeach
+            </div>
+        @endforeach
+    </div>
 @stop

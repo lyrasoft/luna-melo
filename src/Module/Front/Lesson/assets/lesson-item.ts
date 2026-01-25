@@ -30,6 +30,8 @@ await domready(async () => {
     app.mount('lesson-homeworks-app');
   });
 
+  return;
+
   // modal
   const homeworkModal = Modal.getOrCreateInstance('#homework-modal');
   const quizModal = Modal.getOrCreateInstance('#quiz-modal');

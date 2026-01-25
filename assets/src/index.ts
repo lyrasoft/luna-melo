@@ -29,3 +29,9 @@ export async function createLessonHomeworksApp(props: Record<string, any>) {
 
   return createLessonHomeworksApp(props);
 }
+
+export async function createSectionHomeworkApp(props: Record<string, any>) {
+  const { createSectionHomeworkApp } = await import('~melo/modules/section-homework/section-homework');
+
+  return createSectionHomeworkApp(props);
+}
