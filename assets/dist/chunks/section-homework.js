@@ -59,7 +59,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         location.reload();
       } catch (e) {
         console.error(e);
-        await simpleAlert("作業上傳失敗");
+        if (e instanceof Error) {
+          await simpleAlert(e.message, "", "warning");
+        }
       }
     });
     const __returned__ = { form, modalEl, get modal() {

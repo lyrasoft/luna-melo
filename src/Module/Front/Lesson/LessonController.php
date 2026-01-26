@@ -23,6 +23,7 @@ use Lyrasoft\Melo\Features\Question\MultiSelect\MultiSelectQuestion;
 use Lyrasoft\Melo\Features\Question\QuestionComposer;
 use Lyrasoft\Melo\Features\Question\Select\SelectQuestion;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
+use Lyrasoft\Melo\Features\Segment\SegmentAttender;
 use Lyrasoft\Melo\Features\Segment\SegmentFinder;
 use Psr\Cache\InvalidArgumentException;
 use Unicorn\Attributes\Ajax;
@@ -36,6 +37,8 @@ use Windwalker\Core\Attributes\Method;
 use Windwalker\Core\Attributes\Request\Input;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Form\Exception\ValidateFailException;
+use Windwalker\Core\Router\Exception\RouteNotFoundException;
+use Windwalker\Core\Security\Exception\UnauthorizedException;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
@@ -84,7 +87,8 @@ class LessonController
             ->where('map.segment_type', HomeworkSection::id())
             ->where('map.assignment', '!=', '')
             ->where('map.front_show', 1)
-            ->order('map.id', 'ASC')
+            ->order('map.modified', 'DESC')
+            ->order('map.created', 'DESC')
             ->limit($limit)
             ->offset($offset)
             ->groupByJoins()
@@ -110,14 +114,14 @@ class LessonController
         $file = $app->file('item')['homework_file'] ?? null;
 
         if (!$userService->isLogin()) {
-            throw new ValidateFailException('請先登入');
+            throw new UnauthorizedException('請先登入', 400);
         }
 
         $user = $userService->getCurrentUser();
         $segment = $orm->findOne(Segment::class, $item['segment_id']);
 
         if (!$segment) {
-            throw new ValidateFailException('找不到這個章節');
+            throw new RouteNotFoundException('找不到這個章節');
         }
 
         $userSegmentMap = $orm->findOne(
@@ -127,11 +131,7 @@ class LessonController
                 'segment_id' => $segment->id,
                 'lesson_id' => $segment->lessonId,
                 'segment_type' => $segment->type,
-                [
-                    'assignment',
-                    '!=',
-                    '',
-                ],
+                ['assignment', '!=', ''],
             ]
         );
 
@@ -175,15 +175,16 @@ class LessonController
         ORM $orm,
         UserService $userService,
         QuestionComposer $questionComposer,
+        SegmentAttender $segmentAttender,
         #[Input('segment_id'), Filter('int')] int $segmentId,
         #[Input('quiz')] array $userQuizzes,
     ): void {
         if (!$userService->isLogin()) {
-            throw new ValidateFailException('請先登入');
+            throw new UnauthorizedException('請先登入', 401);
         }
 
         if (!$userQuizzes) {
-            throw new ValidateFailException('請先進行作答');
+            throw new UnauthorizedException('請先進行作答', 400);
         }
 
         $user = $userService->getCurrentUser();
@@ -238,17 +239,14 @@ class LessonController
             ]
         );
 
-        $orm->updateOne(
-            UserSegmentMap::class,
-            [
-                'user_id' => $user->id,
-                'segment_id' => $segment->id,
-                'score' => $segmentScore,
-            ],
-            [
-                'user_id',
-                'segment_id',
-            ]
+        $map = $segmentAttender->attendToSegment(
+            $user,
+            $segment,
+            function (UserSegmentMap $map) use ($segmentScore) {
+                $map->score = $segmentScore;
+
+                return $map;
+            }
         );
     }
 

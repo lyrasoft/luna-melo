@@ -61,7 +61,7 @@ $workflow = $app->service(HomeworkStatusWorkflow::class);
                     </th>
 
                     <th class="text-nowrap">
-                        作業
+                        作業檔案
                     </th>
 
                     <th class="text-nowrap">
@@ -104,9 +104,12 @@ $workflow = $app->service(HomeworkStatusWorkflow::class);
                         </td>
 
                         <td class="text-nowrap">
-                            <a href="{{ $item->assignment }}" target="_blank">
-                                {{ $item->assignment }}
-                            </a>
+                            @if ($item->assignment)
+                                <a href="{{ $item->assignment }}" target="_blank"
+                                    class="btn btn-sm btn-primary">
+                                    觀看作業檔案
+                                </a>
+                            @endif
                         </td>
 
                         <td>

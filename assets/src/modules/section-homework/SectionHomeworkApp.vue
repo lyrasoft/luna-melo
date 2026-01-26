@@ -78,7 +78,9 @@ const submit = wrap(async () => {
 
   } catch (e) {
     console.error(e);
-    await simpleAlert('作業上傳失敗');
+    if (e instanceof Error) {
+      await simpleAlert(e.message, '', 'warning');
+    }
   }
 });
 </script>
