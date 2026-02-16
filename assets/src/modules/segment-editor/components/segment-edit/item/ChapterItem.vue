@@ -53,15 +53,13 @@ const sections = ref<(Segment & { uid?: string; })[]>(uniqueItemList(chapter.val
 const isOpen = defineModel<boolean>('open', {
   default: false,
 })
-const slideDisplay = ref(isOpen.value ? 'display: flex;' : 'display: none;');
+const slideDisplay = isOpen.value ? 'display: flex;' : 'display: none;';
 const sectionsContainer = useTemplateRef<HTMLDivElement>('sectionsContainer');
 
 watch(isOpen, () => {
   if (!sectionsContainer.value) {
     return;
   }
-
-  slideDisplay.value = '';
 
   if (isOpen.value) {
     slideDown(sectionsContainer.value, 300, 'flex')

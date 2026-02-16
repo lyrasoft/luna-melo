@@ -53,10 +53,18 @@ const previewSrc = computed<string>(() => {
     return item.value.src;
   }
 
+  if (!item.value.src) {
+    return '';
+  }
+
   return route('@lesson_file/previewFile', { url: item.value.src });
 });
 
 const previewCaptionSrc = computed<string>(() => {
+  if (!item.value.captionSrc) {
+    return '';
+  }
+
   return route('@lesson_file/previewFile', { url: item.value.captionSrc });
 });
 
@@ -195,10 +203,13 @@ function calcVideoDuration(file: File): Promise<number> {
             <iframe :src="videoEmbedUrl" frameborder="0" style="width: 100%;"></iframe>
           </div>
           <div v-else>
-            <video controls class="w-100" style="aspect-ratio: 16 / 9; background-color: black"
+            <video v-if="previewSrc" controls class="w-100" style="aspect-ratio: 16 / 9; background-color: black"
               crossorigin="anonymous">
               <source :src="previewSrc" type="video/mp4">
-              <track default kind="captions" :src="previewCaptionSrc" srclang="zh" label="中文">
+              <track v-if="previewCaptionSrc" default kind="captions" :src="previewCaptionSrc"
+                srclang="zh"
+                label="中文"
+              >
             </video>
           </div>
         </BFormGroup>
