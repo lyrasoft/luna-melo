@@ -88,7 +88,11 @@ async function upload(file: File) {
     emit('error', e);
 
     if (e instanceof Error) {
-      simpleAlert(e.message);
+      if (e.message.includes('cancel')) {
+        console.warn('使用者取消上傳');
+      } else {
+        simpleAlert(e.message);
+      }
     } else {
       simpleAlert('上傳失敗');
     }

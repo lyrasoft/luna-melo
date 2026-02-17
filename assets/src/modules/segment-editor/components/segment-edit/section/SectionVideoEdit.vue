@@ -8,8 +8,13 @@ import { computed, inject, ref } from 'vue';
 import urlParser from 'js-video-url-parser';
 import FileUploader from '~melo/modules/segment-editor/components/uploader/FileUploader.vue';
 import { useSegmentController } from '~melo/modules/segment-editor/features/segment/useSegmentController';
-import { calculateFileBitrate } from '~melo/shared/media';
 import { Segment, SegmentEditorConfig } from '~melo/types';
+
+type VideoDimension = {
+  duration: number;
+  size: number;
+  bitrate: number;
+};
 
 const { deleteFile } = useSegmentController();
 const { loading, run } = useLoading();
@@ -27,6 +32,11 @@ const isFile = computed<boolean>(() => item.value.src !== '' && videoInfo.value 
 const isCloudVideo = computed<boolean>(() => item.value.src !== '' && videoInfo.value != null);
 const cloudVideoUrl = ref<string>('');
 const videoUploading = ref(false);
+let videoDimension: Promise<VideoDimension> = Promise.resolve({
+  duration: 0,
+  size: 0,
+  bitrate: 0
+});
 const config = inject<SegmentEditorConfig>('config');
 
 const maxBitrate = computed(() => {
@@ -103,12 +113,14 @@ function applyCloudVideo() {
 }
 
 async function onVideoBeforeUpload(file: File) {
-  const bitrate = await calculateFileBitrate(file);
+  videoDimension = calcVideoDimension(file);
+
+  const { bitrate } = await videoDimension;
 
   if (bitrate > maxBitrate.value) {
     const v = await simpleConfirm(
       `您的影片超過建議的 Bitrate: ${maxBitrateMbps.value} Mbps`,
-      `目前的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您壓縮影片以確保順暢的播放體驗。`,
+      `這隻影片的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您壓縮影片以確保順暢的播放體驗。`,
       'warning',
       {
         buttons: [
@@ -119,7 +131,7 @@ async function onVideoBeforeUpload(file: File) {
     );
 
     if (!v) {
-      throw new Error('使用者取消上傳');
+      return false;
     }
   }
 }
@@ -127,7 +139,8 @@ async function onVideoBeforeUpload(file: File) {
 async function videoUploaded(src: string, file: File) {
   videoUploading.value = false;
 
-  item.value.duration = await calcVideoDuration(file);
+  const { duration } = await videoDimension;
+  item.value.duration = duration;
   item.value.src = src;
 }
 
@@ -136,7 +149,7 @@ async function captionUploaded(src: string) {
 }
 
 // Duration
-function calcVideoDuration(file: File): Promise<number> {
+function calcVideoDimension(file: File): Promise<VideoDimension> {
   return new Promise((resolve) => {
     const video = document.createElement('video');
 
@@ -146,7 +159,18 @@ function calcVideoDuration(file: File): Promise<number> {
     video.src = url;
 
     video.addEventListener('loadedmetadata', () => {
-      resolve(Math.floor(video.duration));
+      window.URL.revokeObjectURL(video.src);
+
+      const duration = Math.floor(video.duration);
+      const fileSize = file.size;
+
+      const bitrate = (fileSize * 8) / duration;
+
+      resolve({
+        duration: duration,
+        size: fileSize,
+        bitrate
+      });
     });
   });
 }

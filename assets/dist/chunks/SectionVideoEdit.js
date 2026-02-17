@@ -2092,7 +2092,11 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       } catch (e) {
         emit("error", e);
         if (e instanceof Error) {
-          simpleAlert(e.message);
+          if (e.message.includes("cancel")) {
+            console.warn("使用者取消上傳");
+          } else {
+            simpleAlert(e.message);
+          }
         } else {
           simpleAlert("上傳失敗");
         }
@@ -2212,25 +2216,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32);
 }
-const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-fb52d69d"], ["__file", "FileUploader.vue"]]);
-function calculateFileBitrate(file) {
-  return new Promise((resolve) => {
-    const tag = file.type.startsWith("audio/") ? "audio" : "video";
-    const el = document.createElement(tag);
-    el.preload = "metadata";
-    el.onloadedmetadata = function() {
-      window.URL.revokeObjectURL(el.src);
-      const duration = el.duration;
-      const fileSize = file.size;
-      const bitrate = calculateBitrate(fileSize, duration);
-      resolve(bitrate);
-    };
-    el.src = URL.createObjectURL(file);
-  });
-}
-function calculateBitrate(bytesSize, duration) {
-  return bytesSize * 8 / duration;
-}
+const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-008555b2"], ["__file", "FileUploader.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionVideoEdit",
   props: {
@@ -2252,6 +2238,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const isCloudVideo = computed(() => item.value.src !== "" && videoInfo.value != null);
     const cloudVideoUrl = ref("");
     const videoUploading = ref(false);
+    let videoDimension = Promise.resolve({
+      duration: 0,
+      size: 0,
+      bitrate: 0
+    });
     const config = inject("config");
     const maxBitrate = computed(() => {
       return config?.maxBitrate || 2 * 1024 * 1024;
@@ -2312,11 +2303,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       item.value.src = cloudVideoUrl.value;
     }
     async function onVideoBeforeUpload(file) {
-      const bitrate = await calculateFileBitrate(file);
+      videoDimension = calcVideoDimension(file);
+      const { bitrate } = await videoDimension;
       if (bitrate > maxBitrate.value) {
         const v = await simpleConfirm(
           `您的影片超過建議的 Bitrate: ${maxBitrateMbps.value} Mbps`,
-          `目前的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您壓縮影片以確保順暢的播放體驗。`,
+          `這隻影片的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您壓縮影片以確保順暢的播放體驗。`,
           "warning",
           {
             buttons: [
@@ -2326,30 +2318,43 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           }
         );
         if (!v) {
-          throw new Error("使用者取消上傳");
+          return false;
         }
       }
     }
     async function videoUploaded(src, file) {
       videoUploading.value = false;
-      item.value.duration = await calcVideoDuration(file);
+      const { duration } = await videoDimension;
+      item.value.duration = duration;
       item.value.src = src;
     }
     async function captionUploaded(src) {
       item.value.captionSrc = src;
     }
-    function calcVideoDuration(file) {
+    function calcVideoDimension(file) {
       return new Promise((resolve) => {
         const video = document.createElement("video");
         const url = URL.createObjectURL(file);
         video.preload = "metadata";
         video.src = url;
         video.addEventListener("loadedmetadata", () => {
-          resolve(Math.floor(video.duration));
+          window.URL.revokeObjectURL(video.src);
+          const duration = Math.floor(video.duration);
+          const fileSize = file.size;
+          const bitrate = fileSize * 8 / duration;
+          resolve({
+            duration,
+            size: fileSize,
+            bitrate
+          });
         });
       });
     }
-    const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, cloudVideoUrl, videoUploading, config, maxBitrate, maxBitrateMbps, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, applyCloudVideo, onVideoBeforeUpload, videoUploaded, captionUploaded, calcVideoDuration, get route() {
+    const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, cloudVideoUrl, videoUploading, get videoDimension() {
+      return videoDimension;
+    }, set videoDimension(v) {
+      videoDimension = v;
+    }, config, maxBitrate, maxBitrateMbps, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, applyCloudVideo, onVideoBeforeUpload, videoUploaded, captionUploaded, calcVideoDimension, get route() {
       return route;
     }, get BButton() {
       return _sfc_main$5;
@@ -2636,7 +2641,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }))
   ]);
 }
-const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-df023415"], ["__file", "SectionVideoEdit.vue"]]);
+const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-5fb2aed4"], ["__file", "SectionVideoEdit.vue"]]);
 export {
   SectionVideoEdit as default
 };
