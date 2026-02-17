@@ -1,6 +1,6 @@
 import { defineComponent, provide, toRef, createElementBlock, openBlock, unref, normalizeStyle, renderSlot, createVNode, inject, computed, normalizeClass, createTextVNode, toDisplayString, Fragment, toValue, mergeModels, useSlots, useModel, ref, watch, nextTick, onMounted, createBlock, resolveDynamicComponent, withCtx, createCommentVNode, createElementVNode, renderList, mergeProps, withModifiers, withKeys, useAttrs, useTemplateRef, onUnmounted, Transition } from "vue";
 import { useLoading } from "@lyrasoft/ts-toolkit/vue";
-import { simpleAlert, route, deleteConfirm } from "@windwalker-io/unicorn-next";
+import { simpleAlert, route, deleteConfirm, simpleConfirm } from "@windwalker-io/unicorn-next";
 import { u as useDefaults, p as progressInjectionKey, c as useColorVariantClasses, e as useToNumber, f as sortSlotElementsByPosition, t as tabsInjectionKey, g as createReusableTemplate, h as useId } from "./index-BSgsF2PB.js";
 import { B as BvEvent, _ as _sfc_main$4, a as _sfc_main$5 } from "./classes-BW_GpXTu.js";
 import { _ as _sfc_main$6, a as _sfc_main$7 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
@@ -693,6 +693,99 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     };
   }
 });
+var symbolTag = "[object Symbol]";
+function isSymbol(value) {
+  return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
+}
+function arrayMap(array, iteratee) {
+  var index = -1, length = array == null ? 0 : array.length, result = Array(length);
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+var symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
+function baseToString(value) {
+  if (typeof value == "string") {
+    return value;
+  }
+  if (isArray(value)) {
+    return arrayMap(value, baseToString) + "";
+  }
+  if (isSymbol(value)) {
+    return symbolToString ? symbolToString.call(value) : "";
+  }
+  var result = value + "";
+  return result == "0" && 1 / value == -Infinity ? "-0" : result;
+}
+var reWhitespace = /\s/;
+function trimmedEndIndex(string) {
+  var index = string.length;
+  while (index-- && reWhitespace.test(string.charAt(index))) {
+  }
+  return index;
+}
+var reTrimStart = /^\s+/;
+function baseTrim(string) {
+  return string ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, "") : string;
+}
+var NAN = 0 / 0;
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+var reIsBinary = /^0b[01]+$/i;
+var reIsOctal = /^0o[0-7]+$/i;
+var freeParseInt = parseInt;
+function toNumber(value) {
+  if (typeof value == "number") {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == "function" ? value.valueOf() : value;
+    value = isObject(other) ? other + "" : other;
+  }
+  if (typeof value != "string") {
+    return value === 0 ? value : +value;
+  }
+  value = baseTrim(value);
+  var isBinary = reIsBinary.test(value);
+  return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
+}
+var INFINITY = 1 / 0, MAX_INTEGER = 17976931348623157e292;
+function toFinite(value) {
+  if (!value) {
+    return value === 0 ? value : 0;
+  }
+  value = toNumber(value);
+  if (value === INFINITY || value === -INFINITY) {
+    var sign = value < 0 ? -1 : 1;
+    return sign * MAX_INTEGER;
+  }
+  return value === value ? value : 0;
+}
+function toInteger(value) {
+  var result = toFinite(value), remainder = result % 1;
+  return result === result ? remainder ? result - remainder : result : 0;
+}
+function toString(value) {
+  return value == null ? "" : baseToString(value);
+}
+var nativeIsFinite = root.isFinite, nativeMin = Math.min;
+function createRound(methodName) {
+  var func = Math[methodName];
+  return function(number, precision) {
+    number = toNumber(number);
+    precision = precision == null ? 0 : nativeMin(toInteger(precision), 292);
+    if (precision && nativeIsFinite(number)) {
+      var pair = (toString(number) + "e").split("e"), value = func(pair[0] + "e" + (+pair[1] + precision));
+      pair = (toString(value) + "e").split("e");
+      return +(pair[0] + "e" + (+pair[1] - precision));
+    }
+    return func(number);
+  };
+}
+var round = createRound("round");
 var jsVideoUrlParser$1 = { exports: {} };
 var jsVideoUrlParser = jsVideoUrlParser$1.exports;
 var hasRequiredJsVideoUrlParser;
@@ -1942,113 +2035,21 @@ function requireJsVideoUrlParser() {
 }
 var jsVideoUrlParserExports = requireJsVideoUrlParser();
 const urlParser = /* @__PURE__ */ getDefaultExportFromCjs(jsVideoUrlParserExports);
-var symbolTag = "[object Symbol]";
-function isSymbol(value) {
-  return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
-}
-function arrayMap(array, iteratee) {
-  var index = -1, length = array == null ? 0 : array.length, result = Array(length);
-  while (++index < length) {
-    result[index] = iteratee(array[index], index, array);
-  }
-  return result;
-}
-var symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
-function baseToString(value) {
-  if (typeof value == "string") {
-    return value;
-  }
-  if (isArray(value)) {
-    return arrayMap(value, baseToString) + "";
-  }
-  if (isSymbol(value)) {
-    return symbolToString ? symbolToString.call(value) : "";
-  }
-  var result = value + "";
-  return result == "0" && 1 / value == -Infinity ? "-0" : result;
-}
-var reWhitespace = /\s/;
-function trimmedEndIndex(string) {
-  var index = string.length;
-  while (index-- && reWhitespace.test(string.charAt(index))) {
-  }
-  return index;
-}
-var reTrimStart = /^\s+/;
-function baseTrim(string) {
-  return string ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, "") : string;
-}
-var NAN = 0 / 0;
-var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-var reIsBinary = /^0b[01]+$/i;
-var reIsOctal = /^0o[0-7]+$/i;
-var freeParseInt = parseInt;
-function toNumber(value) {
-  if (typeof value == "number") {
-    return value;
-  }
-  if (isSymbol(value)) {
-    return NAN;
-  }
-  if (isObject(value)) {
-    var other = typeof value.valueOf == "function" ? value.valueOf() : value;
-    value = isObject(other) ? other + "" : other;
-  }
-  if (typeof value != "string") {
-    return value === 0 ? value : +value;
-  }
-  value = baseTrim(value);
-  var isBinary = reIsBinary.test(value);
-  return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
-}
-var INFINITY = 1 / 0, MAX_INTEGER = 17976931348623157e292;
-function toFinite(value) {
-  if (!value) {
-    return value === 0 ? value : 0;
-  }
-  value = toNumber(value);
-  if (value === INFINITY || value === -INFINITY) {
-    var sign = value < 0 ? -1 : 1;
-    return sign * MAX_INTEGER;
-  }
-  return value === value ? value : 0;
-}
-function toInteger(value) {
-  var result = toFinite(value), remainder = result % 1;
-  return result === result ? remainder ? result - remainder : result : 0;
-}
-function toString(value) {
-  return value == null ? "" : baseToString(value);
-}
-var nativeIsFinite = root.isFinite, nativeMin = Math.min;
-function createRound(methodName) {
-  var func = Math[methodName];
-  return function(number, precision) {
-    number = toNumber(number);
-    precision = precision == null ? 0 : nativeMin(toInteger(precision), 292);
-    if (precision && nativeIsFinite(number)) {
-      var pair = (toString(number) + "e").split("e"), value = func(pair[0] + "e" + (+pair[1] + precision));
-      pair = (toString(value) + "e").split("e");
-      return +(pair[0] + "e" + (+pair[1] - precision));
-    }
-    return func(number);
-  };
-}
-var round = createRound("round");
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "FileUploader",
   props: {
     s3Multipart: { type: Boolean },
     uploadUrl: {},
     dest: { type: [Function, String] },
-    accept: {}
+    accept: {},
+    onBeforeUpload: { type: Function }
   },
   emits: ["uploaded", "clear", "start", "completed", "error"],
   setup(__props, { expose: __expose, emit: __emit }) {
     __expose();
     const props = __props;
     const emit = __emit;
-    const { classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType } = useFileUploader({
+    const { classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType, cancel } = useFileUploader({
       accept: () => props.accept
     });
     const { files, open, reset, onChange, onCancel } = useFileDialog({
@@ -2078,12 +2079,16 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       }
       const dest = getDest();
       try {
+        const v = await props.onBeforeUpload?.(file);
+        if (v === false) {
+          return;
+        }
         return await run(async () => {
           emit("start", file);
           const url = await uploadWithAdapter(file, dest);
           emit("uploaded", url, file);
           return url;
-        });
+        }, false);
       } catch (e) {
         emit("error", e);
         if (e instanceof Error) {
@@ -2125,7 +2130,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       await upload(files2[0]);
       dragging.value = false;
     }
-    const __returned__ = { props, emit, classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType, files, open, reset, onChange, onCancel, getDest, progress, uploading, run, wrap, upload, uploadWithAdapter, dragging, drop, get BButton() {
+    const __returned__ = { props, emit, classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType, cancel, files, open, reset, onChange, onCancel, getDest, progress, uploading, run, wrap, upload, uploadWithAdapter, dragging, drop, get BButton() {
       return _sfc_main$5;
     }, get BProgress() {
       return _sfc_main$3;
@@ -2150,10 +2155,10 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: "c-file-uploader pb-3",
     style: { "cursor": "pointer" },
-    onDragover: _cache[1] || (_cache[1] = withModifiers(($event) => $setup.dragging = true, ["prevent"])),
-    onDragleave: _cache[2] || (_cache[2] = withModifiers(($event) => $setup.dragging = false, ["prevent"])),
+    onDragover: _cache[2] || (_cache[2] = withModifiers(($event) => $setup.dragging = true, ["prevent"])),
+    onDragleave: _cache[3] || (_cache[3] = withModifiers(($event) => $setup.dragging = false, ["prevent"])),
     onDrop: withModifiers($setup.drop, ["prevent"]),
-    onClick: _cache[3] || (_cache[3] = withModifiers(($event) => $setup.open(), ["prevent"]))
+    onClick: _cache[4] || (_cache[4] = withModifiers(($event) => $setup.open(), ["prevent"]))
   }, [
     createElementVNode("div", {
       class: normalizeClass(["c-file-uploader__card card border overflow-hidden position-relative", { "bg-light": $setup.dragging }])
@@ -2163,30 +2168,38 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
           $setup.uploading ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
             createElementVNode("div", null, [
               createVNode($setup["BSpinner"]),
-              _cache[4] || (_cache[4] = createTextVNode()),
+              _cache[5] || (_cache[5] = createTextVNode()),
               createElementVNode("div", null, "上傳中 " + toDisplayString($setup.round($setup.progress, 2)) + "%", 1)
             ]),
-            _cache[5] || (_cache[5] = createTextVNode()),
+            _cache[6] || (_cache[6] = createTextVNode()),
             createVNode($setup["BProgress"], {
               style: { "width": "100%" },
               value: $setup.progress,
               max: 100
-            }, null, 8, ["value"])
+            }, null, 8, ["value"]),
+            _cache[7] || (_cache[7] = createTextVNode()),
+            createElementVNode("div", null, [
+              createElementVNode("button", {
+                type: "button",
+                class: "btn btn-outline-secondary btn-sm",
+                onClick: _cache[0] || (_cache[0] = withModifiers((...args) => $setup.cancel && $setup.cancel(...args), ["stop"]))
+              }, "\n                取消上傳\n              ")
+            ])
           ])) : (openBlock(), createElementBlock("div", _hoisted_4$1, [
-            _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-center mb-3" }, [
+            _cache[9] || (_cache[9] = createElementVNode("div", { class: "text-center mb-3" }, [
               createElementVNode("i", { class: "far fa-upload fa-fw fa-2x" })
             ], -1)),
-            _cache[8] || (_cache[8] = createTextVNode()),
-            _cache[9] || (_cache[9] = createElementVNode("div", { class: "text-center mb-3" }, "\n              上傳: 拖拉檔案或按此瀏覽\n            ", -1)),
             _cache[10] || (_cache[10] = createTextVNode()),
+            _cache[11] || (_cache[11] = createElementVNode("div", { class: "text-center mb-3" }, "\n              上傳: 拖拉檔案或按此瀏覽\n            ", -1)),
+            _cache[12] || (_cache[12] = createTextVNode()),
             createElementVNode("div", _hoisted_5$1, [
               createVNode($setup["BButton"], {
                 variant: "primary",
                 size: "sm",
-                onClick: _cache[0] || (_cache[0] = withModifiers(($event) => $setup.open(), ["stop"])),
+                onClick: _cache[1] || (_cache[1] = withModifiers(($event) => $setup.open(), ["stop"])),
                 style: { "min-width": "100px" }
               }, {
-                default: withCtx(() => [..._cache[6] || (_cache[6] = [
+                default: withCtx(() => [..._cache[8] || (_cache[8] = [
                   createElementVNode("i", { class: "far fa-plus-circle" }, null, -1),
                   createTextVNode("\n                瀏覽檔案\n              ", -1)
                 ])]),
@@ -2199,7 +2212,25 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32);
 }
-const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-bcfbb26f"], ["__file", "FileUploader.vue"]]);
+const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-fb52d69d"], ["__file", "FileUploader.vue"]]);
+function calculateFileBitrate(file) {
+  return new Promise((resolve) => {
+    const tag = file.type.startsWith("audio/") ? "audio" : "video";
+    const el = document.createElement(tag);
+    el.preload = "metadata";
+    el.onloadedmetadata = function() {
+      window.URL.revokeObjectURL(el.src);
+      const duration = el.duration;
+      const fileSize = file.size;
+      const bitrate = calculateBitrate(fileSize, duration);
+      resolve(bitrate);
+    };
+    el.src = URL.createObjectURL(file);
+  });
+}
+function calculateBitrate(bytesSize, duration) {
+  return bytesSize * 8 / duration;
+}
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionVideoEdit",
   props: {
@@ -2221,6 +2252,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const isCloudVideo = computed(() => item.value.src !== "" && videoInfo.value != null);
     const cloudVideoUrl = ref("");
     const videoUploading = ref(false);
+    const config = inject("config");
+    const maxBitrate = computed(() => {
+      return config?.maxBitrate || 2 * 1024 * 1024;
+    });
+    const maxBitrateMbps = computed(() => {
+      return round(maxBitrate.value / (1024 * 1024), 2);
+    });
     const videoInfo = computed(() => {
       if (item.value.src !== "") {
         return urlParser.parse(item.value.src);
@@ -2242,9 +2280,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (isCloudVideo.value) {
         return item.value.src;
       }
+      if (!item.value.src) {
+        return "";
+      }
       return route("@lesson_file/previewFile", { url: item.value.src });
     });
     const previewCaptionSrc = computed(() => {
+      if (!item.value.captionSrc) {
+        return "";
+      }
       return route("@lesson_file/previewFile", { url: item.value.captionSrc });
     });
     async function clear(field) {
@@ -2267,6 +2311,25 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     function applyCloudVideo() {
       item.value.src = cloudVideoUrl.value;
     }
+    async function onVideoBeforeUpload(file) {
+      const bitrate = await calculateFileBitrate(file);
+      if (bitrate > maxBitrate.value) {
+        const v = await simpleConfirm(
+          `您的影片超過建議的 Bitrate: ${maxBitrateMbps.value} Mbps`,
+          `目前的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您壓縮影片以確保順暢的播放體驗。`,
+          "warning",
+          {
+            buttons: [
+              "放棄上傳",
+              "繼續上傳"
+            ]
+          }
+        );
+        if (!v) {
+          throw new Error("使用者取消上傳");
+        }
+      }
+    }
     async function videoUploaded(src, file) {
       videoUploading.value = false;
       item.value.duration = await calcVideoDuration(file);
@@ -2286,7 +2349,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         });
       });
     }
-    const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, cloudVideoUrl, videoUploading, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, applyCloudVideo, videoUploaded, captionUploaded, calcVideoDuration, get route() {
+    const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, cloudVideoUrl, videoUploading, config, maxBitrate, maxBitrateMbps, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, applyCloudVideo, onVideoBeforeUpload, videoUploaded, captionUploaded, calcVideoDuration, get route() {
       return route;
     }, get BButton() {
       return _sfc_main$5;
@@ -2308,29 +2371,31 @@ const _hoisted_2 = {
   key: 0,
   class: "d-flex flex-column gap-4"
 };
-const _hoisted_3 = { class: "input-group" };
-const _hoisted_4 = {
+const _hoisted_3 = { class: "text-muted mb-2" };
+const _hoisted_4 = { class: "input-group" };
+const _hoisted_5 = {
   key: 1,
   class: "d-flex flex-column gap-4"
 };
-const _hoisted_5 = { class: "input-group" };
-const _hoisted_6 = ["value"];
-const _hoisted_7 = {
+const _hoisted_6 = { class: "input-group" };
+const _hoisted_7 = ["value"];
+const _hoisted_8 = {
   key: 0,
   class: "rwd-video"
 };
-const _hoisted_8 = ["src"];
-const _hoisted_9 = { key: 1 };
-const _hoisted_10 = {
+const _hoisted_9 = ["src"];
+const _hoisted_10 = { key: 1 };
+const _hoisted_11 = {
+  key: 0,
   controls: "",
   class: "w-100",
   style: { "aspect-ratio": "16 / 9", "background-color": "black" },
   crossorigin: "anonymous"
 };
-const _hoisted_11 = ["src"];
 const _hoisted_12 = ["src"];
-const _hoisted_13 = { class: "input-group" };
-const _hoisted_14 = ["value"];
+const _hoisted_13 = ["src"];
+const _hoisted_14 = { class: "input-group" };
+const _hoisted_15 = ["value"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createVNode($setup["BFormGroup"], {
@@ -2349,7 +2414,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     }),
-    _cache[25] || (_cache[25] = createTextVNode()),
+    _cache[24] || (_cache[24] = createTextVNode()),
     createVNode(Transition, {
       name: "fade",
       mode: "out-in"
@@ -2370,15 +2435,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 default: withCtx(() => [
                   createVNode($setup["BFormGroup"], { label: "上傳影片" }, {
                     default: withCtx(() => [
-                      _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted mb-2" }, [
-                        createElementVNode("small", null, "\n                  請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件\n                ")
-                      ], -1)),
-                      _cache[8] || (_cache[8] = createTextVNode()),
+                      createElementVNode("div", _hoisted_3, [
+                        createElementVNode("small", null, "\n                  請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件。\n                  並且 Bitrate 在 " + toDisplayString($setup.maxBitrateMbps) + "Mbps 以下，以確保順暢的播放體驗。\n                ", 1)
+                      ]),
+                      _cache[7] || (_cache[7] = createTextVNode()),
                       createVNode($setup["FileUploader"], {
                         accept: "video/mp4",
                         "s3-multipart": "",
                         onUploaded: $setup.videoUploaded,
                         dest: () => `segments/${$setup.item.id}/video.{ext}`,
+                        "on-before-upload": $setup.onVideoBeforeUpload,
                         onStart: _cache[1] || (_cache[1] = ($event) => $setup.videoUploading = true),
                         onCompleted: _cache[2] || (_cache[2] = ($event) => $setup.videoUploading = false)
                       }, null, 8, ["dest"])
@@ -2388,7 +2454,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 ]),
                 _: 1
               }, 8, ["disabled"]),
-              _cache[11] || (_cache[11] = createTextVNode()),
+              _cache[10] || (_cache[10] = createTextVNode()),
               createVNode($setup["BTab"], {
                 title: "雲端影片",
                 disabled: $setup.videoUploading
@@ -2403,7 +2469,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     class: "mb-5"
                   }, {
                     default: withCtx(() => [
-                      createElementVNode("div", _hoisted_3, [
+                      createElementVNode("div", _hoisted_4, [
                         createVNode($setup["BFormInput"], {
                           id: "input-section-video",
                           modelValue: $setup.cloudVideoUrl,
@@ -2411,13 +2477,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           placeholder: "請輸入影片網址",
                           trim: ""
                         }, null, 8, ["modelValue"]),
-                        _cache[10] || (_cache[10] = createTextVNode()),
+                        _cache[9] || (_cache[9] = createTextVNode()),
                         createVNode($setup["BButton"], {
                           variant: "primary",
                           class: "text-nowrap c-video-submit px-3",
                           onClick: $setup.applyCloudVideo
                         }, {
-                          default: withCtx(() => [..._cache[9] || (_cache[9] = [
+                          default: withCtx(() => [..._cache[8] || (_cache[8] = [
                             createElementVNode("i", { class: "far fa-check" }, null, -1),
                             createTextVNode("\n                  送出\n                ", -1)
                           ])]),
@@ -2433,27 +2499,27 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             _: 1
           })
-        ])) : (openBlock(), createElementBlock("div", _hoisted_4, [
+        ])) : (openBlock(), createElementBlock("div", _hoisted_5, [
           createVNode($setup["BFormGroup"], { label: "影片" }, {
             default: withCtx(() => [
-              createElementVNode("div", _hoisted_5, [
-                _cache[13] || (_cache[13] = createElementVNode("div", { class: "input-group-text" }, [
+              createElementVNode("div", _hoisted_6, [
+                _cache[12] || (_cache[12] = createElementVNode("div", { class: "input-group-text" }, [
                   createElementVNode("span", { class: "fal fa-fw fa-video me-2" })
                 ], -1)),
-                _cache[14] || (_cache[14] = createTextVNode()),
+                _cache[13] || (_cache[13] = createTextVNode()),
                 createElementVNode("input", {
                   type: "text",
                   class: "form-control",
                   disabled: "",
                   value: $setup.videoName
-                }, null, 8, _hoisted_6),
-                _cache[15] || (_cache[15] = createTextVNode()),
+                }, null, 8, _hoisted_7),
+                _cache[14] || (_cache[14] = createTextVNode()),
                 createVNode($setup["BButton"], {
                   variant: "danger",
                   onClick: _cache[4] || (_cache[4] = ($event) => $setup.clear("src")),
                   disabled: $setup.loading
                 }, {
-                  default: withCtx(() => [..._cache[12] || (_cache[12] = [
+                  default: withCtx(() => [..._cache[11] || (_cache[11] = [
                     createElementVNode("span", { class: "fal fa-trash" }, null, -1),
                     createTextVNode("\n              移除\n            ", -1)
                   ])]),
@@ -2463,39 +2529,40 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             _: 1
           }),
-          _cache[17] || (_cache[17] = createTextVNode()),
+          _cache[16] || (_cache[16] = createTextVNode()),
           $setup.item.src !== "" ? (openBlock(), createBlock($setup["BFormGroup"], {
             key: 0,
             class: "",
             label: "預覽"
           }, {
             default: withCtx(() => [
-              $setup.videoEmbedUrl ? (openBlock(), createElementBlock("div", _hoisted_7, [
+              $setup.videoEmbedUrl ? (openBlock(), createElementBlock("div", _hoisted_8, [
                 createElementVNode("iframe", {
                   src: $setup.videoEmbedUrl,
                   frameborder: "0",
                   style: { "width": "100%" }
-                }, null, 8, _hoisted_8)
-              ])) : (openBlock(), createElementBlock("div", _hoisted_9, [
-                createElementVNode("video", _hoisted_10, [
+                }, null, 8, _hoisted_9)
+              ])) : (openBlock(), createElementBlock("div", _hoisted_10, [
+                $setup.previewSrc ? (openBlock(), createElementBlock("video", _hoisted_11, [
                   createElementVNode("source", {
                     src: $setup.previewSrc,
                     type: "video/mp4"
-                  }, null, 8, _hoisted_11),
-                  _cache[16] || (_cache[16] = createTextVNode()),
-                  createElementVNode("track", {
+                  }, null, 8, _hoisted_12),
+                  _cache[15] || (_cache[15] = createTextVNode()),
+                  $setup.previewCaptionSrc ? (openBlock(), createElementBlock("track", {
+                    key: 0,
                     default: "",
                     kind: "captions",
                     src: $setup.previewCaptionSrc,
                     srclang: "zh",
                     label: "中文"
-                  }, null, 8, _hoisted_12)
-                ])
+                  }, null, 8, _hoisted_13)) : createCommentVNode("", true)
+                ])) : createCommentVNode("", true)
               ]))
             ]),
             _: 1
           })) : createCommentVNode("", true),
-          _cache[18] || (_cache[18] = createTextVNode()),
+          _cache[17] || (_cache[17] = createTextVNode()),
           $setup.isCloudVideo ? (openBlock(), createBlock($setup["BFormGroup"], {
             key: 1,
             label: "影片時數 (秒)",
@@ -2517,16 +2584,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     }),
-    _cache[26] || (_cache[26] = createTextVNode()),
+    _cache[25] || (_cache[25] = createTextVNode()),
     $setup.item.captionSrc === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
       key: 0,
       label: "上傳字幕"
     }, {
       default: withCtx(() => [
-        _cache[19] || (_cache[19] = createElementVNode("div", { class: "text-muted mb-2" }, [
+        _cache[18] || (_cache[18] = createElementVNode("div", { class: "text-muted mb-2" }, [
           createElementVNode("small", null, "\n            僅支援格式為 .vtt .srt 的文件\n          ")
         ], -1)),
-        _cache[20] || (_cache[20] = createTextVNode()),
+        _cache[19] || (_cache[19] = createTextVNode()),
         createVNode($setup["FileUploader"], {
           accept: ".vtt,.srt",
           onUploaded: $setup.captionUploaded,
@@ -2540,24 +2607,24 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       label: "字幕"
     }, {
       default: withCtx(() => [
-        createElementVNode("div", _hoisted_13, [
-          _cache[22] || (_cache[22] = createElementVNode("div", { class: "input-group-text" }, [
+        createElementVNode("div", _hoisted_14, [
+          _cache[21] || (_cache[21] = createElementVNode("div", { class: "input-group-text" }, [
             createElementVNode("span", { class: "fal fa-fw fa-closed-captioning me-2" })
           ], -1)),
-          _cache[23] || (_cache[23] = createTextVNode()),
+          _cache[22] || (_cache[22] = createTextVNode()),
           createElementVNode("input", {
             type: "text",
             class: "form-control",
             disabled: "",
             value: $setup.item.captionSrc
-          }, null, 8, _hoisted_14),
-          _cache[24] || (_cache[24] = createTextVNode()),
+          }, null, 8, _hoisted_15),
+          _cache[23] || (_cache[23] = createTextVNode()),
           createVNode($setup["BButton"], {
             variant: "danger",
             onClick: _cache[6] || (_cache[6] = ($event) => $setup.clear("captionSrc")),
             disabled: $setup.loading
           }, {
-            default: withCtx(() => [..._cache[21] || (_cache[21] = [
+            default: withCtx(() => [..._cache[20] || (_cache[20] = [
               createElementVNode("span", { class: "fal fa-trash" }, null, -1),
               createTextVNode("\n            移除\n          ", -1)
             ])]),
@@ -2569,7 +2636,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }))
   ]);
 }
-const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-b7d7df9b"], ["__file", "SectionVideoEdit.vue"]]);
+const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-df023415"], ["__file", "SectionVideoEdit.vue"]]);
 export {
   SectionVideoEdit as default
 };

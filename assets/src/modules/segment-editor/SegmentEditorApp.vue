@@ -9,7 +9,7 @@ import SegmentEditBox from '~melo/modules/segment-editor/components/segment-edit
 import TypeSelector from '~melo/modules/segment-editor/components/segment-edit/SectionTypeSelector.vue';
 import { useSegmentController } from '~melo/modules/segment-editor/features/segment/useSegmentController';
 import { useSegmentEditor } from '~melo/modules/segment-editor/features/segment/useSegmentEditor';
-import { QuestionDefine, SectionDefine, Segment } from '~melo/types';
+import { QuestionDefine, SectionDefine, Segment, SegmentEditorConfig } from '~melo/types';
 
 import('@asika32764/vue-animate/dist/vue-animate.min.css?inline').then(({ default: css }) => {
   injectCssToDocument(css);
@@ -24,10 +24,12 @@ const props = defineProps<{
   sectionDefines: Record<string, SectionDefine>;
   questionDefines: Record<string, QuestionDefine>;
   segments: Segment[];
+  config: SegmentEditorConfig;
 }>();
 
 provide('section.defines', props.sectionDefines);
 provide('question.defines', props.questionDefines);
+provide('config', props.config);
 
 const { reorder: reorderSegments, save: saveChapter, remove, createEmptyChapterItem } = useSegmentController();
 const { edit, editById } = useSegmentEditor();
@@ -36,8 +38,12 @@ const { edit, editById } = useSegmentEditor();
 const items = ref<(Segment & { __open?: boolean; })[]>(prepareSegments(props.segments));
 
 onMounted(() => {
-  // Test
-  editById(244, items.value);
+  const url = new URL(window.location.href);
+  const segmentId = url.searchParams.get('segmentId');
+
+  if (segmentId) {
+    editById(Number(segmentId), items.value);
+  }
 });
 
 function prepareSegments(items: Segment[]) {

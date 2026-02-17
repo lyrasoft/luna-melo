@@ -1,5 +1,6 @@
 import { data, useS3MultipartUploader, useHttpClient } from "@windwalker-io/unicorn-next";
 import { toRef, computed } from "vue";
+let abortController = null;
 function useFileUploader(uploaderOptions = {}) {
   const accept = toRef(uploaderOptions.accept);
   function wrapClassicUpload(uploadUrl, options) {
@@ -15,7 +16,9 @@ function useFileUploader(uploaderOptions = {}) {
       formData.append("path", dest);
     }
     const onProgress = options?.onProgress ?? uploaderOptions.onProgress;
+    abortController = new AbortController();
     const res = await post(uploadUrl, formData, {
+      signal: abortController.signal,
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total) {
           const percentage = Math.round(progressEvent.loaded * 100 / progressEvent.total);
@@ -37,7 +40,9 @@ function useFileUploader(uploaderOptions = {}) {
         onProgress?.(e.percentage);
       }
     });
-    const { url } = await s3.upload(file, dest);
+    abortController = new AbortController();
+    const promise = s3.upload(file, dest, { abortController });
+    const { url } = await promise;
     return url.replace(/%2F/g, "/");
   }
   const acceptString = computed(() => {
@@ -65,13 +70,17 @@ function useFileUploader(uploaderOptions = {}) {
       }
     });
   }
+  function cancel() {
+    abortController?.abort();
+  }
   return {
     classicUpload,
     wrapClassicUpload,
     s3MultiPartUpload,
     acceptString,
     acceptList,
-    checkFileType
+    checkFileType,
+    cancel
   };
 }
 export {

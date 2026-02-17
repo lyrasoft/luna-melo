@@ -3,26 +3,26 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode(`.c-file-uploader__card-body[data-v-bcfbb26f] {
+      elementStyle.appendChild(document.createTextNode(`.c-file-uploader__card-body[data-v-fb52d69d] {
   height: 200px;
   position: relative;
 }
-.c-file-uploader__inner[data-v-bcfbb26f] {
+.c-file-uploader__inner[data-v-fb52d69d] {
   margin: 0;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}.l-section-video-edit .rwd-video[data-v-b7d7df9b] {
+}.l-section-video-edit .rwd-video[data-v-df023415] {
   position: relative;
   padding-bottom: 56.25%;
   padding-top: 30px;
   height: 0;
   overflow: hidden;
 }
-.l-section-video-edit .rwd-video > iframe[data-v-b7d7df9b],
-.l-section-video-edit .rwd-video > embed[data-v-b7d7df9b],
-.l-section-video-edit .rwd-video > object[data-v-b7d7df9b] {
+.l-section-video-edit .rwd-video > iframe[data-v-df023415],
+.l-section-video-edit .rwd-video > embed[data-v-df023415],
+.l-section-video-edit .rwd-video > object[data-v-df023415] {
   position: absolute;
   top: 0;
   left: 0;
@@ -30,7 +30,7 @@
   height: 100%;
   border: 0;
 }
-.l-section-video-edit #input-section-video[data-v-b7d7df9b] {
+.l-section-video-edit #input-section-video[data-v-df023415] {
   border-radius: 0.25rem 0 0 0.25rem;
 }.c-question-button[data-v-71ff6089] {
   transition: all 0.3s;

@@ -10,6 +10,8 @@ export interface FileUploadOptions {
   onProgress?: (progress: number) => void;
 }
 
+let abortController: AbortController | null = null;
+
 export function useFileUploader(uploaderOptions: FileUploaderOptions = {}) {
   const accept = toRef(uploaderOptions.accept);
 
@@ -38,8 +40,10 @@ export function useFileUploader(uploaderOptions: FileUploaderOptions = {}) {
     }
 
     const onProgress = options?.onProgress ?? uploaderOptions.onProgress;
+    abortController = new AbortController();
 
     const res = await post<ApiReturn<{ url: string }>>(uploadUrl, formData, {
+      signal: abortController.signal,
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total) {
           const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -65,7 +69,11 @@ export function useFileUploader(uploaderOptions: FileUploaderOptions = {}) {
       }
     });
 
-    const { url } = await s3.upload(file, dest);
+    abortController = new AbortController();
+
+    const promise = s3.upload(file, dest, { abortController });
+
+    const { url } = await promise;
 
     // Fix Unicorn bug
     return url.replace(/%2F/g, '/');
@@ -102,6 +110,10 @@ export function useFileUploader(uploaderOptions: FileUploaderOptions = {}) {
     });
   }
 
+  function cancel() {
+    abortController?.abort();
+  }
+
   return {
     classicUpload,
     wrapClassicUpload,
@@ -109,6 +121,7 @@ export function useFileUploader(uploaderOptions: FileUploaderOptions = {}) {
     acceptString,
     acceptList,
     checkFileType,
+    cancel,
   };
 }
 

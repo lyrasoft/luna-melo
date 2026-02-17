@@ -69,10 +69,19 @@ class SegmentEditView implements ViewModelInterface
 
         $sectionDefines = $this->getSectionDefines();
         $questionDefines = $this->getQuestionDefines();
+        $config = [
+            'maxBitrate' => $this->meloPackage->config('upload.video_max_bitrate'),
+        ];
 
         $this->uniScript->data(
             'segment.edit.props',
-            compact('segments', 'lessonId', 'sectionDefines', 'questionDefines')
+            compact(
+                'segments',
+                'lessonId',
+                'sectionDefines',
+                'questionDefines',
+                'config',
+            )
         );
 
         $this->uniScript->addRoute('@ajax_segment');

@@ -315,13 +315,12 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     const chapter = ref(props.chapter);
     const sections = ref(uniqueItemList(chapter.value?.children || []));
     const isOpen = useModel(__props, "open");
-    const slideDisplay = ref(isOpen.value ? "display: flex;" : "display: none;");
+    const slideDisplay = isOpen.value ? "display: flex;" : "display: none;";
     const sectionsContainer = useTemplateRef("sectionsContainer");
     watch(isOpen, () => {
       if (!sectionsContainer.value) {
         return;
       }
-      slideDisplay.value = "";
       if (isOpen.value) {
         slideDown(sectionsContainer.value, 300, "flex");
       } else {
@@ -713,7 +712,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     lessonId: {},
     sectionDefines: {},
     questionDefines: {},
-    segments: {}
+    segments: {},
+    config: {}
   },
   setup(__props, { expose: __expose }) {
     __expose();
@@ -726,11 +726,16 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const props = __props;
     provide("section.defines", props.sectionDefines);
     provide("question.defines", props.questionDefines);
+    provide("config", props.config);
     const { reorder: reorderSegments, save: saveChapter, remove, createEmptyChapterItem } = useSegmentController();
     const { edit, editById } = useSegmentEditor();
     const items = ref(prepareSegments(props.segments));
     onMounted(() => {
-      editById(244, items.value);
+      const url = new URL(window.location.href);
+      const segmentId = url.searchParams.get("segmentId");
+      if (segmentId) {
+        editById(Number(segmentId), items.value);
+      }
     });
     function prepareSegments(items2) {
       items2 = uniqueItemList(items2);
@@ -895,7 +900,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["modelValue"])
   ]);
 }
-const SegmentEditorApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-c334bc53"], ["__file", "SegmentEditorApp.vue"]]);
+const SegmentEditorApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-da8d5e16"], ["__file", "SegmentEditorApp.vue"]]);
 var sweetalert_min$1 = { exports: {} };
 var sweetalert_min = sweetalert_min$1.exports;
 var hasRequiredSweetalert_min;

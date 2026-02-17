@@ -180,6 +180,10 @@ export declare interface Segment {
     [prop: string]: any;
 }
 
+export declare interface SegmentEditorConfig {
+    maxBitrate: number;
+}
+
 export declare interface SelectQnParams extends BaseQnParams {
     options: QnOption[];
 }

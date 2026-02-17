@@ -12,6 +12,7 @@ const props = defineProps<{
   uploadUrl?: string;
   dest?: (() => string) | string;
   accept?: string|string[];
+  onBeforeUpload?: (file: File) => Promise<any> | any;
 }>();
 
 const emit = defineEmits<{
@@ -22,7 +23,7 @@ const emit = defineEmits<{
   error: [error: unknown];
 }>();
 
-const { classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType } = useFileUploader({
+const { classicUpload, s3MultiPartUpload, acceptList, acceptString, checkFileType, cancel } = useFileUploader({
   accept: () => props.accept
 });
 
@@ -68,6 +69,12 @@ async function upload(file: File) {
   const dest = getDest();
 
   try {
+    const v = await props.onBeforeUpload?.(file);
+
+    if (v === false) {
+      return;
+    }
+
     return await run(async () => {
       emit('start', file);
 
@@ -76,7 +83,7 @@ async function upload(file: File) {
       emit('uploaded', url, file);
 
       return url;
-    })
+    }, false);
   } catch (e) {
     emit('error', e);
 
@@ -151,6 +158,13 @@ async function drop(event: DragEvent) {
               <div>上傳中 {{ round(progress, 2) }}%</div>
             </div>
             <BProgress style="width: 100%" :value="progress" :max="100" />
+            <div>
+              <button type="button" class="btn btn-outline-secondary btn-sm"
+                @click.stop="cancel"
+              >
+                取消上傳
+              </button>
+            </div>
           </div>
 
           <!-- Upload Box -->

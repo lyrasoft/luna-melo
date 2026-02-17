@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { useLoading } from '@lyrasoft/ts-toolkit/vue';
-import { deleteConfirm, route } from '@windwalker-io/unicorn-next';
+import { deleteConfirm, route, simpleConfirm } from '@windwalker-io/unicorn-next';
 import { BButton, BFormGroup, BFormInput, BTab, BTabs } from 'bootstrap-vue-next';
 import type { VideoInfo } from 'js-video-url-parser/lib/urlParser';
 import { round } from 'lodash-es';
-import { computed, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 import urlParser from 'js-video-url-parser';
 import FileUploader from '~melo/modules/segment-editor/components/uploader/FileUploader.vue';
 import { useSegmentController } from '~melo/modules/segment-editor/features/segment/useSegmentController';
-import { Segment } from '~melo/types';
+import { calculateFileBitrate } from '~melo/shared/media';
+import { Segment, SegmentEditorConfig } from '~melo/types';
 
 const { deleteFile } = useSegmentController();
 const { loading, run } = useLoading();
@@ -26,6 +27,14 @@ const isFile = computed<boolean>(() => item.value.src !== '' && videoInfo.value 
 const isCloudVideo = computed<boolean>(() => item.value.src !== '' && videoInfo.value != null);
 const cloudVideoUrl = ref<string>('');
 const videoUploading = ref(false);
+const config = inject<SegmentEditorConfig>('config');
+
+const maxBitrate = computed(() => {
+  return config?.maxBitrate || (2 * 1024 * 1024);
+});
+const maxBitrateMbps = computed(() => {
+  return round(maxBitrate.value / (1024 * 1024), 2);
+});
 
 const videoInfo = computed<VideoInfo|undefined>(() => {
   if (item.value.src !== '') {
@@ -93,6 +102,28 @@ function applyCloudVideo() {
   item.value.src = cloudVideoUrl.value;
 }
 
+async function onVideoBeforeUpload(file: File) {
+  const bitrate = await calculateFileBitrate(file);
+
+  if (bitrate > maxBitrate.value) {
+    const v = await simpleConfirm(
+      `您的影片超過建議的 Bitrate: ${maxBitrateMbps.value} Mbps`,
+      `目前的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您壓縮影片以確保順暢的播放體驗。`,
+      'warning',
+      {
+        buttons: [
+          '放棄上傳',
+          '繼續上傳'
+        ]
+      }
+    );
+
+    if (!v) {
+      throw new Error('使用者取消上傳');
+    }
+  }
+}
+
 async function videoUploaded(src: string, file: File) {
   videoUploading.value = false;
 
@@ -141,12 +172,14 @@ function calcVideoDuration(file: File): Promise<number> {
             <BFormGroup label="上傳影片">
               <div class="text-muted mb-2">
                 <small>
-                  請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件
+                  請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件。
+                  並且 Bitrate 在 {{ maxBitrateMbps }}Mbps 以下，以確保順暢的播放體驗。
                 </small>
               </div>
 
               <FileUploader accept="video/mp4" s3-multipart @uploaded="videoUploaded"
                 :dest="() => `segments/${item.id}/video.{ext}`"
+                :on-before-upload="onVideoBeforeUpload"
                 @start="videoUploading = true"
                 @completed="videoUploading = false"
               />
