@@ -182,6 +182,7 @@ export declare interface Segment {
 
 export declare interface SegmentEditorConfig {
     maxBitrate: number;
+    bitrateDocUrl: string;
 }
 
 export declare interface SelectQnParams extends BaseQnParams {

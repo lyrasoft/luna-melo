@@ -71,6 +71,7 @@ class SegmentEditView implements ViewModelInterface
         $questionDefines = $this->getQuestionDefines();
         $config = [
             'maxBitrate' => $this->meloPackage->config('upload.video_max_bitrate'),
+            'bitrateDocUrl' => $this->meloPackage->config('upload.video_bitrate_doc'),
         ];
 
         $this->uniScript->data(

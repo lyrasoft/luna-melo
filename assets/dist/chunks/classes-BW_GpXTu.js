@@ -1,4 +1,4 @@
-import { defineComponent, useSlots, computed, createBlock, openBlock, resolveDynamicComponent, unref, normalizeClass, withCtx, createElementBlock, createCommentVNode, renderSlot, createTextVNode, toDisplayString, readonly, toRef, toValue, useAttrs, inject, mergeProps, getCurrentInstance, mergeModels, useTemplateRef, useModel, Fragment, createVNode } from "vue";
+import { defineComponent, useSlots, computed, openBlock, createBlock, resolveDynamicComponent, unref, normalizeClass, withCtx, createElementBlock, renderSlot, createTextVNode, toDisplayString, createCommentVNode, readonly, toRef, toValue, useAttrs, inject, mergeProps, getCurrentInstance, useTemplateRef, useModel, Fragment, createVNode, mergeModels } from "vue";
 import { u as useDefaults, c as useColorVariantClasses, x as isEmptySlot, J as collapseInjectionKey, K as navbarInjectionKey, L as toPascalCase, w as onKeyStroke } from "./index-BSgsF2PB.js";
 const _hoisted_1 = {
   key: 0,

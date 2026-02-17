@@ -1,4 +1,4 @@
-import { effectScope, getCurrentScope, onScopeDispose, computed, toValue, watch, isRef, toRef as toRef$1, readonly, ref, customRef, shallowRef, defineComponent, unref, getCurrentInstance as getCurrentInstance$1, onMounted, h, Teleport, inject, watchEffect, provide, useId as useId$1 } from "vue";
+import { computed, toValue, getCurrentScope, onScopeDispose, watch, effectScope, isRef, toRef as toRef$1, readonly, customRef, ref, shallowRef, defineComponent, unref, getCurrentInstance as getCurrentInstance$1, onMounted, h, Teleport, inject, watchEffect, provide, useId as useId$1 } from "vue";
 const genericBvnPrefix = "BootstrapVueNext__";
 const withBvnPrefix = (value, suffix = "") => {
   const suffixWithTrail = `${suffix}___`;
@@ -1162,17 +1162,17 @@ export {
   defaultsKey as d,
   useToNumber as e,
   sortSlotElementsByPosition as f,
-  createReusableTemplate as g,
-  useId as h,
+  useId as g,
+  createReusableTemplate as h,
   useMutationObserver as i,
-  createSharedComposable as j,
-  toArray as k,
-  unrefElement as l,
+  toArray as j,
+  unrefElement as k,
+  tryOnScopeDispose as l,
   modalManagerKey as m,
   notNullish as n,
   orchestratorRegistryKey as o,
   progressInjectionKey as p,
-  tryOnScopeDispose as q,
+  createSharedComposable as q,
   rtlRegistryKey as r,
   showHideRegistryKey as s,
   tabsInjectionKey as t,

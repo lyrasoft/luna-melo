@@ -1,7 +1,7 @@
-import { defineComponent, useModel, createElementBlock, openBlock, createVNode, createTextVNode, withCtx, withDirectives, createElementVNode, vModelText } from "vue";
+import { defineComponent, useModel, openBlock, createElementBlock, createVNode, withCtx, createTextVNode, withDirectives, createElementVNode, vModelText } from "vue";
 import "./index-BSgsF2PB.js";
 import { _ as _sfc_main$1, a as _sfc_main$2 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
-import { data, route, useSystemUri, useTinymce } from "@windwalker-io/unicorn-next";
+import { data, route, useTinymce, useSystemUri } from "@windwalker-io/unicorn-next";
 import { c as isObject, b as baseGetTag, r as root, i as isObjectLike, f as freeGlobal, a as isArray } from "./isObject.js";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
 function identity(value) {

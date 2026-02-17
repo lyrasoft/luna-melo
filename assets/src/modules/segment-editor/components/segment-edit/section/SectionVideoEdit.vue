@@ -118,11 +118,15 @@ async function onVideoBeforeUpload(file: File) {
   const { bitrate } = await videoDimension;
 
   if (bitrate > maxBitrate.value) {
+    const el = document.createElement('div');
+    el.innerHTML = `這隻影片的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您<a href="${config?.bitrateDocUrl || '#'}" target="_blank">壓縮影片</a>以確保順暢的播放體驗。`;
+
     const v = await simpleConfirm(
       `您的影片超過建議的 Bitrate: ${maxBitrateMbps.value} Mbps`,
-      `這隻影片的 Bitrate 為 ${round(bitrate / (1024 * 1024), 2)} Mbps，建議您壓縮影片以確保順暢的播放體驗。`,
+      '',
       'warning',
       {
+        content: el,
         buttons: [
           '放棄上傳',
           '繼續上傳'
@@ -196,8 +200,9 @@ function calcVideoDimension(file: File): Promise<VideoDimension> {
             <BFormGroup label="上傳影片">
               <div class="text-muted mb-2">
                 <small>
-                  請上傳1280x720(720p)或1920x1080(1080p)尺寸，格式為.mp4的文件。
+                  請上傳1280x720(720p)或1920x1080(1080p) 的 mp4 檔案。
                   並且 Bitrate 在 {{ maxBitrateMbps }}Mbps 以下，以確保順暢的播放體驗。
+                  (<a target="_blank" :href="config?.bitrateDocUrl || '#'">壓縮教學</a>)
                 </small>
               </div>
 

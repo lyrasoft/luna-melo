@@ -1,4 +1,4 @@
-import { defineComponent, inject, createElementBlock, openBlock, Fragment, renderList, createElementVNode, createTextVNode, normalizeClass, withModifiers, toDisplayString, toRefs, withDirectives, vModelText, useModel, ref, onMounted, createVNode, withCtx, TransitionGroup, createBlock, createCommentVNode } from "vue";
+import { defineComponent, inject, openBlock, createElementBlock, Fragment, renderList, createElementVNode, normalizeClass, createTextVNode, withModifiers, toDisplayString, toRefs, withDirectives, vModelText, useModel, ref, onMounted, createVNode, withCtx, TransitionGroup, createBlock, createCommentVNode } from "vue";
 import { uniqueItemList } from "@lyrasoft/ts-toolkit/vue";
 import "./index-BSgsF2PB.js";
 import { u as useSegmentEditor, _ as _sfc_main$4 } from "./useSegmentEditor.js";
