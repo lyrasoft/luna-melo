@@ -19,7 +19,6 @@ namespace App\View;
 use Lyrasoft\Favorite\Entity\Favorite;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Features\LessonService;
-use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -32,11 +31,6 @@ use function Lyrasoft\Melo\numberFormat;
 /**
  * @var Lesson $item
  */
-
-$uniScript = $app->service(UnicornScript::class);
-$uniScript->addRoute('@cart_ajax');
-$uniScript->addRoute('cart');
-$asset->js('vendor/lyrasoft/melo/dist/lesson.ts');
 
 $lessonService = $app->service(LessonService::class);
 $ownedLesson = $lessonService->checkUserHasLesson($item->id);
