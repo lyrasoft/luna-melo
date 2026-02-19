@@ -170,7 +170,7 @@ class LessonItemView implements ViewModelInterface
             ]
         );
 
-        $canAttend = $this->lessonService->checkUserHasLesson($item->id);
+        $hasAttended = $this->lessonService->checkUserHasLesson($item->id);
 
         $totalAssignment = $this->orm->from(UserSegmentMap::class)
             ->where('lesson_id', $item->id)
@@ -187,7 +187,7 @@ class LessonItemView implements ViewModelInterface
             }
         }
 
-        if ($user->isLogin() && $canAttend) {
+        if ($user->isLogin() && $hasAttended) {
             $map = $this->orm->findOneOrCreate(
                 UserSegmentMap::class,
                 [
@@ -223,7 +223,7 @@ class LessonItemView implements ViewModelInterface
             'totalDuration',
             'teacher',
             'attachments',
-            'canAttend',
+            'hasAttended',
             'hasAttachment',
             'progress',
         );

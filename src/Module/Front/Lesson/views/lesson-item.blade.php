@@ -334,7 +334,7 @@ $meloScript->lessonCart();
                                             登入
                                         </a>
                                     </div>
-                                @elseif(!$ownedLesson)
+                                @elseif(!$hasAttended)
                                     <div class="d-grid mx-2">
                                         <button class="btn btn-primary btn-lg"
                                             data-melo-task="buy"
