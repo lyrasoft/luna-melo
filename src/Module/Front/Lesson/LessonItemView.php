@@ -20,6 +20,7 @@ use Lyrasoft\Melo\Features\LessonService;
 use Lyrasoft\Melo\Features\Question\QuestionComposer;
 use Lyrasoft\Melo\Features\Section\AbstractSection;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
+use Lyrasoft\Melo\Features\Section\Video\VideoSection;
 use Lyrasoft\Melo\Features\Segment\SegmentAttender;
 use Lyrasoft\Melo\Features\Segment\SegmentFinder;
 use Lyrasoft\Melo\Features\Segment\SegmentPresenter;
@@ -145,15 +146,22 @@ class LessonItemView implements ViewModelInterface
         );
 
         if ($user->isLogin() && $context->hasAttended) {
-            $this->segmentAttender->attendToSegment(
+            $map = $this->segmentAttender->attendToSegment(
                 $user,
                 $currentSegment,
                 initData: function (array $map) {
                     $map['status'] = UserSegmentStatus::PROCESS;
 
                     return $map;
+                },
+                modify: function (UserSegmentMap $map) use ($currentSegment) {
+                    if ($currentSegment->type === VideoSection::id()) {
+                        $map->status = UserSegmentStatus::DONE;
+                    }
                 }
             );
+
+            $context->currentSectionStudent->map = $map;
         }
 
         if (!$context->canAccess()) {

@@ -22,6 +22,14 @@ class SectionMenuItem
         get => $this->lessonStudent->user;
     }
 
+    public ?UserSegmentStatus $status {
+        get => $this->getCurrentUserMap()?->status;
+    }
+
+    public SectionCapacity $capacity {
+        get => $this->getCapacity();
+    }
+
     public ?\Closure $capacityHandler = null;
 
     public function __construct(
