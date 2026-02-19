@@ -13,14 +13,13 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Renderer\RendererService;
 use Windwalker\DI\Attributes\Inject;
+use Windwalker\Edge\Exception\LayoutNotFoundException;
+use Windwalker\Renderer\CompositeRenderer;
 use Windwalker\Utilities\Contract\LanguageInterface;
 use Windwalker\Utilities\Iterator\PriorityQueue;
 
 abstract class AbstractSection
 {
-    #[Inject]
-    protected RendererService $rendererService;
-
     abstract public static function id(): string;
 
     abstract public static function icon(): string;
@@ -52,28 +51,24 @@ abstract class AbstractSection
 
     public function renderContent(RendererService $rendererService, SectionContent $sectionContent): string
     {
-        $this->registerViewPaths($rendererService);
+        $renderer = $this->prepareRenderer($rendererService);
 
         try {
-            return $rendererService->render(
+            return $renderer->render(
                 static::id() . '-content',
                 [
                     'instance' => $this,
                     'content' => $sectionContent,
                 ]
             );
-        } catch (\Throwable $e) {
-            if (str_contains($e->getMessage(), 'Unable to find layout')) {
-                return $rendererService->render(
-                    'melo.section.default-content',
-                    [
-                        'instance' => $this,
-                        'content' => $sectionContent,
-                    ]
-                );
-            }
-
-            throw $e;
+        } catch (LayoutNotFoundException $e) {
+            return $renderer->render(
+                'default-content',
+                [
+                    'instance' => $this,
+                    'content' => $sectionContent,
+                ]
+            );
         }
     }
 
@@ -81,28 +76,24 @@ abstract class AbstractSection
         RendererService $rendererService,
         SectionMenuItem $sectionMenuItem,
     ): string {
-        $this->registerViewPaths($rendererService);
+        $renderer = $this->prepareRenderer($rendererService);
 
         try {
-            return $rendererService->render(
+            return $renderer->render(
                 static::id() . '-menu-item',
                 [
                     'instance' => $this,
                     'menu' => $sectionMenuItem,
                 ]
             );
-        } catch (\Throwable $e) {
-            if (str_contains($e->getMessage(), 'Unable to find layout')) {
-                return $rendererService->render(
-                    'melo.section.default-menu-item',
-                    [
-                        'instance' => $this,
-                        'menu' => $sectionMenuItem,
-                    ]
-                );
-            }
-
-            throw $e;
+        } catch (LayoutNotFoundException $e) {
+            return $renderer->render(
+                'default-menu-item',
+                [
+                    'instance' => $this,
+                    'menu' => $sectionMenuItem,
+                ]
+            );
         }
     }
 
@@ -110,47 +101,58 @@ abstract class AbstractSection
         RendererService $rendererService,
         SectionContent $sectionContent,
     ): string {
-        $this->registerViewPaths($rendererService);
+        $renderer = $this->prepareRenderer($rendererService);
 
         try {
-            return $rendererService->render(
+            return $renderer->render(
                 static::id() . '-hidden-content',
                 [
                     'instance' => $this,
                     'content' => $sectionContent,
                 ]
             );
-        } catch (\Throwable $e) {
-            if (str_contains($e->getMessage(), 'Unable to find layout')) {
-                return $rendererService->render(
-                    'melo.section.default-hidden-content',
-                    [
-                        'instance' => $this,
-                        'content' => $sectionContent,
-                    ]
-                );
-            }
-
-            throw $e;
+        } catch (LayoutNotFoundException $e) {
+            return $renderer->render(
+                'default-hidden-content',
+                [
+                    'instance' => $this,
+                    'content' => $sectionContent,
+                ]
+            );
         }
     }
 
-    /**
-     * @param  RendererService  $rendererService
-     *
-     * @return  void
-     */
-    protected function registerViewPaths(RendererService $rendererService): void
+    protected function prepareRenderer(RendererService $rendererService): CompositeRenderer
+    {
+        /** @var CompositeRenderer $renderer */
+        $renderer = $rendererService->createRenderer();
+
+        $this->registerViewPaths($renderer);
+
+        return $renderer;
+    }
+
+    protected function registerViewPaths(CompositeRenderer $renderer): void
     {
         $ref = new \ReflectionClass($this);
         $dir = dirname($ref->getFileName());
 
-        $rendererService->addPath(
+        $renderer->addPath(
+            WINDWALKER_VIEWS . '/melo/section/' . static::id(),
+            PriorityQueue::HIGH
+        );
+
+        $renderer->addPath(
             $dir . '/views',
             PriorityQueue::LOW
         );
 
-        $rendererService->addPath(
+        $renderer->addPath(
+            MeloPackage::path('views/melo/section'),
+            PriorityQueue::LOW
+        );
+
+        $renderer->addPath(
             MeloPackage::path('views/melo/section/' . static::id()),
             PriorityQueue::LOW
         );
