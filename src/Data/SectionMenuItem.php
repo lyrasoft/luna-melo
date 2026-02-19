@@ -8,6 +8,7 @@ use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
+use Lyrasoft\Melo\Enum\SectionCapacity;
 use Lyrasoft\Melo\Enum\UserSegmentStatus;
 use Windwalker\Data\Collection;
 
@@ -21,7 +22,7 @@ class SectionMenuItem
         get => $this->lessonStudent->user;
     }
 
-    public ?\Closure $accessHandler = null;
+    public ?\Closure $capacityHandler = null;
 
     public function __construct(
         public LessonStudent $lessonStudent,
@@ -49,43 +50,52 @@ class SectionMenuItem
         return $status === UserSegmentStatus::PASSED || $status === UserSegmentStatus::DONE;
     }
 
-    public function canAccess(): bool
+    public function getCapacity(): SectionCapacity
     {
-        if ($this->accessHandler) {
-            return (bool) ($this->accessHandler)($this);
+        if ($this->capacityHandler) {
+            return ($this->capacityHandler)($this);
         }
 
         // If user not logged in, lock all sections except the preview opened.
         if (!$this->lessonStudent->user->isLogin()) {
-            return $this->section->preview;
+            return $this->section->preview
+                ? SectionCapacity::PREVIEW
+                : SectionCapacity::LOGIN_REQUIRED;
         }
 
         // Teacher or Admin can access all sections.
         if ($this->lessonStudent->canManage) {
-            return true;
+            return SectionCapacity::AVAILABLE;
         }
 
         // If user login, check user has lesson or not. If not, lock all sections except the preview opened.
         if (!$this->lessonStudent->map || !$this->lessonStudent->hasAccess) {
-            return $this->section->preview;
+            return $this->section->preview
+                ? SectionCapacity::PREVIEW
+                : SectionCapacity::NOT_YET_ATTENDED;
         }
 
         if (!$this->lessonStudent->lesson->isStepByStep) {
-            return true;
+            return SectionCapacity::AVAILABLE;
         }
 
         // If step by step, check previous section is done or not. If not, lock current section.
         $previousStudent = $this->getPreviousStudent();
 
         if ($previousStudent === null) {
-            return false;
+            return SectionCapacity::PROGRESS_LOCKED;
         }
 
-        if ($previousStudent->status === UserSegmentStatus::PASSED || $previousStudent->status === UserSegmentStatus::DONE) {
-            return true;
+        if (!$previousStudent->status->isDone()) {
+            return SectionCapacity::PROGRESS_LOCKED;
         }
 
-        return false;
+        return SectionCapacity::AVAILABLE;
+    }
+
+    public function canAccess(): bool
+    {
+        return $this->getCapacity()->isAvailable();
     }
 
     public function getPreviousSection(): ?Segment

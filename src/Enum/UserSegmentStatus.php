@@ -38,4 +38,9 @@ enum UserSegmentStatus: string implements EnumTranslatableInterface
     {
         return $lang->trans('melo.user.segment.status.' . $this->getKey());
     }
+
+    public function isDone(): bool
+    {
+        return $this === self::PASSED || $this === self::DONE;
+    }
 }
