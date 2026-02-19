@@ -4,13 +4,97 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Segment;
 
+use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Tree\NodeInterface;
+use Lyrasoft\Melo\Data\LessonStudent;
+use Lyrasoft\Melo\Data\SectionMenuItem;
+use Lyrasoft\Melo\Data\SectionStudent;
 use Lyrasoft\Melo\Entity\Segment;
+use Lyrasoft\Melo\Enum\UserSegmentStatus;
+use Lyrasoft\Melo\Features\Section\SectionComposer;
+use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Service;
+
+use function Windwalker\collect;
 
 #[Service]
 class SegmentPresenter
 {
+    public function __construct(protected SectionComposer $sectionComposer, protected SegmentAttender $segmentAttender)
+    {
+    }
+
+    public function computeProgress(
+        Collection $sectionStudents,
+        User $user
+    ): float {
+        if (!$user->isLogin()) {
+            return 0;
+        }
+
+        $total = $sectionStudents->count();
+
+        if ($total === 0) {
+            return 0;
+        }
+
+        $passed = $sectionStudents->filter(
+            function (SectionStudent $student) {
+                if ($student->map === null) {
+                    return false;
+                }
+
+                return $student->map->status === UserSegmentStatus::PASSED || $student->map->status === UserSegmentStatus::DONE;
+            }
+        );
+
+        return count($passed) / $total * 100;
+    }
+
+    /**
+     * @param  LessonStudent  $lessonStudent
+     * @param  iterable       $chapters
+     * @param  Collection     $sectionStudents
+     * @param  Segment        $currentSegment
+     *
+     * @return  Collection<SectionMenuItem>
+     */
+    public function prepareMenuItems(
+        LessonStudent $lessonStudent,
+        iterable $chapters,
+        Collection $sectionStudents,
+        Segment $currentSegment,
+    ): Collection {
+        $sectionTypeIndexes = [];
+        $menuItems = collect();
+
+        foreach ($chapters as $i => $chapter) {
+            if ($chapter instanceof NodeInterface) {
+                throw new \RuntimeException('This method only accepts chapters with sections, not nested nodes.');
+            }
+
+            /** @var Segment $section */
+            foreach ($chapter->children as $j => $section) {
+                $sectionTypeIndexes[$section->type] ??= 0;
+
+                $menuItem = new SectionMenuItem(
+                    lessonStudent: $lessonStudent,
+                    chapter: $chapter,
+                    sectionStudents: $sectionStudents,
+                    chapterIndex: $i + 1,
+                    section: $section,
+                    sectionIndex: $j + 1,
+                    typeIndex: ++$sectionTypeIndexes[$section->type],
+                    isActive: $section->id === $currentSegment->id
+                );
+
+                $menuItems[] = $menuItem;
+            }
+        }
+
+        return $menuItems;
+    }
+
     /**
      * @param  iterable<Segment>  $chapters
      *
@@ -18,50 +102,41 @@ class SegmentPresenter
      */
     public static function getFirstSectionFromTree(iterable $chapters): ?Segment
     {
-        foreach ($chapters as $chapter) {
-            if ($chapter instanceof NodeInterface) {
-                /** @var Segment $segment */
-                $segment = $chapter->getValue();
-
-                if (!$segment->parentId) {
-                    return $segment;
-                }
-
-                continue;
-            }
-
-            foreach ($chapter->children as $section) {
-                return $section;
-            }
+        foreach (static::iterateTree($chapters) as $section) {
+            return $section;
         }
 
         return null;
     }
 
+    public static function getFirstPreviewableSectionFromTree(iterable $chapters): ?Segment
+    {
+        $first = null;
+
+        foreach (static::iterateTree($chapters) as $section) {
+            if (!$first) {
+                $first = $section;
+            }
+
+            if ($section->preview) {
+                return $section;
+            }
+        }
+
+        return $first;
+    }
+
     public static function findSectionFromTree(iterable $chapters, int|\Closure $sectionId): ?Segment
     {
         if (is_int($sectionId)) {
-            $finder = fn (Segment $segment) => $segment->id === $sectionId;
+            $finder = fn(Segment $segment) => $segment->id === $sectionId;
         } else {
             $finder = $sectionId;
         }
 
-        foreach ($chapters as $chapter) {
-            if ($chapter instanceof NodeInterface) {
-                /** @var Segment $segment */
-                $segment = $chapter->getValue();
-
-                if ($finder($segment)) {
-                    return $segment;
-                }
-
-                continue;
-            }
-
-            foreach ($chapter->children as $section) {
-                if ($finder($section)) {
-                    return $section;
-                }
+        foreach (static::iterateTree($chapters) as $section) {
+            if ($finder($section)) {
+                return $section;
             }
         }
 
@@ -70,26 +145,40 @@ class SegmentPresenter
 
     public static function countSectionsFromTree(iterable $chapters): int
     {
-        $count = 0;
-
-        foreach ($chapters as $chapter) {
-            $count += count($chapter->children);
-        }
-
-        return $count;
+        return iterator_count(static::iterateTree($chapters));
     }
 
     public static function calcSectionsDurationFromTree(iterable $chapters): int
     {
         $duration = 0;
 
-        /** @var Segment $chapter */
-        foreach ($chapters as $chapter) {
-            foreach ($chapter->children as $section) {
-                $duration += $section->duration;
-            }
+        foreach (static::iterateTree($chapters) as $section) {
+            $duration += $section->duration;
         }
 
         return $duration;
+    }
+
+    /**
+     * @param  iterable  $chapters
+     *
+     * @return  \Generator<Segment>
+     */
+    protected static function iterateTree(iterable $chapters): \Generator
+    {
+        foreach ($chapters as $chapter) {
+            if ($chapter instanceof NodeInterface) {
+                /** @var Segment $segment */
+                $segment = $chapter->getValue();
+
+                yield $segment;
+
+                continue;
+            }
+
+            foreach ($chapter->children as $section) {
+                yield $section;
+            }
+        }
     }
 }

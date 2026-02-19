@@ -37,8 +37,12 @@ use Windwalker\Core\Router\SystemUri;
 
 $link = $menu->lesson->makeLink($nav, $menu->section->id);
 
-if (!$app->service(UserService::class)->isLogin()) {
-    $link = $nav->to('login')->withReturn();
+if (!$menu->canAccess()) {
+    if (!$app->service(UserService::class)->isLogin()) {
+        $link = $nav->to('login')->withReturn();
+    } else {
+        $link = 'javascript:void(0)';
+    }
 }
 
 $format = fn(BigDecimal $value) => sprintf('%02d', $value->toInt());
@@ -53,12 +57,18 @@ $durationText = Duration::from($menu->section->duration, 's')
         divider: ':'
     );
 ?>
-<a class="link-dark" href="{{ $link }}" data-segment-id="{{ $menu->section->id }}">
+<a class="{{ $menu->canAccess() ? 'link-dark' : 'link-secondary disabled' }}"
+    @attr('href', $link)
+    data-segment-id="{{ $menu->section->id }}">
     <div class="c-section-item {{ $menu->isActive ? 'active' : '' }}">
         <div class="c-section-item__inner">
             <div class="d-flex gap-2">
                 <div>
-                    <i class="fa-solid fa-circle-play"></i>
+                    @if ($menu->canAccess())
+                        <i class="fa-solid fa-circle-play"></i>
+                    @else
+                        <i class="fa-solid fa-lock"></i>
+                    @endif
                 </div>
                 <div class="text-nowrap">
                     單元 {{ $menu->typeIndex }}

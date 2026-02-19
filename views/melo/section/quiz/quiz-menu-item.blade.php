@@ -40,7 +40,8 @@ if (!$app->service(UserService::class)->isLogin()) {
 }
 ?>
 
-<a class="link-dark" href="#"
+<a class="{{ $menu->canAccess() ? 'link-dark' : 'link-secondary disabled' }}"
+    href="#"
     data-segment-id="{{ $menu->section->id }}"
     data-segment-title="{{ $menu->section->title }}"
     data-chapter-index="{{ $menu->chapterIndex }}"
@@ -51,7 +52,11 @@ if (!$app->service(UserService::class)->isLogin()) {
         <div class="c-section-item__inner">
             <div class="d-flex gap-2">
                 <div>
-                    <i class="fa-regular fa-circle-check"></i>
+                    @if ($menu->canAccess())
+                        <i class="fa-regular fa-circle-check"></i>
+                    @else
+                        <i class="fa-solid fa-lock"></i>
+                    @endif
                 </div>
                 <div class="text-nowrap">
                     {{ $instance::title($lang) }} {{ $menu->typeIndex }}

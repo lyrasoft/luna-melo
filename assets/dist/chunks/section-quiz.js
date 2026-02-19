@@ -37,6 +37,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       for (const button of buttons) {
         button.addEventListener("click", async (e) => {
           e.preventDefault();
+          if (button.getAttribute("disabled") != null || button.classList.contains("disabled") || button.getAttribute("aria-disabled") === "true") {
+            return;
+          }
           loaded.value = false;
           await startQuiz(button);
           loaded.value = true;

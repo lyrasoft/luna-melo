@@ -242,7 +242,7 @@ class LessonController
         $map = $segmentAttender->attendToSegment(
             $user,
             $segment,
-            function (UserSegmentMap $map) use ($segmentScore) {
+            modify: function (UserSegmentMap $map) use ($segmentScore) {
                 $map->score = $segmentScore;
 
                 return $map;

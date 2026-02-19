@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Front\Lesson;
 
-use Lyrasoft\Melo\Enum\UserSegmentStatus;
-use Lyrasoft\Melo\Entity\Lesson;
-use Lyrasoft\Melo\Entity\Segment;
-use Lyrasoft\Melo\Entity\UserLessonMap;
-use Lyrasoft\Melo\Entity\UserSegmentMap;
-use Lyrasoft\Melo\Enum\SegmentType;
-use Lyrasoft\Melo\Features\Question\QuestionComposer;
-use Lyrasoft\Melo\Features\Section\AbstractSection;
-use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
-use Lyrasoft\Melo\Features\Segment\SegmentFinder;
-use Lyrasoft\Melo\Features\Segment\SegmentPresenter;
-use Lyrasoft\Melo\Repository\LessonRepository;
 use Lyrasoft\Attachment\Entity\Attachment;
 use Lyrasoft\Luna\Entity\Tag;
 use Lyrasoft\Luna\Entity\TagMap;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
+use Lyrasoft\Melo\Data\SectionMenuItem;
+use Lyrasoft\Melo\Entity\Lesson;
+use Lyrasoft\Melo\Entity\Segment;
+use Lyrasoft\Melo\Entity\UserSegmentMap;
+use Lyrasoft\Melo\Enum\SegmentType;
+use Lyrasoft\Melo\Enum\UserSegmentStatus;
+use Lyrasoft\Melo\Features\Lesson\LessonNavigator;
 use Lyrasoft\Melo\Features\LessonService;
+use Lyrasoft\Melo\Features\Question\QuestionComposer;
+use Lyrasoft\Melo\Features\Section\AbstractSection;
+use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
+use Lyrasoft\Melo\Features\Segment\SegmentAttender;
+use Lyrasoft\Melo\Features\Segment\SegmentFinder;
+use Lyrasoft\Melo\Features\Segment\SegmentPresenter;
+use Lyrasoft\Melo\Repository\LessonRepository;
 use Psr\Cache\InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -42,7 +43,6 @@ use Windwalker\ORM\ORM;
 use Windwalker\Query\Query;
 
 use function Windwalker\Query\qn;
-use function Windwalker\where;
 
 #[ViewModel(
     layout: 'lesson-item',
@@ -63,8 +63,9 @@ class LessonItemView implements ViewModelInterface
         protected UserService $userService,
         protected UnicornScript $uniScript,
         protected QuestionComposer $questionComposer,
-        protected SegmentFinder $segmentFinder,
         protected AssetService $asset,
+        protected SegmentAttender $segmentAttender,
+        protected LessonNavigator $lessonNavigator,
         #[Service]
         protected LessonService $lessonService,
     ) {
@@ -74,7 +75,7 @@ class LessonItemView implements ViewModelInterface
     /**
      * Prepare View.
      *
-     * @param  AppContext  $app   The web app context.
+     * @param  AppContext  $app  The web app context.
      * @param  View        $view  The view object.
      *
      * @return  mixed
@@ -105,8 +106,8 @@ class LessonItemView implements ViewModelInterface
         }
 
         $user = $this->userService->getUser();
-        
-        $chapters = $this->segmentFinder->getChaptersSections($item->id);
+
+        $chapters = $this->lessonNavigator->getChaptersSections($item->id);
 
         if ($chapters->count() === 0) {
             $app->addMessage('沒有可用章節', 'warning');
@@ -115,13 +116,13 @@ class LessonItemView implements ViewModelInterface
         }
 
         if (!$segmentId) {
-            $currentSegment = SegmentPresenter::getFirstSectionFromTree($chapters);
+            $currentSegment = SegmentPresenter::getFirstPreviewableSectionFromTree($chapters);
         } else {
             $currentSegment = SegmentPresenter::findSectionFromTree($chapters, $segmentId);
         }
 
         if (!$currentSegment) {
-            $firstSegment = SegmentPresenter::getFirstSectionFromTree($chapters);
+            $firstSegment = SegmentPresenter::getFirstPreviewableSectionFromTree($chapters);
 
             if (!$firstSegment) {
                 $app->addMessage('沒有可用章節', 'warning');
@@ -137,9 +138,29 @@ class LessonItemView implements ViewModelInterface
         $view[$item::class] = $item;
         $view[Segment::class] = $currentSegment;
 
-        $currentChapter = $chapters->findFirst(
-            fn (Segment $chapter) => $chapter->id === $currentSegment->parentId
+        $context = $this->lessonNavigator->getLessonProgressContext(
+            $item,
+            $user,
+            $currentSegment
         );
+
+        if ($user->isLogin() && $context->hasAttended) {
+            $this->segmentAttender->attendToSegment(
+                $user,
+                $currentSegment,
+                initData: function (array $map) {
+                    $map['status'] = UserSegmentStatus::PROCESS;
+
+                    return $map;
+                }
+            );
+        }
+
+        if (!$context->canAccess()) {
+            return $item->makeLink($this->nav);
+        }
+
+        $sectionMenuGroup = $context->menuItems->groupBy(fn(SectionMenuItem $menuItem) => $menuItem->chapter->id);
 
         $tags = $this->orm->from(Tag::class)
             ->whereExists(
@@ -161,23 +182,15 @@ class LessonItemView implements ViewModelInterface
             ]
         );
 
-        $hasAttachment = (bool) $this->orm->findOne(
-            Attachment::class,
-            [
-                'type' => 'lesson',
-                'target_id' => $item->id,
-            ]
-        );
-
         $attachments = $this->orm->findList(
             Attachment::class,
             [
                 'type' => 'lesson',
                 'target_id' => $item->id,
             ]
-        );
+        )->all();
 
-        $hasAttended = $this->lessonService->checkUserHasLesson($item->id);
+        $hasAttachment = \Windwalker\count($attachments) > 0;
 
         $totalAssignment = $this->orm->from(UserSegmentMap::class)
             ->where('lesson_id', $item->id)
@@ -194,23 +207,6 @@ class LessonItemView implements ViewModelInterface
             }
         }
 
-        if ($user->isLogin() && $hasAttended) {
-            $map = $this->orm->findOneOrCreate(
-                UserSegmentMap::class,
-                [
-                    'user_id' => $user->id,
-                    'lesson_id' => $item->id,
-                    'segment_id' => $currentSegment->id,
-                    'segment_type' => $currentSegment->type,
-                ],
-                [
-                    'status' => UserSegmentStatus::PROCESS,
-                ]
-            );
-        }
-
-        $progress = $this->lessonService->getLessonProgress($item->id);
-
         $this->uniScript->data('lessonId', (int) $item->id);
         $this->uniScript->data('totalAssignment', $totalAssignment);
         $this->uniScript->data('lessonSectionOrder', $lessonSectionOrder);
@@ -223,16 +219,15 @@ class LessonItemView implements ViewModelInterface
             'item',
             'tags',
             'chapters',
-            'currentChapter',
             'currentSegment',
             'totalChapter',
             'totalSection',
             'totalDuration',
             'teacher',
             'attachments',
-            'hasAttended',
             'hasAttachment',
-            'progress',
+            'sectionMenuGroup',
+            'context',
         );
     }
 

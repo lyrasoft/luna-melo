@@ -19,6 +19,7 @@ namespace App\View;
 use Asika\BetterUnits\Duration;
 use Brick\Math\BigDecimal;
 use Lyrasoft\Attachment\Entity\Attachment;
+use Lyrasoft\Melo\Data\LessonProgressContext;
 use Lyrasoft\Melo\Data\SectionContent;
 use Lyrasoft\Melo\Data\SectionMenuItem;
 use Lyrasoft\Melo\Entity\Segment;
@@ -43,14 +44,16 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var Lesson       $item
- * @var Tag          $tag
- * @var Segment      $currentSegment
- * @var Segment      $chapter
- * @var Segment      $section
- * @var Segment      $sectionSegment
- * @var User         $teacher
- * @var Attachment[] $attachments
+ * @var Lesson                $item
+ * @var Tag                   $tag
+ * @var Segment               $currentSegment
+ * @var Segment               $chapter
+ * @var Segment               $section
+ * @var Segment               $sectionSegment
+ * @var User                  $teacher
+ * @var Attachment[]          $attachments
+ * @var LessonProgressContext $context
+ * @var SectionMenuItem       $menuItem
  */
 
 $breadcrumb = $app->service(Breadcrumb::class);
@@ -63,11 +66,7 @@ $videoService = $app->service(VideoService::class);
 $userService = $app->service(UserService::class);
 $sectionComposer = $app->service(SectionComposer::class);
 $currentSectionInstance = $sectionComposer->makeInstance($currentSegment);
-$sectionContent = new SectionContent(
-    lesson: $item,
-    chapter: $currentChapter,
-    section: $currentSegment,
-);
+$sectionContent = new SectionContent($context);
 $sectionTypeIndexes = [];
 
 $durationText = Duration::from($totalDuration, 's')->humanize(
@@ -155,23 +154,15 @@ $meloScript->lessonCart();
                                         <div
                                             class="c-section-list collapse {{ $vm->activeChapter($chapters, $currentSegment) === $i ? 'show' : '' }}"
                                             id="chapter-{{ $chapter->id }}-collapse">
-                                            @foreach($chapter->children as $j => $sectionSegment)
+                                            @foreach($sectionMenuGroup[$chapter->id] as $j => $menuItem)
                                                 @php
-                                                    $section = $sectionComposer->makeInstance($sectionSegment);
-                                                    $sectionTypeIndexes[$sectionSegment->type] ??= 0;
-
-                                                    $menuItem = new SectionMenuItem(
-                                                        lesson: $item,
-                                                        chapter: $chapter,
-                                                        chapterIndex: $i + 1,
-                                                        section: $sectionSegment,
-                                                        sectionIndex: $j + 1,
-                                                        typeIndex: ++$sectionTypeIndexes[$sectionSegment->type],
-                                                        isActive: $sectionSegment->id === $currentSegment->id
-                                                    );
+                                                    $section = $sectionComposer->makeInstance($menuItem->section);
                                                 @endphp
 
-                                                {!! $section->renderSectionMenuItem($rendererService, $menuItem) !!}
+                                                <div
+                                                    class="c-section-menu-item" @attr('data-section-id', $menuItem->section->id)>
+                                                    {!! $section->renderSectionMenuItem($rendererService, $menuItem) !!}
+                                                </div>
                                             @endforeach
                                         </div>
                                     @endforeach
@@ -303,7 +294,7 @@ $meloScript->lessonCart();
                                         檔案下載
                                     </div>
 
-                                    @if($hasAttachment)
+                                    @if($context->hasAttended)
                                         @foreach($attachments as $file)
                                             <div class="c-file-item">
                                                 <div>
@@ -334,7 +325,7 @@ $meloScript->lessonCart();
                                             登入
                                         </a>
                                     </div>
-                                @elseif(!$hasAttended)
+                                @elseif(!$context->hasAttended)
                                     <div class="d-grid mx-2">
                                         <button class="btn btn-primary btn-lg"
                                             data-melo-task="buy"
@@ -349,7 +340,7 @@ $meloScript->lessonCart();
                                             課程進度
                                         </div>
                                         <div class="h2">
-                                            {{ $progress }}
+                                            {{ round($context->progress, 2) }}
                                         </div>
                                     </div>
                                 @endif
@@ -394,11 +385,7 @@ $meloScript->lessonCart();
                         $section = $sectionComposer->makeInstance($sectionSegment);
                         $sectionTypeIndexes[$sectionSegment->type] ??= 0;
 
-                        $content = new SectionContent(
-                            lesson: $item,
-                            chapter: $chapter,
-                            section: $sectionSegment,
-                        );
+                        $content = new SectionContent($context);
                     @endphp
 
                     <div class="l-section-hidden" data-section-hidden-id="{{ $sectionSegment->id }}">
