@@ -16,6 +16,7 @@ namespace App\view;
  * @var $lang      LangService     The language translation service.
  */
 
+use Asika\BetterUnits\Duration;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Data\SectionMenuItem;
 use Lyrasoft\Melo\Entity\Lesson;
@@ -39,11 +40,15 @@ if (!$app->service(UserService::class)->isLogin()) {
     $link = $nav->to('login')->withReturn();
 }
 
-$format = 'i:s';
-
-if ($menu->section->duration >= 3600) {
-    $format = 'H:i:s';
-}
+$durationText = Duration::from($menu->section->duration, 's')
+    ->humanize(
+        formats: [
+            Duration::UNIT_HOURS,
+            Duration::UNIT_MINUTES,
+            Duration::UNIT_SECONDS,
+        ],
+        divider: ':'
+    );
 ?>
 <a class="link-dark" href="{{ $link }}" data-segment-id="{{ $menu->section->id }}">
     <div class="c-section-item {{ $menu->isActive ? 'active' : '' }}">
@@ -59,7 +64,7 @@ if ($menu->section->duration >= 3600) {
                     {{ $menu->section->title }}
                 </div>
                 <div class="text-nowrap">
-                    {{ $chronos::toFormat((string) $menu->section->duration, $format) }}
+                    {{ $durationText }}
                 </div>
             </div>
         </div>
