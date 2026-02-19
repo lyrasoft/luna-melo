@@ -111,20 +111,25 @@ class LessonItemView implements ViewModelInterface
         }
 
         if (!$segmentId) {
-            $segment = SegmentPresenter::getFirstSectionFromTree($chapters);
+            $currentSegment = SegmentPresenter::getFirstSectionFromTree($chapters);
+        } else {
+            $currentSegment = SegmentPresenter::findSectionFromTree($chapters, $segmentId);
+        }
 
-            if (!$segment) {
+        if (!$currentSegment) {
+            $firstSegment = SegmentPresenter::getFirstSectionFromTree($chapters);
+
+            if (!$firstSegment) {
                 $app->addMessage('沒有可用章節', 'warning');
 
                 return $this->nav->to('lesson_list');
             }
 
-            $segmentId = $segment->id;
+            $segmentId = $firstSegment->id;
 
             return $item->makeLink($this->nav, $segmentId);
         }
 
-        $currentSegment = SegmentPresenter::findSectionFromTree($chapters, $segmentId);
         $currentChapter = $chapters->findFirst(
             fn (Segment $chapter) => $chapter->id === $currentSegment->parentId
         );
@@ -139,9 +144,7 @@ class LessonItemView implements ViewModelInterface
             ->getIterator(Tag::class);
 
         $totalChapter = $chapters->count();
-
         $totalSection = SegmentPresenter::countSectionsFromTree($chapters);
-
         $totalDuration = SegmentPresenter::calcSectionsDurationFromTree($chapters);
 
         $teacher = $this->orm->findOne(
