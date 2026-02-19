@@ -16,6 +16,8 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
+use Asika\BetterUnits\Duration;
+use Brick\Math\BigDecimal;
 use Lyrasoft\Attachment\Entity\Attachment;
 use Lyrasoft\Melo\Data\SectionContent;
 use Lyrasoft\Melo\Data\SectionMenuItem;
@@ -68,11 +70,14 @@ $sectionContent = new SectionContent(
 );
 $sectionTypeIndexes = [];
 
-$format = 'i分鐘s秒';
-
-if ($totalDuration >= 3600) {
-    $format = 'H小時i分鐘s秒';
-}
+$durationText = Duration::from($totalDuration, 's')->humanize(
+    [
+        Duration::UNIT_HOURS => '%s小時',
+        Duration::UNIT_MINUTES => '%s分鐘',
+        Duration::UNIT_SECONDS => '%s秒',
+    ],
+    ''
+);
 
 $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
 
@@ -127,7 +132,7 @@ $meloScript->lessonCart();
                         <div class="col-lg-4">
                             <div class="l-lesson-item__chapter c-segment-list">
                                 <div class="c-segment-list__title">
-                                    {{ $totalChapter }} 個章節 / {{ $totalSection }} 個單元 / {{ $chronos::toFormat($totalDuration, $format) }}
+                                    {{ $totalChapter }} 個章節 / {{ $totalSection }} 個單元 / {{ $durationText }}
                                 </div>
 
                                 <div class="c-segment-list__inner">
@@ -150,7 +155,7 @@ $meloScript->lessonCart();
                                         <div
                                             class="c-section-list collapse {{ $vm->activeChapter($chapters, $currentSegment) === $i ? 'show' : '' }}"
                                             id="chapter-{{ $chapter->id }}-collapse">
-                                            @foreach($chapter->sections as $j => $sectionSegment)
+                                            @foreach($chapter->children as $j => $sectionSegment)
                                                 @php
                                                     $section = $sectionComposer->makeInstance($sectionSegment);
                                                     $sectionTypeIndexes[$sectionSegment->type] ??= 0;
@@ -233,7 +238,7 @@ $meloScript->lessonCart();
                                         <div class="d-flex mb-3">
                                             <div class="flex-grow-1">
                                                 <i class="fa-regular fa-clock me-2 text-primary"></i>
-                                                課程總時長｜{{ $chronos::toFormat($totalDuration, $format) }}
+                                                課程總時長｜{{ $durationText }}
                                             </div>
                                             <div class="flex-grow-1">
                                                 <i class="fa-regular fa-rectangle-list me-2 text-primary"></i>
@@ -265,7 +270,7 @@ $meloScript->lessonCart();
                                         </div>
 
                                         <div>
-                                            @foreach($chapter->sections as $l => $section)
+                                            @foreach($chapter->children as $l => $section)
                                                 <div
                                                     class="c-lesson-detail-section list-group-item d-flex justify-content-between">
                                                     <div class="ps-4">
@@ -378,13 +383,13 @@ $meloScript->lessonCart();
         </div>
     </div>
 
-{{--    @include('melo.front.lesson.homework-modal')--}}
-{{--    @include('melo.front.lesson.quiz-modal')--}}
+    {{--    @include('melo.front.lesson.homework-modal')--}}
+    {{--    @include('melo.front.lesson.quiz-modal')--}}
 
     <div class="l-segment-hiddens">
         @foreach($chapters as $i => $chapter)
             <div class="l-chapter-hidden" data-chapter-hidden-id="{{ $chapter->id }}">
-                @foreach($chapter->sections as $j => $sectionSegment)
+                @foreach($chapter->children as $j => $sectionSegment)
                     @php
                         $section = $sectionComposer->makeInstance($sectionSegment);
                         $sectionTypeIndexes[$sectionSegment->type] ??= 0;

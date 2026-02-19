@@ -13,6 +13,8 @@ use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Melo\Features\Question\QuestionComposer;
 use Lyrasoft\Melo\Features\Section\AbstractSection;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
+use Lyrasoft\Melo\Features\Segment\SegmentFinder;
+use Lyrasoft\Melo\Features\Segment\SegmentPresenter;
 use Lyrasoft\Melo\Repository\LessonRepository;
 use Lyrasoft\Attachment\Entity\Attachment;
 use Lyrasoft\Luna\Entity\Tag;
@@ -59,6 +61,7 @@ class LessonItemView implements ViewModelInterface
         protected UserService $userService,
         protected UnicornScript $uniScript,
         protected QuestionComposer $questionComposer,
+        protected SegmentFinder $segmentFinder,
         protected AssetService $asset,
         #[Service]
         protected LessonService $lessonService,
@@ -98,12 +101,8 @@ class LessonItemView implements ViewModelInterface
         }
 
         $user = $this->userService->getUser();
-
-        $chapters = $this->orm->from(Segment::class)
-            ->where('lesson_id', $item->id)
-            ->where('parent_id', 0)
-            ->order('ordering', 'ASC')
-            ->all(Segment::class);
+        
+        $chapters = $this->segmentFinder->getChaptersSections($item->id);
 
         if ($chapters->count() === 0) {
             $app->addMessage('沒有可用章節', 'warning');
@@ -112,11 +111,7 @@ class LessonItemView implements ViewModelInterface
         }
 
         if (!$segmentId) {
-            $segment = $this->orm->from(Segment::class)
-                ->where('lesson_id', $item->id)
-                ->where('parent_id', $chapters[0]->id)
-                ->order('ordering', 'ASC')
-                ->get(Segment::class);
+            $segment = SegmentPresenter::getFirstSectionFromTree($chapters);
 
             if (!$segment) {
                 $app->addMessage('沒有可用章節', 'warning');
@@ -129,14 +124,10 @@ class LessonItemView implements ViewModelInterface
             return $item->makeLink($this->nav, $segmentId);
         }
 
-        $currentSegment = $this->orm->mustFindOne(
-            Segment::class,
-            [
-                'lesson_id' => $item->id,
-                'id' => $segmentId,
-            ]
+        $currentSegment = SegmentPresenter::findSectionFromTree($chapters, $segmentId);
+        $currentChapter = $chapters->findFirst(
+            fn (Segment $chapter) => $chapter->id === $currentSegment->parentId
         );
-        $currentChapter = null;
 
         $tags = $this->orm->from(Tag::class)
             ->whereExists(
@@ -147,35 +138,11 @@ class LessonItemView implements ViewModelInterface
             )
             ->getIterator(Tag::class);
 
-        /** @var Segment $chapter */
-        foreach ($chapters as $chapter) {
-            $sections = $this->orm->from(Segment::class)
-                ->where('lesson_id', $item->id)
-                ->where('parent_id', $chapter->id)
-                ->order('ordering', 'ASC')
-                ->all(Segment::class);
+        $totalChapter = $chapters->count();
 
-            if ($chapter->id === $currentSegment->parentId) {
-                $currentChapter = $chapter;
-            }
+        $totalSection = SegmentPresenter::countSectionsFromTree($chapters);
 
-            $chapter->sections = $sections;
-        }
-
-        $totalChapter = $this->orm->from(Segment::class)
-            ->where('lesson_id', $item->id)
-            ->where('parent_id', 0)
-            ->count();
-
-        $totalSection = $this->orm->from(Segment::class)
-            ->where('lesson_id', $item->id)
-            ->where('parent_id', '!=', 0)
-            ->count();
-
-        $totalDuration = $this->orm->from(Segment::class)
-            ->selectRaw('SUM(duration)')
-            ->where('lesson_id', $item->id)
-            ->result();
+        $totalDuration = SegmentPresenter::calcSectionsDurationFromTree($chapters);
 
         $teacher = $this->orm->findOne(
             User::class,
@@ -200,7 +167,7 @@ class LessonItemView implements ViewModelInterface
             ]
         );
 
-        $ownedLesson = $this->lessonService->checkUserHasLesson($item->id);
+        $canAttend = $this->lessonService->checkUserHasLesson($item->id);
 
         $totalAssignment = $this->orm->from(UserSegmentMap::class)
             ->where('lesson_id', $item->id)
@@ -212,12 +179,12 @@ class LessonItemView implements ViewModelInterface
         $lessonSectionOrder = [];
 
         foreach ($chapters as $k => $chapter) {
-            foreach ($chapter->sections as $section) {
+            foreach ($chapter->children as $section) {
                 $lessonSectionOrder[$k][] = $section->getId();
             }
         }
 
-        if ($user->isLogin() && $ownedLesson) {
+        if ($user->isLogin() && $canAttend) {
             $map = $this->orm->findOneOrCreate(
                 UserSegmentMap::class,
                 [
@@ -253,7 +220,7 @@ class LessonItemView implements ViewModelInterface
             'totalDuration',
             'teacher',
             'attachments',
-            'ownedLesson',
+            'canAttend',
             'hasAttachment',
             'progress',
         );
@@ -264,7 +231,7 @@ class LessonItemView implements ViewModelInterface
         Segment $current
     ): int|null {
         foreach ($chapters as $k => $chapter) {
-            foreach ($chapter->sections as $section) {
+            foreach ($chapter->children as $section) {
                 if ($section->getId() === $current->id) {
                     return (int) $k;
                 }

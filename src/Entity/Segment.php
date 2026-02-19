@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Entity;
 
-use Lyrasoft\Melo\Enum\SegmentType;
+use Windwalker\Data\Collection;
 use Windwalker\ORM\Attributes\AutoIncrement;
 use Windwalker\ORM\Attributes\Cast;
 use Unicorn\Enum\BasicState;
@@ -25,8 +25,14 @@ use Windwalker\ORM\EntityTrait;
 use Windwalker\ORM\Event\AfterDeleteEvent;
 use Windwalker\ORM\Metadata\EntityMetadata;
 
+use function Windwalker\collect;
+
 // phpcs:disable
 // todo: remove this when phpcs supports 8.4
+
+/**
+ * @property-read  Segment[]  $children
+ */
 #[Table('segments', 'segment')]
 #[\AllowDynamicProperties]
 class Segment implements EntityInterface
@@ -109,6 +115,11 @@ class Segment implements EntityInterface
     #[Column('params')]
     #[Cast(JsonCast::class)]
     public array $params = [];
+
+    public Collection $children {
+        get => $this->children ??= new Collection();
+        set(iterable $value) => collect($value);
+    }
 
     #[EntitySetup]
     public static function setup(EntityMetadata $metadata): void

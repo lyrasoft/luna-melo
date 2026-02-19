@@ -65,7 +65,7 @@ class SegmentEditView implements ViewModelInterface
     {
         $lessonId = (int) $app->input('lesson_id');
 
-        $segments = $this->segmentFinder->getSegmentsTree((int) $lessonId);
+        $segments = $this->segmentFinder->getChaptersSections((int) $lessonId);
 
         $sectionDefines = $this->getSectionDefines();
         $questionDefines = $this->getQuestionDefines();
