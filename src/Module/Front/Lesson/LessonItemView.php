@@ -27,7 +27,9 @@ use Psr\Http\Message\ResponseInterface;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
+use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\Exception\RouteNotFoundException;
 use Windwalker\Core\Router\Navigator;
@@ -93,11 +95,13 @@ class LessonItemView implements ViewModelInterface
             throw new RouteNotFoundException('Lesson not found');
         }
 
-        $canonicalLink = $item->makeLink($this->nav, $segmentId);
-        $view->getHtmlFrame()->addCanonical($canonicalLink->full());
+        $canonicalMainLink = $item->makeLink($this->nav);
+        $view->getHtmlFrame()->addCanonical($canonicalMainLink->full());
+
+        $canonicalSectionLink = $item->makeLink($this->nav, $segmentId);
 
         if ($item->alias !== $alias) {
-            return $canonicalLink;
+            return $canonicalSectionLink;
         }
 
         $user = $this->userService->getUser();
@@ -129,6 +133,9 @@ class LessonItemView implements ViewModelInterface
 
             return $item->makeLink($this->nav, $segmentId);
         }
+
+        $view[$item::class] = $item;
+        $view[Segment::class] = $currentSegment;
 
         $currentChapter = $chapters->findFirst(
             fn (Segment $chapter) => $chapter->id === $currentSegment->parentId
@@ -266,5 +273,13 @@ class LessonItemView implements ViewModelInterface
             },
             $defines
         );
+    }
+
+    #[ViewMetadata]
+    public function viewMetadata(HtmlFrame $htmlFrame, Lesson $lesson): void
+    {
+        $title = $lesson->title;
+
+        $htmlFrame->setTitle($title);
     }
 }
