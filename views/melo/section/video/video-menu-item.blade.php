@@ -17,6 +17,7 @@ namespace App\view;
  */
 
 use Asika\BetterUnits\Duration;
+use Brick\Math\BigDecimal;
 use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Data\SectionMenuItem;
 use Lyrasoft\Melo\Entity\Lesson;
@@ -40,12 +41,14 @@ if (!$app->service(UserService::class)->isLogin()) {
     $link = $nav->to('login')->withReturn();
 }
 
+$format = fn(BigDecimal $value) => sprintf('%02d', $value->toInt());
+
 $durationText = Duration::from($menu->section->duration, 's')
     ->humanize(
         formats: [
-            Duration::UNIT_HOURS,
-            Duration::UNIT_MINUTES,
-            Duration::UNIT_SECONDS,
+            Duration::UNIT_HOURS => $format,
+            Duration::UNIT_MINUTES => $format,
+            Duration::UNIT_SECONDS => $format,
         ],
         divider: ':'
     );
