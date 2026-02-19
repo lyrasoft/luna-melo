@@ -29,7 +29,6 @@ use Lyrasoft\Melo\Features\VideoService;
 use Lyrasoft\Luna\Entity\Tag;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
-use Lyrasoft\Melo\Script\MeloScript;
 use Unicorn\Html\Breadcrumb;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Module\Front\Lesson\LessonItemView;
@@ -79,9 +78,6 @@ $durationText = Duration::from($totalDuration, 's')->humanize(
 );
 
 $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
-
-$meloScript = $app->service(MeloScript::class);
-$meloScript->lessonCart();
 ?>
 
 @extends('global.body')
