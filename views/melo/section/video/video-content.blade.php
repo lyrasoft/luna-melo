@@ -35,6 +35,15 @@ use Windwalker\Core\Router\SystemUri;
 $videoService = $app->service(VideoService::class);
 
 ?>
+<script data-macro="section.video.content" lang="ts" type="module">
+    import { injectCssToDocument } from '@windwalker-io/unicorn-next';
+    import Plyr from 'plyr';
+    import css from 'plyr/dist/plyr.css?inline';
+
+    const player = new Plyr('#section-player');
+    injectCssToDocument(css);
+</script>
+
 <div class="film" id="attend-video">
     @if($videoService->isCloudVideo($content->section->src))
         <div id="section-player" data-plyr-provider="youtube"
