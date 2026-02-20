@@ -117,7 +117,7 @@ class LessonItemView implements ViewModelInterface
         }
 
         if (!$segmentId) {
-            $currentSegment = SegmentPresenter::getFirstPreviewableSectionFromTree($chapters);
+            $currentSegment = SegmentPresenter::getFirstPreviewableSectionFromTree($chapters, true);
         } else {
             $currentSegment = SegmentPresenter::findSectionFromTree($chapters, $segmentId);
         }
@@ -142,7 +142,8 @@ class LessonItemView implements ViewModelInterface
         $context = $this->lessonNavigator->getLessonProgressContext(
             $item,
             $user,
-            $currentSegment
+            $currentSegment,
+            $chapters,
         );
 
         if ($user->isLogin() && $context->hasAttended) {

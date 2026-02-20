@@ -32,6 +32,10 @@ class SectionMenuItem
 
     public ?\Closure $capacityHandler = null;
 
+    public bool $canPreview {
+        get => $this->section->preview;
+    }
+
     public function __construct(
         public LessonStudent $lessonStudent,
         public Segment $chapter,

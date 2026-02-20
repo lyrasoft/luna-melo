@@ -109,7 +109,7 @@ class SegmentPresenter
         return null;
     }
 
-    public static function getFirstPreviewableSectionFromTree(iterable $chapters): ?Segment
+    public static function getFirstPreviewableSectionFromTree(iterable $chapters, bool $fallbackFirst = false): ?Segment
     {
         $first = null;
 
@@ -123,7 +123,13 @@ class SegmentPresenter
             }
         }
 
-        return $first;
+        if ($fallbackFirst) {
+            $first->preview = true;
+
+            return $first;
+        }
+
+        return null;
     }
 
     public static function findSectionFromTree(iterable $chapters, int|\Closure $sectionId): ?Segment

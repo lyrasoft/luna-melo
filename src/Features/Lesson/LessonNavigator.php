@@ -39,9 +39,13 @@ class LessonNavigator
         return $this->segmentFinder->getChaptersSections($lessonId);
     }
 
-    public function getLessonProgressContext(Lesson $lesson, User $user, Segment $currentSection): LessonProgressContext
-    {
-        $chapters = $this->getChaptersSections($lesson->id);
+    public function getLessonProgressContext(
+        Lesson $lesson,
+        User $user,
+        Segment $currentSection,
+        ?Collection $chapters = null
+    ): LessonProgressContext {
+        $chapters ??= $this->getChaptersSections($lesson->id);
 
         $currentChapter = $chapters->findFirst(
             fn(Segment $chapter) => $chapter->id === $currentSection->parentId
