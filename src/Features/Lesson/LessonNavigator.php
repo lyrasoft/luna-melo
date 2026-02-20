@@ -56,7 +56,8 @@ class LessonNavigator
         $lessonStudent = new LessonStudent(
             lesson: $lesson,
             user: $user,
-            map: $userLessonMap
+            map: $userLessonMap,
+            canManage: $user->id === $lesson->teacherId
         );
 
         $sectionStudents = $this->segmentAttender->getSectionStudents($lesson->id, $chapters, $user);

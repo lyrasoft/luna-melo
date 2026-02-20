@@ -28,6 +28,10 @@ class LessonProgressContext
         get => $this->userLessonMap !== null;
     }
 
+    public bool $canManage {
+        get => $this->lessonStudent->canManage;
+    }
+
     public function __construct(
         public LessonStudent $lessonStudent,
         public float $progress,

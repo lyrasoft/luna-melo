@@ -36,6 +36,10 @@ class SectionMenuItem
         get => $this->section->preview;
     }
 
+    public bool $canManage {
+        get => $this->lessonStudent->canManage;
+    }
+
     public function __construct(
         public LessonStudent $lessonStudent,
         public Segment $chapter,
