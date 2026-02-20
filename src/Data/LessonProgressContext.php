@@ -31,14 +31,39 @@ class LessonProgressContext
     public function __construct(
         public LessonStudent $lessonStudent,
         public float $progress,
+        /**
+         * @var Collection<SectionMenuItem>
+         */
         public Collection $menuItems,
         public Segment $currentSection,
         public Segment $currentChapter,
         public ?SectionMenuItem $activeMenuItem,
         public Collection $sectionStudents,
         public SectionStudent $currentSectionStudent,
+        /**
+         * @var Collection<Segment>
+         */
         public Collection $chapters = new Collection(),
     ) {
+    }
+
+    /**
+     * @param  int  $chapterId
+     *
+     * @return  Collection<SectionMenuItem>
+     */
+    public function getChapterSectionMenuItems(int $chapterId): Collection
+    {
+        return $this->menuItems->filter(
+            fn (SectionMenuItem $menuItem) => $menuItem->section->parentId === $chapterId
+        );
+    }
+
+    public function getSectionMenuItem(int $sectionId): ?SectionMenuItem
+    {
+        return $this->menuItems->findFirst(
+            fn (SectionMenuItem $menuItem) => $menuItem->section->id === $sectionId
+        );
     }
 
     public function canAccess(): bool
