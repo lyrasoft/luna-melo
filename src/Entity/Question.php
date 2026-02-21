@@ -57,7 +57,7 @@ class Question implements EntityInterface
     public string $image = '';
 
     #[Column('score')]
-    public int $score = 0;
+    public float $score = 0;
 
     #[Column('state')]
     #[Cast('int')]

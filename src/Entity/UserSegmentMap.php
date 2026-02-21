@@ -56,7 +56,7 @@ class UserSegmentMap implements EntityInterface
     public string $description = '';
 
     #[Column('score')]
-    public int $score = 0;
+    public float $score = 0;
 
     #[Column('assignment')]
     public string $assignment = '';

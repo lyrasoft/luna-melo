@@ -14,6 +14,7 @@ use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
 use Windwalker\DI\Container;
 use Windwalker\DI\ServiceProviderInterface;
+use Windwalker\Utilities\StrNormalize;
 
 class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
 {
@@ -99,17 +100,21 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
             );
         }
 
-        $installer->installFiles(
-            static::path('assets/src/modules/segment-editor/**/*'),
-            'resources/assets/src/melo/modules/segment-editor',
-            ['melo_vue', 'melo_vue_segment_editor']
-        );
+        $modules = [
+            'cart',
+            'lesson-homeworks',
+            'section-homework',
+            'section-quiz',
+            'segment-editor',
+        ];
 
-        $installer->installFiles(
-            static::path('assets/src/modules/cart/**/*'),
-            'resources/assets/src/melo/modules/cart',
-            ['melo_vue', 'melo_vue_cart']
-        );
+        foreach ($modules as $module) {
+            $installer->installFiles(
+                static::path("assets/src/modules/$module/**/*"),
+                "resources/assets/src/melo/modules/$module",
+                ['melo_vue', 'melo_vue_' . StrNormalize::toSnakeCase($module)]
+            );
+        }
     }
 
     public function config(string $name, ?string $delimiter = '.'): mixed

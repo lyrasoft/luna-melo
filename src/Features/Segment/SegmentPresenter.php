@@ -109,24 +109,18 @@ class SegmentPresenter
         return null;
     }
 
-    public static function getFirstPreviewableSectionFromTree(iterable $chapters, bool $fallbackFirst = false): ?Segment
-    {
-        $first = null;
-
+    public static function getFirstPreviewableSectionFromTree(
+        iterable $chapters,
+        ?\Closure $filter = null
+    ): ?Segment {
         foreach (static::iterateTreeToFlatSections($chapters) as $section) {
-            if (!$first) {
-                $first = $section;
+            if ($filter && !$filter($section)) {
+                continue;
             }
 
             if ($section->preview) {
                 return $section;
             }
-        }
-
-        if ($fallbackFirst) {
-            $first->preview = true;
-
-            return $first;
         }
 
         return null;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Entity;
 
-use Lyrasoft\Melo\Enum\QuestionType;
 use Windwalker\ORM\Attributes\AutoIncrement;
 use Windwalker\ORM\Attributes\Cast;
 use Windwalker\ORM\Cast\JsonCast;
@@ -19,6 +18,8 @@ use Windwalker\ORM\Attributes\Table;
 use Windwalker\ORM\EntityInterface;
 use Windwalker\ORM\EntityTrait;
 use Windwalker\ORM\Metadata\EntityMetadata;
+
+use function Windwalker\unwrap_enum;
 
 // phpcs:disable
 // todo: remove this when phpcs supports 8.4
@@ -37,14 +38,19 @@ class UserAnswer implements EntityInterface
     #[Column('lesson_id')]
     public int $lessonId = 0;
 
+    #[Column('quiz_id')]
+    public int $quizId = 0;
+
     #[Column('question_id')]
     public int $questionId = 0;
 
     #[Column('question_type')]
-    public string $questionType = '';
+    public string $questionType = '' {
+        set(string|\BackedEnum $value) => $this->questionType = unwrap_enum($value);
+    }
 
     #[Column('score')]
-    public int $score = 0;
+    public float $score = 0;
 
     #[Column('value')]
     #[Cast(JsonCast::class)]

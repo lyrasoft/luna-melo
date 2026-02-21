@@ -32,6 +32,7 @@ use Windwalker\Core\Router\SystemUri;
  * @var $instance  QuizSection
  * @var $content   SectionContent
  */
+
 ?>
 
 @if (!QuizSection::$hiddenContentRendered)

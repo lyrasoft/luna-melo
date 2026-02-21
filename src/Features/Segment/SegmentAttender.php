@@ -65,6 +65,20 @@ class SegmentAttender
             ->all(UserSegmentMap::class);
     }
 
+    public function getUserSegmentMap(Segment|int $segment, User|int $user): ?UserSegmentMap
+    {
+        $segmentId = $segment instanceof Segment ? $segment->id : $segment;
+        $userId = $user instanceof User ? $user->id : $user;
+
+        /** @var ?UserSegmentMap $map */
+        $map = $this->orm->from(UserSegmentMap::class)
+            ->where('segment_id', $segmentId)
+            ->where('user_id', $userId)
+            ->get(UserSegmentMap::class);
+
+        return $map;
+    }
+
     /**
      * @param  int        $lessonId
      * @param  iterable   $chapters

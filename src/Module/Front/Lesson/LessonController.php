@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Front\Lesson;
 
+use App\Entity\Lesson;
 use Lyrasoft\Melo\Entity\Question;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserAnswer;
@@ -18,6 +19,7 @@ use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\UserSegmentStatus;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\User\UserService;
+use Lyrasoft\Melo\Features\LessonService;
 use Lyrasoft\Melo\Features\Question\Boolean\BooleanQuestion;
 use Lyrasoft\Melo\Features\Question\MultiSelect\MultiSelectQuestion;
 use Lyrasoft\Melo\Features\Question\QuestionComposer;
@@ -176,6 +178,7 @@ class LessonController
         UserService $userService,
         QuestionComposer $questionComposer,
         SegmentAttender $segmentAttender,
+        LessonService $lessonService,
         #[Input('segment_id'), Filter('int')] int $segmentId,
         #[Input('quiz')] array $userQuizzes,
     ): void {
@@ -183,13 +186,17 @@ class LessonController
             throw new UnauthorizedException('請先登入', 401);
         }
 
+        $user = $userService->getCurrentUser();
+        $segment = $orm->mustFindOne(Segment::class, ['id' => $segmentId]);
+        $lesson = $orm->mustFindOne(Lesson::class, $segment->lessonId);
+
+        if (!$lessonService->checkUserHasLesson($lesson->id, $user)) {
+            throw new UnauthorizedException('無法作答', 400);
+        }
+
         if (!$userQuizzes) {
             throw new UnauthorizedException('請先進行作答', 400);
         }
-
-        $user = $userService->getCurrentUser();
-
-        $segment = $orm->mustFindOne(Segment::class, ['id' => $segmentId]);
 
         $questions = $orm->from(Question::class)
             ->where('question.segment_id', $segment->id)
@@ -219,6 +226,7 @@ class LessonController
 
             $userAnswer->userId = $user->id;
             $userAnswer->lessonId = $segment->lessonId;
+            $userAnswer->quizId = $segment->id;
             $userAnswer->questionId = $question->id;
             $userAnswer->questionType = $question->type;
             $userAnswer->isCorrect = $isCorrect;
