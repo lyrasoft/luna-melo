@@ -19,14 +19,6 @@ class SectionContent
         get => $this->context->lessonStudent->user;
     }
 
-    public Segment $chapter {
-        get => $this->context->currentChapter;
-    }
-
-    public Segment $section {
-        get => $this->context->currentSection;
-    }
-
     /**
      * @var Collection<SectionStudent>
      */
@@ -36,6 +28,8 @@ class SectionContent
 
     public function __construct(
         public LessonProgressContext $context,
+        public Segment $chapter,
+        public Segment $section,
     ) {
     }
 }

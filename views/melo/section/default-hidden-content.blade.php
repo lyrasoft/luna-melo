@@ -32,4 +32,4 @@ use Windwalker\Core\Router\SystemUri;
  * @var $content   SectionContent
  */
 ?>
-<!-- Hidden for Segment: {{ $content->section->id }} -->
+<!-- Hidden for Segment: {{ $instance->data->id }} -->

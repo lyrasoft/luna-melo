@@ -39,11 +39,11 @@ class LessonProgressContext
          * @var Collection<SectionMenuItem>
          */
         public Collection $menuItems,
-        public Segment $currentSection,
-        public Segment $currentChapter,
+        public ?Segment $currentSection,
+        public ?Segment $currentChapter,
         public ?SectionMenuItem $activeMenuItem,
         public Collection $sectionStudents,
-        public SectionStudent $currentSectionStudent,
+        public ?SectionStudent $currentSectionStudent,
         /**
          * @var Collection<Segment>
          */

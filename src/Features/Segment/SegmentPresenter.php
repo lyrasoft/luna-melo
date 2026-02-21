@@ -55,7 +55,7 @@ class SegmentPresenter
      * @param  LessonStudent  $lessonStudent
      * @param  iterable       $chapters
      * @param  Collection     $sectionStudents
-     * @param  Segment        $currentSegment
+     * @param  Segment|null   $currentSegment
      *
      * @return  Collection<SectionMenuItem>
      */
@@ -63,7 +63,7 @@ class SegmentPresenter
         LessonStudent $lessonStudent,
         iterable $chapters,
         Collection $sectionStudents,
-        Segment $currentSegment,
+        ?Segment $currentSegment = null,
     ): Collection {
         $sectionTypeIndexes = [];
         $menuItems = collect();
@@ -85,7 +85,7 @@ class SegmentPresenter
                     section: $section,
                     sectionIndex: $j + 1,
                     typeIndex: ++$sectionTypeIndexes[$section->type],
-                    isActive: $section->id === $currentSegment->id
+                    isActive: $section->id === $currentSegment?->id
                 );
 
                 $menuItems[] = $menuItem;
@@ -102,7 +102,7 @@ class SegmentPresenter
      */
     public static function getFirstSectionFromTree(iterable $chapters): ?Segment
     {
-        foreach (static::iterateTree($chapters) as $section) {
+        foreach (static::iterateTreeToFlatSections($chapters) as $section) {
             return $section;
         }
 
@@ -113,7 +113,7 @@ class SegmentPresenter
     {
         $first = null;
 
-        foreach (static::iterateTree($chapters) as $section) {
+        foreach (static::iterateTreeToFlatSections($chapters) as $section) {
             if (!$first) {
                 $first = $section;
             }
@@ -140,7 +140,7 @@ class SegmentPresenter
             $finder = $sectionId;
         }
 
-        foreach (static::iterateTree($chapters) as $section) {
+        foreach (static::iterateTreeToFlatSections($chapters) as $section) {
             if ($finder($section)) {
                 return $section;
             }
@@ -151,14 +151,14 @@ class SegmentPresenter
 
     public static function countSectionsFromTree(iterable $chapters): int
     {
-        return iterator_count(static::iterateTree($chapters));
+        return iterator_count(static::iterateTreeToFlatSections($chapters));
     }
 
     public static function calcSectionsDurationFromTree(iterable $chapters): int
     {
         $duration = 0;
 
-        foreach (static::iterateTree($chapters) as $section) {
+        foreach (static::iterateTreeToFlatSections($chapters) as $section) {
             $duration += $section->duration;
         }
 
@@ -170,7 +170,7 @@ class SegmentPresenter
      *
      * @return  \Generator<Segment>
      */
-    protected static function iterateTree(iterable $chapters): \Generator
+    public static function iterateTreeToFlatSections(iterable $chapters): \Generator
     {
         foreach ($chapters as $chapter) {
             if ($chapter instanceof NodeInterface) {

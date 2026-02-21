@@ -15,7 +15,7 @@ use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Melo\Enum\UserSegmentStatus;
-use Lyrasoft\Melo\Features\Lesson\LessonNavigator;
+use Lyrasoft\Melo\Features\Lesson\LessonProgressManager;
 use Lyrasoft\Melo\Features\LessonService;
 use Lyrasoft\Melo\Features\Question\QuestionComposer;
 use Lyrasoft\Melo\Features\Section\AbstractSection;
@@ -66,7 +66,7 @@ class LessonItemView implements ViewModelInterface
         protected QuestionComposer $questionComposer,
         protected AssetService $asset,
         protected SegmentAttender $segmentAttender,
-        protected LessonNavigator $lessonNavigator,
+        protected LessonProgressManager $lessonProgressManager,
         #[Service]
         protected LessonService $lessonService,
     ) {
@@ -108,7 +108,7 @@ class LessonItemView implements ViewModelInterface
 
         $user = $this->userService->getUser();
 
-        $chapters = $this->lessonNavigator->getChaptersSections($item->id);
+        $chapters = $this->lessonProgressManager->getChaptersSections($item->id);
 
         if ($chapters->count() === 0) {
             $app->addMessage('沒有可用章節', 'warning');
@@ -139,7 +139,7 @@ class LessonItemView implements ViewModelInterface
         $view[$item::class] = $item;
         $view[Segment::class] = $currentSegment;
 
-        $context = $this->lessonNavigator->getLessonProgressContext(
+        $context = $this->lessonProgressManager->getLessonProgressContext(
             $item,
             $user,
             $currentSegment,

@@ -19,7 +19,7 @@ use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Service;
 
 #[Service]
-class LessonNavigator
+class LessonProgressManager
 {
     public function __construct(
         protected SegmentAttender $segmentAttender,
@@ -42,13 +42,13 @@ class LessonNavigator
     public function getLessonProgressContext(
         Lesson $lesson,
         User $user,
-        Segment $currentSection,
+        ?Segment $currentSection = null,
         ?Collection $chapters = null
     ): LessonProgressContext {
         $chapters ??= $this->getChaptersSections($lesson->id);
 
         $currentChapter = $chapters->findFirst(
-            fn(Segment $chapter) => $chapter->id === $currentSection->parentId
+            fn(Segment $chapter) => $chapter->id === $currentSection?->parentId
         );
 
         $userLessonMap = $this->lessonService->getUserLessonMap($lesson->id, $user);
@@ -64,7 +64,7 @@ class LessonNavigator
         $progress = $this->segmentPresenter->computeProgress($sectionStudents, $user);
 
         $currentSectionStudent = $sectionStudents->findFirst(
-            fn(SectionStudent $student) => $student->section->id === $currentSection->id
+            fn(SectionStudent $student) => $student->section->id === $currentSection?->id
         );
 
         $menuItems = $this->segmentPresenter->prepareMenuItems(
@@ -75,7 +75,7 @@ class LessonNavigator
         );
 
         $active = $menuItems->findFirst(
-            fn(SectionMenuItem $item) => $item->section->id === $currentSection->id
+            fn(SectionMenuItem $item) => $item->section->id === $currentSection?->id
         );
 
         return new LessonProgressContext(
