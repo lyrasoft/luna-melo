@@ -27,7 +27,8 @@
         "lyrasoft/luna": "^2.2",
         "lyrasoft/favorite": "^1.0||^2.0",
         "lyrasoft/attachment": "^1.0",
-        "asika/better-units": "^0.1.1"
+        "asika/better-units": "^0.1.1",
+        "brick/math": "*"
     },
     "require-dev": {
         "lyrasoft/sequence": "^1.0"

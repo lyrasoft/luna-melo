@@ -25,7 +25,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const loadAssignments = wrap(async () => {
       const { get, post } = await useHttpClient();
       const res = await get(
-        "@ajax_lesson/prepareStudentAssignments",
+        "@lesson_ajax/prepareStudentAssignments",
         {
           params: {
             lesson_id: props.lessonId,

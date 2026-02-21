@@ -7,9 +7,12 @@ namespace Lyrasoft\Melo\Features\Segment;
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Tree\NodeInterface;
 use Lyrasoft\Melo\Data\SectionStudent;
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
+use Lyrasoft\Melo\Enum\SectionCapacity;
 use Lyrasoft\Melo\Enum\UserSegmentStatus;
+use Lyrasoft\Melo\Features\LessonService;
 use Windwalker\Core\Database\ORMAwareTrait;
 use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Service;
@@ -20,6 +23,10 @@ use function Windwalker\collect;
 class SegmentAttender
 {
     use ORMAwareTrait;
+
+    public function __construct(protected LessonService $lessonService)
+    {
+    }
 
     public function attendToSegment(User $user, Segment $segment, ?\Closure $initData = null, ?\Closure $modify = null): UserSegmentMap
     {

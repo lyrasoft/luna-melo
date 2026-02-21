@@ -57,7 +57,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       typeIndex.value = Number(button.dataset.typeIndex) || 0;
       const { get } = await useHttpClient();
       const res = await get(
-        `@ajax_lesson/prepareQuestionList?id=${segmentId.value}`
+        `@section_ajax/getQuizQuestions?id=${segmentId.value}`
       );
       questions.value = res.data.data.questions;
       for (const question of questions.value) {
@@ -112,7 +112,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const formData = new FormData(form.value);
       try {
         await post(
-          "@ajax_lesson/submitQuiz",
+          "@section_ajax/submitQuiz",
           formData
         );
         await simpleAlert("測驗提交成功！", "", "success");

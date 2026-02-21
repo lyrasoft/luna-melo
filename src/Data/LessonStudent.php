@@ -10,12 +10,17 @@ use Lyrasoft\Melo\Entity\UserLessonMap;
 
 class LessonStudent
 {
+    public static ?\Closure $canManageHandler = null;
+
+    public bool $canManage {
+        get => (static::$canManageHandler)($this);
+    }
+
     public function __construct(
         public Lesson $lesson,
         public User $user,
         public ?UserLessonMap $map = null,
         public bool $hasAccess = true,
-        public bool $canManage = false,
     ) {
     }
 }

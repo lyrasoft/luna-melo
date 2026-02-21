@@ -56,10 +56,10 @@ $videoService = $app->service(VideoService::class);
         <video class="rounded" id="section-player" width="100%" height="450"
             controls preload="metadata" crossorigin="anonymous"
             controlsList="nodownload">
-            <source src="{{ $content->section->src }}" type="video/mp4">
+            <source src="{{ $nav->to('section_file')->id($content->section->id) }}" type="video/mp4">
             @if($content->section->captionSrc)
                 <track label="中文" kind="subtitles" srclang="zh"
-                    src="{{ $content->section->captionSrc }}"
+                    src="{{ $nav->to('segment_file')->id($content->section->id)->var('field', 'caption') }}"
                     default>
             @endif
         </video>

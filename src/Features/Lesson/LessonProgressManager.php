@@ -17,11 +17,16 @@ use Lyrasoft\Melo\Features\Segment\SegmentFinder;
 use Lyrasoft\Melo\Features\Segment\SegmentPresenter;
 use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Service;
+use Windwalker\ORM\ORM;
+use Windwalker\Utilities\Cache\InstanceCacheTrait;
 
 #[Service]
 class LessonProgressManager
 {
+    use InstanceCacheTrait;
+
     public function __construct(
+        protected ORM $orm,
         protected SegmentAttender $segmentAttender,
         protected SegmentPresenter $segmentPresenter,
         protected SegmentFinder $segmentFinder,
@@ -39,55 +44,59 @@ class LessonProgressManager
         return $this->segmentFinder->getChaptersSections($lessonId);
     }
 
+    public function canAccess(Segment $segment, User $user, ?Lesson $lesson = null, ?Collection $chapters = null): bool
+    {
+        $lesson ??= $this->orm->mustFindOne(Lesson::class, $segment->lessonId);
+
+        return $this->getLessonProgressContext($lesson, $user, $segment, $chapters)->canAccess();
+    }
+
     public function getLessonProgressContext(
         Lesson $lesson,
         User $user,
         ?Segment $currentSection = null,
         ?Collection $chapters = null
     ): LessonProgressContext {
-        $chapters ??= $this->getChaptersSections($lesson->id);
+        return $this->once(
+            'context.' . $lesson->id . '.' . $user->id . '.' . ($currentSection?->id ?? 'null'),
+            function () use ($lesson, $user, $currentSection, $chapters) {
+                $chapters ??= $this->getChaptersSections($lesson->id);
 
-        $currentChapter = $chapters->findFirst(
-            fn(Segment $chapter) => $chapter->id === $currentSection?->parentId
-        );
+                $currentChapter = $chapters->findFirst(
+                    fn(Segment $chapter) => $chapter->id === $currentSection?->parentId
+                );
 
-        $userLessonMap = $this->lessonService->getUserLessonMap($lesson->id, $user);
+                $lessonStudent = $this->lessonService->getLessonStudent($lesson, $user);
+                $sectionStudents = $this->segmentAttender->getSectionStudents($lesson->id, $chapters, $user);
+                $progress = $this->segmentPresenter->computeProgress($sectionStudents, $user);
 
-        $lessonStudent = new LessonStudent(
-            lesson: $lesson,
-            user: $user,
-            map: $userLessonMap,
-            canManage: $user->id === $lesson->teacherId
-        );
+                $currentSectionStudent = $sectionStudents->findFirst(
+                    fn(SectionStudent $student) => $student->section->id === $currentSection?->id
+                );
 
-        $sectionStudents = $this->segmentAttender->getSectionStudents($lesson->id, $chapters, $user);
-        $progress = $this->segmentPresenter->computeProgress($sectionStudents, $user);
+                $menuItems = $this->segmentPresenter->prepareMenuItems(
+                    $lessonStudent,
+                    $chapters,
+                    $sectionStudents,
+                    $currentSection
+                );
 
-        $currentSectionStudent = $sectionStudents->findFirst(
-            fn(SectionStudent $student) => $student->section->id === $currentSection?->id
-        );
+                $active = $menuItems->findFirst(
+                    fn(SectionMenuItem $item) => $item->section->id === $currentSection?->id
+                );
 
-        $menuItems = $this->segmentPresenter->prepareMenuItems(
-            $lessonStudent,
-            $chapters,
-            $sectionStudents,
-            $currentSection
-        );
-
-        $active = $menuItems->findFirst(
-            fn(SectionMenuItem $item) => $item->section->id === $currentSection?->id
-        );
-
-        return new LessonProgressContext(
-            lessonStudent: $lessonStudent,
-            progress: $progress,
-            menuItems: $menuItems,
-            currentSection: $currentSection,
-            currentChapter: $currentChapter,
-            activeMenuItem: $active,
-            sectionStudents: $sectionStudents,
-            currentSectionStudent: $currentSectionStudent,
-            chapters: $chapters,
+                return new LessonProgressContext(
+                    lessonStudent: $lessonStudent,
+                    progress: $progress,
+                    menuItems: $menuItems,
+                    currentSection: $currentSection,
+                    currentChapter: $currentChapter,
+                    activeMenuItem: $active,
+                    sectionStudents: $sectionStudents,
+                    currentSectionStudent: $currentSectionStudent,
+                    chapters: $chapters,
+                );
+            }
         );
     }
 }

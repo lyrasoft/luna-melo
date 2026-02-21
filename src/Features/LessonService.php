@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Features;
 
 use Lyrasoft\Luna\Entity\User;
+use Lyrasoft\Melo\Data\LessonStudent;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
@@ -57,27 +58,30 @@ class LessonService
     }
 
     public function getUserLessonMap(
-        int $lessonId,
-        User $user
+        Lesson|int $lesson,
+        User|int $user
     ): ?UserLessonMap {
+        $lessonId = $lesson instanceof Lesson ? $lesson->id : $lesson;
+        $userId = $user instanceof User ? $user->id : $user;
+
         return $this->orm->findOne(
             UserLessonMap::class,
             [
-                'user_id' => $user->id,
+                'user_id' => $userId,
                 'lesson_id' => $lessonId,
             ]
         );
     }
 
     /**
-     * @param  int  $lessonId
+     * @param  Lesson|int  $lessonId
      *
      * @return  bool
      *
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function checkUserHasLesson(
-        int $lessonId,
+        Lesson|int $lesson,
         ?User $user = null
     ): bool {
         if (!$this->userService->isLogin()) {
@@ -86,7 +90,7 @@ class LessonService
 
         $user ??= $this->userService->getCurrentUser();
 
-        return (bool) $this->getUserLessonMap($lessonId, $user);
+        return (bool) $this->getUserLessonMap($lesson, $user);
 
         // $exist = (bool) $this->orm->from(MeloOrder::class, 'order')
         //     ->where('user_id', $user->id)
@@ -104,5 +108,20 @@ class LessonService
         //         'lesson_id' => $lessonId,
         //     ]
         // );
+    }
+
+    public function getLessonStudent(Lesson|int $lesson, User|int $user): LessonStudent
+    {
+        $userLessonMap = $this->getUserLessonMap($lesson->id, $user);
+
+        LessonStudent::$canManageHandler ??= static function () use ($lesson, $user) {
+            return $user->id === $lesson->teacherId || $user->can('lesson::edit');
+        };
+
+        return new LessonStudent(
+            lesson: $lesson,
+            user: $user,
+            map: $userLessonMap,
+        );
     }
 }

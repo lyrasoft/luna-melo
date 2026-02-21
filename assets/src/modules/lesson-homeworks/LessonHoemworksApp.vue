@@ -26,7 +26,7 @@ const loadAssignments = wrap(async () => {
   const { get, post } = await useHttpClient();
 
   const res = await get<ApiReturn<UserSegmentMap[]>>(
-    '@ajax_lesson/prepareStudentAssignments',
+    '@lesson_ajax/prepareStudentAssignments',
     {
       params: {
         lesson_id: props.lessonId,

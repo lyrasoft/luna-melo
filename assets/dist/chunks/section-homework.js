@@ -40,7 +40,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       file.value = void 0;
       frontShow.value = true;
       const { get } = await useHttpClient();
-      const res = await get(`@ajax_lesson/getSegment?id=${segmentId.value}`);
+      const res = await get(`@section_ajax/item?id=${segmentId.value}`);
       currentSegment.value = res.data.data;
     }
     const { wrap, loading } = useLoading();
@@ -57,7 +57,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           formData.append("item[homework_file]", file.value);
         }
         formData.append("item[front_show]", frontShow.value ? "1" : "0");
-        const res = await post("@ajax_lesson/updateHomework", formData);
+        const res = await post("@section_ajax/uploadHomework", formData);
         await simpleAlert("作業上傳成功！");
         location.reload();
       } catch (e) {

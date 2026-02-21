@@ -67,7 +67,7 @@ async function startQuiz(button: HTMLAnchorElement) {
   const { get } = await useHttpClient();
 
   const res = await get<ApiReturn<{ questions: Question[]; }>>(
-    `@ajax_lesson/prepareQuestionList?id=${segmentId.value}`
+    `@section_ajax/getQuizQuestions?id=${segmentId.value}`
   );
 
   questions.value = res.data.data.questions;
@@ -149,7 +149,7 @@ const submit = wrap(async () => {
 
   try {
     await post(
-      '@ajax_lesson/submitQuiz',
+      '@section_ajax/submitQuiz',
       formData,
     );
 

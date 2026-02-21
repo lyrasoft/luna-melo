@@ -68,7 +68,7 @@ const submit = wrap(async () => {
 
   try {
     await post(
-      '@ajax_lesson/submitQuiz',
+      '@lesson_ajax/submitQuiz',
       formData,
     );
 

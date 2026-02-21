@@ -30,7 +30,7 @@ class SectionMenuItem
         get => $this->getCapacity();
     }
 
-    public ?\Closure $capacityHandler = null;
+    public static ?\Closure $capacityHandler = null;
 
     public bool $canPreview {
         get => $this->section->preview;
@@ -68,8 +68,8 @@ class SectionMenuItem
 
     public function getCapacity(): SectionCapacity
     {
-        if ($this->capacityHandler) {
-            return ($this->capacityHandler)($this);
+        if (static::$capacityHandler) {
+            return (static::$capacityHandler)($this);
         }
 
         // If user not logged in, lock all sections except the preview opened.

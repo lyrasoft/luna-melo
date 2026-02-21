@@ -53,7 +53,7 @@ async function startHomework(button: HTMLAnchorElement) {
 
   const { get } = await useHttpClient();
 
-  const res = await get<ApiReturn<Segment>>(`@ajax_lesson/getSegment?id=${segmentId.value}`);
+  const res = await get<ApiReturn<Segment>>(`@section_ajax/item?id=${segmentId.value}`);
 
   currentSegment.value = res.data.data;
 }
@@ -78,7 +78,7 @@ const submit = wrap(async () => {
     }
     formData.append('item[front_show]', frontShow.value ? '1' : '0');
 
-    const res = await post('@ajax_lesson/updateHomework', formData);
+    const res = await post('@section_ajax/uploadHomework', formData);
 
     await simpleAlert('作業上傳成功！');
 

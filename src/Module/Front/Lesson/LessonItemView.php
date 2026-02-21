@@ -97,13 +97,10 @@ class LessonItemView implements ViewModelInterface
             throw new RouteNotFoundException('Lesson not found');
         }
 
-        $canonicalMainLink = $item->makeLink($this->nav);
-        $view->getHtmlFrame()->addCanonical($canonicalMainLink->full());
-
-        $canonicalSectionLink = $item->makeLink($this->nav, $segmentId);
+        $view->getHtmlFrame()->addCanonical($item->makeLink($this->nav)->full());
 
         if ($item->alias !== $alias) {
-            return $canonicalSectionLink;
+            return $item->makeLink($this->nav, $segmentId);
         }
 
         $user = $this->userService->getUser();
@@ -117,23 +114,34 @@ class LessonItemView implements ViewModelInterface
         }
 
         if (!$segmentId) {
-            $currentSegment = SegmentPresenter::getFirstPreviewableSectionFromTree($chapters, true);
+            $currentSegment = SegmentPresenter::getFirstPreviewableSectionFromTree(
+                $chapters,
+                static fn (Segment $section) => $section->type === VideoSection::id()
+            );
         } else {
             $currentSegment = SegmentPresenter::findSectionFromTree($chapters, $segmentId);
         }
 
         if (!$currentSegment) {
-            $firstSegment = SegmentPresenter::getFirstPreviewableSectionFromTree($chapters);
+            $firstSegment = SegmentPresenter::getFirstPreviewableSectionFromTree(
+                $chapters,
+                static fn (Segment $section) => $section->type === VideoSection::id()
+            );
 
-            if (!$firstSegment) {
-                $app->addMessage('沒有可用章節', 'warning');
+            if ($firstSegment) {
+                $segmentId = $firstSegment->id;
 
-                return $this->nav->to('lesson_list');
+                return $item->makeLink($this->nav, $segmentId);
             }
+        }
 
-            $segmentId = $firstSegment->id;
-
-            return $item->makeLink($this->nav, $segmentId);
+        // Only allow video section to access page
+        if (
+            $currentSegment
+            && $currentSegment->type !== VideoSection::id()
+            && $currentSegment->id !== SegmentPresenter::getFirstSectionFromTree($chapters)->id
+        ) {
+            return $item->makeLink($this->nav);
         }
 
         $view[$item::class] = $item;
@@ -146,27 +154,27 @@ class LessonItemView implements ViewModelInterface
             $chapters,
         );
 
-        if ($user->isLogin() && $context->hasAttended) {
-            $map = $this->segmentAttender->attendToSegment(
-                $user,
-                $currentSegment,
-                initData: function (array $map) {
-                    $map['status'] = UserSegmentStatus::PROCESS;
+        if ($currentSegment) {
+            if ($user->isLogin() && $context->hasAttended) {
+                $map = $this->segmentAttender->attendToSegment(
+                    $user,
+                    $currentSegment,
+                    initData: function (array $map) {
+                        // Handle default map data
 
-                    return $map;
-                },
-                modify: function (UserSegmentMap $map) use ($currentSegment) {
-                    if ($currentSegment->type === VideoSection::id()) {
+                        return $map;
+                    },
+                    modify: function (UserSegmentMap $map) {
                         $map->status = UserSegmentStatus::DONE;
                     }
-                }
-            );
+                );
 
-            $context->currentSectionStudent->map = $map;
-        }
+                $context->currentSectionStudent->map = $map;
+            }
 
-        if (!$context->canAccess()) {
-            return $item->makeLink($this->nav);
+            if (!$context->canAccess()) {
+                return $item->makeLink($this->nav);
+            }
         }
 
         $sectionMenuGroup = $context->menuItems->groupBy(fn(SectionMenuItem $menuItem) => $menuItem->chapter->id);
@@ -222,7 +230,8 @@ class LessonItemView implements ViewModelInterface
 
         $this->uniScript->data('question.defines', $this->getQuestionDefines());
 
-        $this->uniScript->addRoute('@ajax_lesson');
+        $this->uniScript->addRoute('@lesson_ajax');
+        $this->uniScript->addRoute('@section_ajax');
 
         return compact(
             'item',
@@ -242,8 +251,12 @@ class LessonItemView implements ViewModelInterface
 
     public function activeChapter(
         Collection $chapters,
-        Segment $current
+        ?Segment $current = null
     ): int|null {
+        if (!$current) {
+            return null;
+        }
+
         foreach ($chapters as $k => $chapter) {
             foreach ($chapter->children as $section) {
                 if ($section->getId() === $current->id) {

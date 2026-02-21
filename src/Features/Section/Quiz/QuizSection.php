@@ -8,7 +8,9 @@ use Lyrasoft\Melo\Features\Section\AbstractSection;
 
 class QuizSection extends AbstractSection
 {
-    public static $hiddenContentRendered = false;
+    public static bool $hiddenContentRendered = false;
+
+    public static int $defaultPassingScore = 60;
 
     public static function id(): string
     {

@@ -19,6 +19,6 @@ $router->group('lesson')
         $router->any('lesson_item', '/lesson/{id:\d+}[-{alias}[/attend/{segment_id}]]')
             ->view(LessonItemView::class);
 
-        $router->any('ajax_lesson', '/_ajax/lesson[/{task}]')
+        $router->any('lesson_ajax', '/lesson/ajax[/{task}]')
             ->controller(LessonController::class, 'ajax');
     });

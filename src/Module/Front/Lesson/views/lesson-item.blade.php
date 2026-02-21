@@ -64,8 +64,6 @@ $rendererService = $app->service(RendererService::class);
 $videoService = $app->service(VideoService::class);
 $userService = $app->service(UserService::class);
 $sectionComposer = $app->service(SectionComposer::class);
-$currentSectionInstance = $sectionComposer->makeInstance($currentSegment);
-$sectionContent = new SectionContent($context);
 $sectionTypeIndexes = [];
 
 $durationText = Duration::from($totalDuration, 's')->humanize(
@@ -120,7 +118,20 @@ $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
                     <div class="row g-0">
                         <div class="col-lg-8">
                             <div class="l-lesson-item__section">
-                                {!! $currentSectionInstance->renderContent($rendererService, $sectionContent) !!}
+                                @if ($currentSegment)
+                                    @php
+                                        $sectionContent = new SectionContent(
+                                            context: $context,
+                                            chapter: $context->currentChapter,
+                                            section: $context->currentSection,
+                                        );
+                                    @endphp
+                                    {!! $sectionComposer->makeInstance($currentSegment)->renderContent($rendererService, $sectionContent) !!}
+                                @else
+                                    <img src="{{ $item->image }}" alt="{{ $item->title }}"
+                                        class="l-lesson-item__img"
+                                    >
+                                @endif
                             </div>
                         </div>
 
@@ -381,7 +392,11 @@ $defaultUserImg = $app->service(ImagePlaceholder::class)->placeholderSquare();
                         $section = $sectionComposer->makeInstance($sectionSegment);
                         $sectionTypeIndexes[$sectionSegment->type] ??= 0;
 
-                        $content = new SectionContent($context);
+                        $content = new SectionContent(
+                            context: $context,
+                            chapter: $chapter,
+                            section: $sectionSegment,
+                        );
                     @endphp
 
                     <div class="l-section-hidden" data-section-hidden-id="{{ $sectionSegment->id }}">

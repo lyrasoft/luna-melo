@@ -59,7 +59,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       }
       try {
         await post(
-          "@ajax_lesson/submitQuiz",
+          "@lesson_ajax/submitQuiz",
           formData
         );
         await simpleAlert("測驗提交成功！", "", "success");
