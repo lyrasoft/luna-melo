@@ -42,6 +42,9 @@ class LessonProgressContext
         public ?Segment $currentSection,
         public ?Segment $currentChapter,
         public ?SectionMenuItem $activeMenuItem,
+        /**
+         * @var Collection<SectionStudent>
+         */
         public Collection $sectionStudents,
         public ?SectionStudent $currentSectionStudent,
         /**
@@ -77,5 +80,10 @@ class LessonProgressContext
         }
 
         return false;
+    }
+
+    public function reset(): void
+    {
+        $this->progress->reset();
     }
 }

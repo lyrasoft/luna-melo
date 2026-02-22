@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Features\Lesson;
 
 use Lyrasoft\Luna\Entity\User;
+use Lyrasoft\Melo\Data\LessonProgress;
 use Lyrasoft\Melo\Data\LessonProgressContext;
-use Lyrasoft\Melo\Data\LessonStudent;
 use Lyrasoft\Melo\Data\SectionMenuItem;
 use Lyrasoft\Melo\Data\SectionStudent;
 use Lyrasoft\Melo\Entity\Lesson;
@@ -51,6 +51,43 @@ class LessonProgressManager
         return $this->getLessonProgressContext($lesson, $user, $segment, $chapters)->canAccess();
     }
 
+    /**
+     * @param  Collection<SectionStudent>  $sectionStudents
+     * @param  User                        $user
+     *
+     * @return  LessonProgress
+     */
+    public function computeProgress(
+        Collection $sectionStudents,
+        User $user
+    ): LessonProgress {
+        if (!$user->isLogin()) {
+            return new LessonProgress(
+                done: 0,
+                total: 0,
+            );
+        }
+
+        $total = $sectionStudents->count();
+
+        return new LessonProgress(
+            done: function () use ($sectionStudents) {
+                $passed = $sectionStudents->filter(
+                    function (SectionStudent $student) {
+                        if ($student->map === null) {
+                            return false;
+                        }
+
+                        return $student->map->status->isDone();
+                    }
+                );
+
+                return $passed->count();
+            },
+            total: $total,
+        );
+    }
+
     public function getLessonProgressContext(
         Lesson $lesson,
         User $user,
@@ -68,7 +105,7 @@ class LessonProgressManager
 
                 $lessonStudent = $this->lessonService->getLessonStudent($lesson, $user);
                 $sectionStudents = $this->segmentAttender->getSectionStudents($lesson->id, $chapters, $user);
-                $progress = $this->segmentPresenter->computeProgress($sectionStudents, $user);
+                $progress = $this->computeProgress($sectionStudents, $user);
 
                 $currentSectionStudent = $sectionStudents->findFirst(
                     fn(SectionStudent $student) => $student->section->id === $currentSection?->id

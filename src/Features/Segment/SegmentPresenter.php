@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Segment;
 
-use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Tree\NodeInterface;
-use Lyrasoft\Melo\Data\LessonProgress;
 use Lyrasoft\Melo\Data\LessonStudent;
 use Lyrasoft\Melo\Data\SectionMenuItem;
-use Lyrasoft\Melo\Data\SectionStudent;
 use Lyrasoft\Melo\Entity\Segment;
-use Lyrasoft\Melo\Enum\UserSegmentStatus;
 use Lyrasoft\Melo\Features\Section\SectionComposer;
 use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Service;
@@ -23,35 +19,6 @@ class SegmentPresenter
 {
     public function __construct(protected SectionComposer $sectionComposer, protected SegmentAttender $segmentAttender)
     {
-    }
-
-    public function computeProgress(
-        Collection $sectionStudents,
-        User $user
-    ): LessonProgress {
-        if (!$user->isLogin()) {
-            return new LessonProgress(
-                done: 0,
-                total: 0,
-            );
-        }
-
-        $total = $sectionStudents->count();
-
-        $passed = $sectionStudents->filter(
-            function (SectionStudent $student) {
-                if ($student->map === null) {
-                    return false;
-                }
-
-                return $student->map->status->isDone();
-            }
-        );
-
-        return new LessonProgress(
-            done: $passed->count(),
-            total: $total,
-        );
     }
 
     /**

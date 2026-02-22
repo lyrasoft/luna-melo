@@ -168,6 +168,7 @@ class LessonItemView implements ViewModelInterface
                 );
 
                 $context->currentSectionStudent->map = $map;
+                $context->reset();
             }
 
             if (!$context->canAccess()) {
