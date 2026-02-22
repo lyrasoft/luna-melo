@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Segment;
 
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Features\Question\QuestionComposer;
 use Lyrasoft\Melo\Features\Section\AbstractSection;
 use Lyrasoft\Melo\Features\Section\SectionComposer;
@@ -65,6 +66,8 @@ class SegmentEditView implements ViewModelInterface
     {
         $lessonId = (int) $app->input('lesson_id');
 
+        $item = $this->orm->mustFindOne(Lesson::class, $lessonId);
+
         $segments = $this->segmentFinder->getChaptersSections((int) $lessonId);
 
         $sectionDefines = $this->getSectionDefines();
@@ -114,7 +117,7 @@ class SegmentEditView implements ViewModelInterface
             $s3Profile
         );
 
-        return compact('lessonId');
+        return compact('lessonId', 'item');
     }
 
     #[ViewMetadata]

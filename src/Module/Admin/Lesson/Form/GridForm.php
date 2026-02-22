@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Module\Admin\Lesson\Form;
 
 use Lyrasoft\Luna\Field\CategoryListField;
+use Lyrasoft\Luna\Field\UserModalField;
 use Unicorn\Enum\BasicState;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Form\Attributes\FormDefine;
@@ -52,5 +53,9 @@ class GridForm
             ->label($this->trans('unicorn.field.state'))
             ->option($this->trans('unicorn.select.no.change'), '')
             ->registerFromEnums(BasicState::class, $this->lang);
+
+        $form->add('userId', UserModalField::class)
+            ->label('指派給使用者')
+            ->multiple(true);
     }
 }

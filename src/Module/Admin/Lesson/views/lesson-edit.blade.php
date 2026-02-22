@@ -32,25 +32,13 @@ use Windwalker\Form\Form;
  * @var $item Lesson
  */
 
-// $formService = $app->service(FormScript::class)
-//     ->listDependent(
-//         '#input-item-sub_category_id',
-//         '#input-item-category_id',
-//         $nav->to('category_ajax_list')->var('type', 'lesson'),
-//         [
-//             'default_value' => $subCategoryIds,
-//         ]
-//     );
-
 ?>
-
-@extends('melo.admin.lesson-edit-layout', ['lessonId' => $item?->id])
 
 @section('toolbar-buttons')
     @include('edit-toolbar')
 @stop
 
-@section('content')
+<x-lesson-edit-layout :lesson="$item">
     <form name="admin-form" id="admin-form"
         uni-form-validate='{"scroll": true}'
         action="{{ $nav->to('lesson_edit') }}"
@@ -111,4 +99,4 @@ use Windwalker\Form\Form;
             <x-csrf></x-csrf>
         </div>
     </form>
-@stop
+</x-lesson-edit-layout>

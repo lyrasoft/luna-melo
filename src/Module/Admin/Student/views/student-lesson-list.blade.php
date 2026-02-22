@@ -8,7 +8,7 @@ namespace App\View;
  * Global variables
  * --------------------------------------------------------------
  * @var  $app       AppContext      Application context.
- * @var  $vm        UserLessonListView The view model object.
+ * @var  $vm        StudentLessonListView The view model object.
  * @var  $uri       SystemUri       System Uri information.
  * @var  $chronos   ChronosService  The chronos datetime service.
  * @var  $nav       Navigator       Navigator object to build route.
@@ -17,6 +17,7 @@ namespace App\View;
  */
 
 use Lyrasoft\Melo\Entity\UserLessonMap;
+use Lyrasoft\Melo\Module\Admin\Student\StudentLessonListView;
 use Lyrasoft\Melo\Workflow\UserLessonStatusWorkflow;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -25,20 +26,19 @@ use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
-use Lyrasoft\Melo\Module\Admin\UserLesson\UserLessonListView;
 
 /**
  * @var UserLessonMap $item
  */
 
 $workflow = $app->service(UserLessonStatusWorkflow::class);
-
-$app->service(HtmlFrame::class)->addBodyClass('sidebar-enable vertical-collpsed');
 ?>
 
-@extends('melo.admin.lesson-edit-layout', ['lessonId' => $lessonId])
+@section('toolbar-buttons')
+    @include('list-toolbar')
+@stop
 
-@section('content')
+<x-lesson-edit-layout :lesson="$lesson" card>
     <div class="d-flex justify-content-between">
         <div class="mb-4">
             <a class="btn btn-outline-secondary" href="{{ $nav->to('student_list', ['lesson_id' => $lessonId]) }}">
@@ -170,5 +170,4 @@ $app->service(HtmlFrame::class)->addBodyClass('sidebar-enable vertical-collpsed'
 
         <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>
     </form>
-
-@stop
+</x-lesson-edit-layout>

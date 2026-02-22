@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo;
 
+use Lyrasoft\Melo\Component\LessonEditLayoutComponent;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\Question;
@@ -39,6 +40,7 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
             'renderer.edge.components',
             [
                 'cart-items' => '@cart-items',
+                'lesson-edit-layout' => LessonEditLayoutComponent::class
             ],
         );
     }

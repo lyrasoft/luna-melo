@@ -33,13 +33,11 @@ use Lyrasoft\Melo\Module\Admin\UserHomework\UserHomeworkListView;
 $workflow = $app->service(HomeworkStatusWorkflow::class);
 ?>
 
-@extends('melo.admin.lesson-edit-layout', ['lessonId' => $lessonId])
-
 @section('toolbar-buttons')
     @include('list-toolbar')
 @stop
 
-@section('content')
+<x-lesson-edit-layout :lesson="$lesson" card>
     <form id="admin-form" action="" x-data="{ grid: $store.grid }"
         x-ref="gridForm"
         data-ordering="{{ $ordering }}"
@@ -154,4 +152,4 @@ $workflow = $app->service(HomeworkStatusWorkflow::class);
         <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>
     </form>
 
-@stop
+</x-lesson-edit-layout>

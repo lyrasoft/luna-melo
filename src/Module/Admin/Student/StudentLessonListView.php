@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Admin\UserLesson;
+namespace Lyrasoft\Melo\Module\Admin\Student;
 
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\UserLessonMap;
-use Lyrasoft\Melo\Module\Admin\UserLesson\Form\GridForm;
+use Lyrasoft\Melo\Module\Admin\Student\Form\GridForm;
 use Lyrasoft\Melo\Repository\UserLessonMapRepository;
 use Lyrasoft\Luna\Entity\User;
 use Windwalker\Core\Application\AppContext;
@@ -26,12 +27,12 @@ use Windwalker\ORM\ORM;
  */
 #[ViewModel(
     layout: [
-        'default' => 'user-lesson-list',
-        'modal' => 'user-lesson-modal',
+        'default' => 'student-lesson-list',
+        'modal' => 'student-lesson-modal',
     ],
-    js: 'user-lesson-list.js'
+    js: 'student-lesson-list.js'
 )]
-class UserLessonListView implements ViewModelInterface, FilterAwareViewModelInterface
+class StudentLessonListView implements ViewModelInterface, FilterAwareViewModelInterface
 {
     use TranslatorTrait;
     use FilterAwareViewModelTrait;
@@ -58,6 +59,8 @@ class UserLessonListView implements ViewModelInterface, FilterAwareViewModelInte
         $lessonId = $app->input('lesson_id');
 
         $state = $this->repository->getState();
+
+        $lesson = $this->orm->mustFindOne(Lesson::class, $lessonId);
 
         // Prepare Items
         $page     = $state->rememberFromRequest('page');
@@ -96,7 +99,8 @@ class UserLessonListView implements ViewModelInterface, FilterAwareViewModelInte
             'ordering',
             'userId',
             'lessonId',
-            'user'
+            'user',
+            'lesson',
         );
     }
 

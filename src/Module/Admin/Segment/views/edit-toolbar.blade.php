@@ -8,7 +8,7 @@ namespace App\View;
  * Global variables
  * --------------------------------------------------------------
  * @var  $app       AppContext      Application context.
- * @var  $vm        SegmentEditView  The view model object.
+ * @var  $view      LessonEditView  The view modal object.
  * @var  $uri       SystemUri       System Uri information.
  * @var  $chronos   ChronosService  The chronos datetime service.
  * @var  $nav       Navigator       Navigator object to build route.
@@ -16,33 +16,27 @@ namespace App\View;
  * @var  $lang      LangService     The language translation service.
  */
 
-use Lyrasoft\Melo\Entity\Segment;
-use Lyrasoft\Melo\Module\Admin\Segment\SegmentEditView;
-use Unicorn\Script\VueScript;
+use Lyrasoft\Melo\Module\Admin\Lesson\LessonEditView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
-use Windwalker\Form\Form;
-
-/**
- * @var $form Form
- * @var $item Segment
- */
 
 ?>
 
+<div x-title="toolbar" x-data="{ form: $store.form }" class="l-toolbar">
+    <a href="{{ $nav->to('front::lesson_item')->id($item->id) }}" target="_blank"
+        class="btn btn-outline-primary btn-sm uni-btn-preview">
+        <i class="fa fa-eye"></i>
+        預覽
+    </a>
 
-@section('toolbar-buttons')
-    @include('edit-toolbar')
-@stop
-
-<x-lesson-edit-layout :lesson="$item">
-    <div class="l-segment-edit">
-        <div class="l-segment-edit__card-body">
-            <segment-edit-app id="segment-edit-app"></segment-edit-app>
-        </div>
-    </div>
-</x-lesson-edit-layout>
+    {{-- Cancel --}}
+    <a class="btn btn-default btn-outline-secondary btn-sm uni-btn-cancel"
+        href="{{ $nav->to('lesson_list') }}">
+        <span class="fa fa-times"></span>
+        @lang('unicorn.toolbar.cancel')
+    </a>
+</div>

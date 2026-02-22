@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\UserQuiz;
 
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\Segment;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\SegmentType;
@@ -61,6 +62,8 @@ class UserQuizListView implements ViewModelInterface, FilterAwareViewModelInterf
 
         $state = $this->repository->getState();
 
+        $lesson = $this->orm->mustFindOne(Lesson::class, $lessonId);
+
         // Prepare Items
         $page     = $state->rememberFromRequest('page');
         $limit    = $state->rememberFromRequest('limit') ?: 30;
@@ -95,7 +98,8 @@ class UserQuizListView implements ViewModelInterface, FilterAwareViewModelInterf
             'form',
             'showFilters',
             'ordering',
-            'lessonId'
+            'lessonId',
+            'lesson',
         );
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\UserHomework;
 
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\SegmentType;
 use Lyrasoft\Melo\Features\Section\Homework\HomeworkSection;
@@ -60,11 +61,13 @@ class UserHomeworkListView implements ViewModelInterface, FilterAwareViewModelIn
         $state = $this->repository->getState();
 
         // Prepare Items
-        $page     = $state->rememberFromRequest('page');
-        $limit    = $state->rememberFromRequest('limit') ?: 30;
-        $filter   = (array) $state->rememberFromRequest('filter');
-        $search   = (array) $state->rememberFromRequest('search');
+        $page = $state->rememberFromRequest('page');
+        $limit = $state->rememberFromRequest('limit') ?: 30;
+        $filter = (array) $state->rememberFromRequest('filter');
+        $search = (array) $state->rememberFromRequest('search');
         $ordering = $state->rememberFromRequest('list_ordering') ?? $this->getDefaultOrdering();
+
+        $lesson = $this->orm->mustFindOne(Lesson::class, $lessonId);
 
         $items = $this->repository->getListSelector()
             ->where('segment.lesson_id', $lessonId)
@@ -87,7 +90,15 @@ class UserHomeworkListView implements ViewModelInterface, FilterAwareViewModelIn
 
         $showFilters = $this->isFiltered($filter);
 
-        return compact('items', 'pagination', 'form', 'showFilters', 'ordering', 'lessonId');
+        return compact(
+            'items',
+            'pagination',
+            'form',
+            'showFilters',
+            'ordering',
+            'lessonId',
+            'lesson'
+        );
     }
 
     /**
@@ -111,7 +122,7 @@ class UserHomeworkListView implements ViewModelInterface, FilterAwareViewModelIn
             'segment.id',
             'segment.title',
             'lesson.title',
-            'user.name'
+            'user.name',
         ];
     }
 

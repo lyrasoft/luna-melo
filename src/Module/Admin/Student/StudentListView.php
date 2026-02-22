@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\Student;
 
+use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Module\Admin\Student\Form\GridForm;
 use Lyrasoft\Melo\Repository\UserLessonMapRepository;
@@ -61,11 +62,13 @@ class StudentListView implements ViewModelInterface, FilterAwareViewModelInterfa
 
         $state = $this->repository->getState();
 
+        $lesson = $this->orm->mustFindOne(Lesson::class, $lessonId);
+
         // Prepare Items
-        $page     = $state->rememberFromRequest('page');
-        $limit    = $state->rememberFromRequest('limit') ?? 30;
-        $filter   = (array) $state->rememberMergeRequest('filter');
-        $search   = (array) $state->rememberMergeRequest('search');
+        $page = $state->rememberFromRequest('page');
+        $limit = $state->rememberFromRequest('limit') ?? 30;
+        $filter = (array) $state->rememberMergeRequest('filter');
+        $search = (array) $state->rememberMergeRequest('search');
         $ordering = $state->rememberFromRequest('list_ordering') ?? $this->getDefaultOrdering();
 
         $items = $this->repository->getListSelector()
@@ -88,7 +91,15 @@ class StudentListView implements ViewModelInterface, FilterAwareViewModelInterfa
 
         $showFilters = $this->isFiltered($filter);
 
-        return compact('items', 'pagination', 'form', 'showFilters', 'ordering', 'lessonId');
+        return compact(
+            'items',
+            'pagination',
+            'form',
+            'showFilters',
+            'ordering',
+            'lessonId',
+            'lesson'
+        );
     }
 
     /**
