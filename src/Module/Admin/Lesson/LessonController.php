@@ -6,6 +6,8 @@ namespace Lyrasoft\Melo\Module\Admin\Lesson;
 
 use Lyrasoft\Luna\Services\TagService;
 use Lyrasoft\Melo\Entity\LessonCategoryMap;
+use Lyrasoft\Melo\Features\Lesson\LessonDispatcher;
+use Lyrasoft\Melo\Features\LessonService;
 use Lyrasoft\Melo\Module\Admin\Lesson\Form\EditForm;
 use Lyrasoft\Melo\Repository\LessonRepository;
 use Lyrasoft\Attachment\Entity\Attachment;
@@ -15,7 +17,9 @@ use Unicorn\Upload\FileUploadManager;
 use Unicorn\Upload\FileUploadService;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
+use Windwalker\Core\Attributes\Request\Input;
 use Windwalker\Core\Router\Navigator;
+use Windwalker\Core\Router\RouteUri;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DI\Attributes\Service;
@@ -159,6 +163,17 @@ class LessonController
         GridController $controller
     ): mixed {
         $task = $app->input('task');
+
+        if ($task === 'assignLessons') {
+            $lessonIds = (array) $app->input('id');
+            $userIds = (array) $app->input('assign')['userId'];
+
+            return $app->call(
+                $this->assignLessons(...),
+                compact('lessonIds', 'userIds')
+            );
+        }
+
         $data = match ($task) {
             'publish' => ['state' => 1],
             'unpublish' => ['state' => 0],
@@ -174,5 +189,31 @@ class LessonController
         GridController $controller
     ): mixed {
         return $app->call([$controller, 'copy'], compact('repository'));
+    }
+
+    public function assignLessons(
+        AppContext $app,
+        LessonDispatcher $lessonDispatcher,
+        #[Input('id')] mixed $lessonIds,
+        #[Input('userId')] mixed $userIds,
+    ): RouteUri {
+        $lessonIds = (array) $lessonIds;
+        $userIds = (array) $userIds;
+
+        if ($lessonIds === [] || $userIds === []) {
+            $app->addMessage('沒有可分派的課程或用戶', 'warning');
+
+            return $app->navBack();
+        }
+
+        foreach ($userIds as $userId) {
+            foreach ($lessonIds as $lessonId) {
+                $lessonDispatcher->assignLessonToUser((int) $lessonId, (int) $userId);
+            }
+        }
+
+        $app->addMessage('已成功分派课程', 'success');
+
+        return $app->navBack();
     }
 }

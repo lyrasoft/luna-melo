@@ -41,14 +41,6 @@ use Windwalker\Form\Form;
         @lang('unicorn.toolbar.new')
     </a>
 
-    {{-- Duplicate --}}
-    <button type="button" class="btn btn-info btn-sm uni-btn-duplicate"
-        @click="grid.form.post()"
-    >
-        <i class="fa fa-clone"></i>
-        @lang('unicorn.toolbar.duplicate')
-    </button>
-
     {{-- Change State --}}
     <x-state-dropdown color-on="text"
         button-style="width: 100%"
@@ -59,6 +51,14 @@ use Windwalker\Form\Form;
     >
         @lang('unicorn.toolbar.state.change')
     </x-state-dropdown>
+
+    <button type="button" class="btn btn-dark btn-sm uni-btn-assign"
+        data-bs-toggle="modal"
+        data-bs-target="#lesson-assign-modal"
+    >
+        <i class="fa fa-paper-plane"></i>
+        指派課程
+    </button>
 
     @if ($form?->countFields(null, 'batch'))
         {{-- Batch --}}

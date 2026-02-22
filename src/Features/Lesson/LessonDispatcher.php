@@ -32,7 +32,7 @@ class LessonDispatcher
 
                 if (is_array($initData)) {
                     $data = array_merge($data, $initData);
-                } else {
+                } elseif ($initData instanceof \Closure) {
                     $data = $initData($data) ?? $data;
                 }
 

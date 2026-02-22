@@ -213,7 +213,8 @@ $workflow = $app->service(BasicStateWorkflow::class);
             <x-csrf></x-csrf>
         </div>
 
-        <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>
+        <x-batch-modal :form="$form" namespace="batch" :copy="false"></x-batch-modal>
+        <x-assign-modal :form="$form" />
     </form>
 
 @stop

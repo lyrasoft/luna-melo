@@ -53,9 +53,14 @@ class GridForm
             ->label($this->trans('unicorn.field.state'))
             ->option($this->trans('unicorn.select.no.change'), '')
             ->registerFromEnums(BasicState::class, $this->lang);
+    }
 
+    #[FormDefine]
+    #[NS('assign')]
+    public function assign(Form $form): void
+    {
         $form->add('userId', UserModalField::class)
-            ->label('指派給使用者')
-            ->multiple(true);
+            ->multiple(true)
+            ->placeholder('指派使用者給 <span class="c-lesson-assign-target fw-bold"></span> 個課程。');
     }
 }
