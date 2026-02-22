@@ -34,7 +34,7 @@ class LessonProgressContext
 
     public function __construct(
         public LessonStudent $lessonStudent,
-        public float $progress,
+        public LessonProgress $progress,
         /**
          * @var Collection<SectionMenuItem>
          */

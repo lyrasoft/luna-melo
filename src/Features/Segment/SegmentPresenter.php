@@ -6,6 +6,7 @@ namespace Lyrasoft\Melo\Features\Segment;
 
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Tree\NodeInterface;
+use Lyrasoft\Melo\Data\LessonProgress;
 use Lyrasoft\Melo\Data\LessonStudent;
 use Lyrasoft\Melo\Data\SectionMenuItem;
 use Lyrasoft\Melo\Data\SectionStudent;
@@ -27,16 +28,15 @@ class SegmentPresenter
     public function computeProgress(
         Collection $sectionStudents,
         User $user
-    ): float {
+    ): LessonProgress {
         if (!$user->isLogin()) {
-            return 0;
+            return new LessonProgress(
+                done: 0,
+                total: 0,
+            );
         }
 
         $total = $sectionStudents->count();
-
-        if ($total === 0) {
-            return 0;
-        }
 
         $passed = $sectionStudents->filter(
             function (SectionStudent $student) {
@@ -44,11 +44,14 @@ class SegmentPresenter
                     return false;
                 }
 
-                return $student->map->status === UserSegmentStatus::PASSED || $student->map->status === UserSegmentStatus::DONE;
+                return $student->map->status->isDone();
             }
         );
 
-        return count($passed) / $total * 100;
+        return new LessonProgress(
+            done: $passed->count(),
+            total: $total,
+        );
     }
 
     /**
