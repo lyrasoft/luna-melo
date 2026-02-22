@@ -20,6 +20,7 @@ use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Attributes\Request\Input;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
+use Windwalker\Core\Utilities\Base64Url;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DI\Attributes\Service;
@@ -196,14 +197,21 @@ class LessonController
         LessonDispatcher $lessonDispatcher,
         #[Input('id')] mixed $lessonIds,
         #[Input('userId')] mixed $userIds,
+        #[Input('return')] ?string $return = null,
     ): RouteUri {
         $lessonIds = (array) $lessonIds;
         $userIds = (array) $userIds;
 
+        $redirect = $app->navBack();
+
+        if ($return) {
+            $redirect = $app->nav->redirect(Base64Url::decode($return) ?: $redirect);
+        }
+
         if ($lessonIds === [] || $userIds === []) {
             $app->addMessage('沒有可分派的課程或用戶', 'warning');
 
-            return $app->navBack();
+            return $redirect;
         }
 
         foreach ($userIds as $userId) {
@@ -214,6 +222,6 @@ class LessonController
 
         $app->addMessage('已成功分派课程', 'success');
 
-        return $app->navBack();
+        return $redirect;
     }
 }
