@@ -6,6 +6,7 @@ export interface Segment {
   parentId: number;
   type: string;
   title: string;
+  cover: string;
   content: string;
   src: string;
   filename: string;

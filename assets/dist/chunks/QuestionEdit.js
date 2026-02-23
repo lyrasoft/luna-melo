@@ -1,15 +1,15 @@
-import { readonly, toRef, computed, toValue, defineComponent, useSlots, useAttrs, useModel, inject, useTemplateRef, openBlock, createBlock, mergeProps, unref, withCtx, withDirectives, createElementVNode, vModelCheckbox, createElementBlock, normalizeClass, renderSlot, createCommentVNode, mergeModels, provide, Fragment, renderList, createTextVNode, toDisplayString, vModelRadio, normalizeStyle, ref, onMounted, nextTick, createVNode, TransitionGroup, withModifiers, watch } from "vue";
-import { a as useFileDialog, u as useCurrentElement } from "./index.js";
-import { useHttpClient, route, uid, deleteConfirm, data, simpleAlert, sleep } from "@windwalker-io/unicorn-next";
-import { u as useDefaults, g as useId, A as checkboxGroupKey, B as useFocus, x as isEmptySlot, C as _sfc_main$6, D as radioGroupKey, e as useToNumber, E as isVisible } from "./index-BSgsF2PB.js";
-import { u as useAriaInvalid, b as useStateClass, n as normalizeInput, c as useFormInput, _ as _sfc_main$9, a as _sfc_main$a } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
-import { a as _sfc_main$7, _ as _sfc_main$8 } from "./classes-BW_GpXTu.js";
+import { readonly, toRef, computed, toValue, defineComponent, useSlots, useAttrs, useModel, inject, useTemplateRef, openBlock, createBlock, mergeProps, unref, withCtx, withDirectives, createElementVNode, vModelCheckbox, createElementBlock, normalizeClass, renderSlot, createCommentVNode, mergeModels, provide, Fragment, renderList, createTextVNode, toDisplayString, vModelRadio, normalizeStyle, ref, onMounted, nextTick, createVNode, TransitionGroup, watch } from "vue";
+import { u as useCurrentElement } from "./index2.js";
+import { useHttpClient, route, uid, deleteConfirm, sleep } from "@windwalker-io/unicorn-next";
+import { u as useDefaults, g as useId, A as checkboxGroupKey, B as useFocus, x as isEmptySlot, C as _sfc_main$5, D as radioGroupKey, e as useToNumber, E as isVisible } from "./index-BSgsF2PB.js";
+import { u as useAriaInvalid, b as useStateClass, n as normalizeInput, c as useFormInput, _ as _sfc_main$7, a as _sfc_main$8 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
+import { v as vBTooltip, a as _sfc_main$6 } from "./index.js";
 import { VueDraggable } from "vue-draggable-plus";
-import { v as vBTooltip, s as sleepMax } from "./timing.js";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
+import { s as sleepMax } from "./timing.js";
 import { u as useQuestionPresenter } from "./useQuestionPresenter.js";
-import { u as useFileUploader } from "./useFileUploader.js";
-import { u as useDebounceFn } from "./index2.js";
+import { I as ImageUploader } from "./ImageUploader.js";
+import { u as useDebounceFn } from "./index3.js";
 const getClasses = (items) => computed(() => {
   const resolvedItems = toValue(items);
   return {
@@ -61,7 +61,7 @@ const getGroupClasses = (items) => computed(() => {
   };
 });
 const _hoisted_1$1$2 = ["id", "disabled", "required", "name", "form", "aria-label", "aria-labelledby", "aria-required", "value", "true-value", "false-value", "indeterminate"];
-const _hoisted_2$4 = ["for"];
+const _hoisted_2$3 = ["for"];
 const _sfc_main$1$2 = /* @__PURE__ */ defineComponent({
   ...{
     inheritAttrs: false
@@ -168,7 +168,7 @@ const _sfc_main$1$2 = /* @__PURE__ */ defineComponent({
       }
     });
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(_sfc_main$6, mergeProps({ skip: isButtonGroup.value }, unref(props).wrapperAttrs, { class: computedWrapperClasses.value }), {
+      return openBlock(), createBlock(_sfc_main$5, mergeProps({ skip: isButtonGroup.value }, unref(props).wrapperAttrs, { class: computedWrapperClasses.value }), {
         default: withCtx(() => [
           withDirectives(createElementVNode("input", mergeProps({
             id: unref(computedId),
@@ -196,7 +196,7 @@ const _sfc_main$1$2 = /* @__PURE__ */ defineComponent({
             class: normalizeClass(unref(labelClasses))
           }, [
             renderSlot(_ctx.$slots, "default")
-          ], 10, _hoisted_2$4)) : createCommentVNode("", true)
+          ], 10, _hoisted_2$3)) : createCommentVNode("", true)
         ]),
         _: 3
       }, 16, ["skip", "class"]);
@@ -204,7 +204,7 @@ const _sfc_main$1$2 = /* @__PURE__ */ defineComponent({
   }
 });
 const _hoisted_1$1$1 = ["id", "disabled", "required", "name", "form", "aria-label", "aria-labelledby", "value", "aria-required"];
-const _hoisted_2$3 = ["for"];
+const _hoisted_2$2 = ["for"];
 const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
   ...{
     inheritAttrs: false
@@ -287,7 +287,7 @@ const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
       }
     });
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(_sfc_main$6, {
+      return openBlock(), createBlock(_sfc_main$5, {
         skip: isButtonGroup.value,
         class: normalizeClass(unref(computedClasses))
       }, {
@@ -314,15 +314,15 @@ const _sfc_main$1$1 = /* @__PURE__ */ defineComponent({
             class: normalizeClass(unref(labelClasses))
           }, [
             renderSlot(_ctx.$slots, "default")
-          ], 10, _hoisted_2$3)) : createCommentVNode("", true)
+          ], 10, _hoisted_2$2)) : createCommentVNode("", true)
         ]),
         _: 3
       }, 8, ["skip", "class"]);
     };
   }
 });
-const _hoisted_1$5 = ["id"];
-const _sfc_main$5 = /* @__PURE__ */ defineComponent({
+const _hoisted_1$4 = ["id"];
+const _sfc_main$4 = /* @__PURE__ */ defineComponent({
   __name: "BFormRadioGroup",
   props: /* @__PURE__ */ mergeModels({
     ariaInvalid: { type: [Boolean, String], default: void 0 },
@@ -428,7 +428,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
           }, 1040);
         }), 128)),
         renderSlot(_ctx.$slots, "default")
-      ], 16, _hoisted_1$5);
+      ], 16, _hoisted_1$4);
     };
   }
 });
@@ -491,8 +491,8 @@ const useTextareaResize = (input, {
     computedRows
   };
 };
-const _hoisted_1$4 = ["id", "name", "form", "value", "disabled", "placeholder", "required", "autocomplete", "readonly", "aria-required", "aria-invalid", "rows", "wrap"];
-const _sfc_main$4 = /* @__PURE__ */ defineComponent({
+const _hoisted_1$3 = ["id", "name", "form", "value", "disabled", "placeholder", "required", "autocomplete", "readonly", "aria-required", "aria-invalid", "rows", "wrap"];
+const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   __name: "BFormTextarea",
   props: /* @__PURE__ */ mergeModels({
     noResize: { type: Boolean, default: false },
@@ -595,7 +595,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
         (...args) => unref(onChange) && unref(onChange)(...args)),
         onBlur: _cache[2] || (_cache[2] = //@ts-ignore
         (...args) => unref(onBlur) && unref(onBlur)(...args))
-      }, null, 46, _hoisted_1$4);
+      }, null, 46, _hoisted_1$3);
     };
   }
 });
@@ -612,12 +612,12 @@ function useQuestionController() {
     );
     return res.data.data;
   }
-  async function save(data2, isNew = 0) {
+  async function save(data, isNew = 0) {
     const { post } = await useHttpClient();
     const res = await post(
       route("@ajax_question/save"),
       {
-        data: data2,
+        data,
         isNew
       }
     );
@@ -663,7 +663,7 @@ function useQuestionController() {
     createEmptyQuestion
   };
 }
-const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "OptionEdit",
   props: /* @__PURE__ */ mergeModels({
     index: {}
@@ -688,7 +688,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     const __returned__ = { props, emit, item, deleteOption, setIsAnswer, get BFormCheckbox() {
       return _sfc_main$1$2;
     }, get BFormTextarea() {
-      return _sfc_main$4;
+      return _sfc_main$3;
     }, get vBTooltip() {
       return vBTooltip;
     } };
@@ -696,23 +696,23 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     return __returned__;
   }
 });
-const _hoisted_1$3 = ["data-option-id"];
-const _hoisted_2$2 = {
+const _hoisted_1$2 = ["data-option-id"];
+const _hoisted_2$1 = {
   class: "c-option-item card border",
   style: { "min-width": "1px" }
 };
-const _hoisted_3$1 = { class: "card-body d-flex align-items-center gap-3" };
-const _hoisted_4$1 = { class: "text-nowrap flex-grow-1" };
-const _hoisted_5$1 = { class: "d-flex align-items-center gap-3" };
-const _hoisted_6$1 = { class: "text-nowrap me-1 d-flex align-items-center" };
+const _hoisted_3 = { class: "card-body d-flex align-items-center gap-3" };
+const _hoisted_4 = { class: "text-nowrap flex-grow-1" };
+const _hoisted_5 = { class: "d-flex align-items-center gap-3" };
+const _hoisted_6 = { class: "text-nowrap me-1 d-flex align-items-center" };
 const _hoisted_7 = { class: "c-option-item__delete" };
-function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: "c-option-outside",
     "data-option-id": $setup.item.id
   }, [
-    createElementVNode("div", _hoisted_2$2, [
-      createElementVNode("div", _hoisted_3$1, [
+    createElementVNode("div", _hoisted_2$1, [
+      createElementVNode("div", _hoisted_3, [
         _cache[5] || (_cache[5] = createElementVNode("div", {
           class: "c-option-item__handle handle",
           style: { "cursor": "move", "z-index": "3" }
@@ -720,7 +720,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
           createElementVNode("span", { class: "fal fa-bars" })
         ], -1)),
         _cache[6] || (_cache[6] = createTextVNode()),
-        createElementVNode("div", _hoisted_4$1, [
+        createElementVNode("div", _hoisted_4, [
           createVNode($setup["BFormTextarea"], {
             modelValue: $setup.item.text,
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.item.text = $event),
@@ -729,8 +729,8 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
           }, null, 8, ["modelValue"])
         ]),
         _cache[7] || (_cache[7] = createTextVNode()),
-        createElementVNode("div", _hoisted_5$1, [
-          createElementVNode("div", _hoisted_6$1, [
+        createElementVNode("div", _hoisted_5, [
+          createElementVNode("div", _hoisted_6, [
             createVNode($setup["BFormCheckbox"], {
               modelValue: $setup.item.isAnswer,
               "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.item.isAnswer = $event),
@@ -759,9 +759,9 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ])
     ])
-  ], 8, _hoisted_1$3);
+  ], 8, _hoisted_1$2);
 }
-const OptionEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__file", "OptionEdit.vue"]]);
+const OptionEdit = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__file", "OptionEdit.vue"]]);
 function useOptionController() {
   function createEmptyOption() {
     return {
@@ -775,7 +775,7 @@ function useOptionController() {
     createEmptyOption
   };
 }
-const _sfc_main$2 = /* @__PURE__ */ defineComponent({
+const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "OptionList",
   props: /* @__PURE__ */ mergeModels({
     question: {}
@@ -829,7 +829,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       emit("saved");
     }
     const __returned__ = { props, emit, options, createEmptyOption, reorder, createOption, deleteOption, setAnswer, get BButton() {
-      return _sfc_main$7;
+      return _sfc_main$6;
     }, get VueDraggable() {
       return VueDraggable;
     }, OptionEdit };
@@ -837,8 +837,8 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     return __returned__;
   }
 });
-const _hoisted_1$2 = { class: "text-center mb-2 mt-3" };
-function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$1 = { class: "text-center mb-2 mt-3" };
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock(Fragment, null, [
     createVNode($setup["VueDraggable"], {
       modelValue: $setup.options,
@@ -869,7 +869,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       _: 1
     }, 8, ["modelValue"]),
     _cache[2] || (_cache[2] = createTextVNode()),
-    createElementVNode("div", _hoisted_1$2, [
+    createElementVNode("div", _hoisted_1$1, [
       createVNode($setup["BButton"], {
         onClick: $setup.createOption,
         variant: "primary",
@@ -884,203 +884,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-const OptionList = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__file", "OptionList.vue"]]);
-const _sfc_main$1 = /* @__PURE__ */ defineComponent({
-  __name: "ImageUploader",
-  props: /* @__PURE__ */ mergeModels({
-    uploadUrl: {},
-    dest: {},
-    accept: { default: "image/*" }
-  }, {
-    "modelValue": {
-      default: ""
-    },
-    "modelModifiers": {}
-  }),
-  emits: /* @__PURE__ */ mergeModels(["uploaded", "clear"], ["update:modelValue"]),
-  setup(__props, { expose: __expose, emit: __emit }) {
-    __expose();
-    const props = __props;
-    const emit = __emit;
-    const image = useModel(__props, "modelValue");
-    const { wrapClassicUpload, acceptString, checkFileType } = useFileUploader({
-      accept: () => props.accept
-    });
-    const uploadImage = wrapClassicUpload(props.uploadUrl || route("@image_upload"));
-    const defaultImage = ref(data("defaultImage"));
-    const loading = ref(false);
-    const { open, reset, onChange, onCancel, files } = useFileDialog({
-      accept: acceptString.value
-    });
-    onChange(async () => {
-      if (!files.value?.length) {
-        return;
-      }
-      upload(files.value[0]);
-      reset();
-    });
-    onCancel(reset);
-    async function upload(file) {
-      loading.value = true;
-      try {
-        const url = await uploadImage(file, props.dest);
-        image.value = url;
-        emit("uploaded", url);
-      } catch (e) {
-        if (e instanceof Error) {
-          simpleAlert(`上傳失敗`, e.message, "warning");
-        }
-        throw e;
-      } finally {
-        loading.value = false;
-      }
-    }
-    function clear() {
-      image.value = "";
-      reset();
-      emit("clear");
-    }
-    function paste(e) {
-      console.log(e);
-    }
-    const dragging = ref(false);
-    function onDragStart() {
-      dragging.value = true;
-    }
-    function onDragEnd() {
-      dragging.value = false;
-    }
-    function onDrop(e) {
-      dragging.value = false;
-      const file = e.dataTransfer?.files?.[0];
-      if (!file) {
-        return;
-      }
-      upload(file);
-    }
-    const __returned__ = { props, emit, image, wrapClassicUpload, acceptString, checkFileType, uploadImage, defaultImage, loading, open, reset, onChange, onCancel, files, upload, clear, paste, dragging, onDragStart, onDragEnd, onDrop, get BSpinner() {
-      return _sfc_main$8;
-    }, get vBTooltip() {
-      return vBTooltip;
-    } };
-    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
-    return __returned__;
-  }
-});
-const _hoisted_1$1 = { class: "c-image-uploader card border overflow-hidden position-relative" };
-const _hoisted_2$1 = {
-  key: 0,
-  class: "position-absolute d-flex justify-content-center align-items-center",
-  style: { "left": "0", "top": "0", "right": "0", "bottom": "0", "background-color": "rgba(255, 255, 255, 0.7)", "z-index": "10" }
-};
-const _hoisted_3 = ["href"];
-const _hoisted_4 = ["src"];
-const _hoisted_5 = {
-  key: 0,
-  class: "c-image-uploader-actions d-flex align-items-center justify-content-between gap-2"
-};
-const _hoisted_6 = { class: "d-flex align-items-center gap-2" };
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", {
-    class: "c-image-uploader-wrapper d-flex flex-column gap-2 mx-auto",
-    style: { "max-width": "500px", "width": "100%" },
-    onDragover: withModifiers($setup.onDragStart, ["prevent"]),
-    onDragleave: withModifiers($setup.onDragEnd, ["prevent"]),
-    onDrop: withModifiers($setup.onDrop, ["prevent"])
-  }, [
-    createElementVNode("div", _hoisted_1$1, [
-      $setup.loading ? (openBlock(), createElementBlock("div", _hoisted_2$1, [
-        createVNode($setup["BSpinner"])
-      ])) : createCommentVNode("", true),
-      _cache[9] || (_cache[9] = createTextVNode()),
-      $setup.image ? (openBlock(), createElementBlock("a", {
-        key: 1,
-        href: $setup.image,
-        target: "_blank"
-      }, [
-        createElementVNode("div", {
-          class: "c-image-uploader__preview position-relative",
-          style: normalizeStyle([[$setup.dragging ? "opacity: .7" : ""], { "aspect-ratio": "16/9", "background-color": "black", "transition": "all .3s" }])
-        }, [
-          createElementVNode("img", {
-            class: "position-absolute rounded",
-            src: $setup.image || $setup.defaultImage,
-            alt: "Preview",
-            style: { "aspect-ratio": "16/9", "top": "0", "left": "0", "width": "100%", "height": "100%", "object-fit": "contain" }
-          }, null, 8, _hoisted_4)
-        ], 4)
-      ], 8, _hoisted_3)) : (openBlock(), createElementBlock("div", {
-        key: 2,
-        class: "c-image-uploader__placeholder d-flex flex-column gap-3 justify-content-center align-items-center",
-        style: normalizeStyle([{ "aspect-ratio": "16/9", "background-color": "white", "transition": "all .3s" }, [$setup.dragging ? "background-color: var(--bs-light)" : ""]])
-      }, [
-        _cache[5] || (_cache[5] = createElementVNode("div", null, [
-          createElementVNode("i", { class: "fas fa-upload fa-2x" })
-        ], -1)),
-        _cache[6] || (_cache[6] = createTextVNode()),
-        _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted" }, "\n          拖拉至此上傳圖片\n        ", -1)),
-        _cache[8] || (_cache[8] = createTextVNode()),
-        createElementVNode("div", null, [
-          createElementVNode("button", {
-            type: "button",
-            class: "btn btn-primary btn-sm",
-            onClick: _cache[0] || (_cache[0] = ($event) => $setup.open())
-          }, [..._cache[2] || (_cache[2] = [
-            createElementVNode("i", { class: "fas fa-image" }, null, -1),
-            createTextVNode("\n            點擊此處選擇檔案\n          ", -1)
-          ])]),
-          _cache[4] || (_cache[4] = createTextVNode()),
-          withDirectives((openBlock(), createElementBlock("button", {
-            type: "button",
-            class: "btn btn-outline-primary btn-sm",
-            onClick: $setup.paste
-          }, [..._cache[3] || (_cache[3] = [
-            createElementVNode("i", { class: "fas fa-paste" }, null, -1)
-          ])])), [
-            [$setup["vBTooltip"], "從剪貼簿貼上圖片檔案"]
-          ])
-        ])
-      ], 4))
-    ]),
-    _cache[17] || (_cache[17] = createTextVNode()),
-    $setup.image ? (openBlock(), createElementBlock("div", _hoisted_5, [
-      createElementVNode("div", _hoisted_6, [
-        createElementVNode("button", {
-          type: "button",
-          class: "btn btn-primary btn-sm",
-          onClick: _cache[1] || (_cache[1] = ($event) => $setup.open())
-        }, [..._cache[10] || (_cache[10] = [
-          createElementVNode("i", { class: "fas fa-image" }, null, -1),
-          createTextVNode("\n          更換檔案\n        ", -1)
-        ])]),
-        _cache[12] || (_cache[12] = createTextVNode()),
-        createElementVNode("div", null, [
-          withDirectives((openBlock(), createElementBlock("button", {
-            type: "button",
-            class: "btn btn-outline-primary btn-sm",
-            onClick: $setup.paste
-          }, [..._cache[11] || (_cache[11] = [
-            createElementVNode("i", { class: "fas fa-paste" }, null, -1)
-          ])])), [
-            [$setup["vBTooltip"], "從剪貼簿貼上圖片檔案"]
-          ])
-        ]),
-        _cache[13] || (_cache[13] = createTextVNode()),
-        _cache[14] || (_cache[14] = createElementVNode("span", { class: "small text-muted" }, "或拖拉檔案至上方", -1))
-      ]),
-      _cache[16] || (_cache[16] = createTextVNode()),
-      createElementVNode("button", {
-        type: "button",
-        class: "btn btn-outline-danger btn-sm",
-        onClick: $setup.clear
-      }, [..._cache[15] || (_cache[15] = [
-        createElementVNode("i", { class: "fal fa-trash" }, null, -1),
-        createTextVNode("\n        移除圖片\n      ", -1)
-      ])])
-    ])) : createCommentVNode("", true)
-  ], 32);
-}
-const ImageUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__file", "ImageUploader.vue"]]);
+const OptionList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__file", "OptionList.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "QuestionEdit",
   props: {
@@ -1167,15 +971,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     }, set autoSave(v) {
       autoSave = v;
     }, saveDebounced, answersCount, get BFormGroup() {
-      return _sfc_main$a;
+      return _sfc_main$8;
     }, get BFormInput() {
-      return _sfc_main$9;
+      return _sfc_main$7;
     }, get BFormRadio() {
       return _sfc_main$1$1;
     }, get BFormRadioGroup() {
-      return _sfc_main$5;
-    }, get BFormTextarea() {
       return _sfc_main$4;
+    }, get BFormTextarea() {
+      return _sfc_main$3;
     }, OptionList, ImageUploader };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
@@ -1301,7 +1105,7 @@ const QuestionEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
 }, Symbol.toStringTag, { value: "Module" }));
 export {
   QuestionEdit as Q,
-  _sfc_main$5 as _,
+  _sfc_main$4 as _,
   _sfc_main$1$1 as a,
   QuestionEdit$1 as b,
   useQuestionController as u

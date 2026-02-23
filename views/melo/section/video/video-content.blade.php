@@ -45,7 +45,12 @@ $videoService = $app->service(VideoService::class);
 </script>
 
 <div class="film" id="attend-video">
-    @if($videoService->isCloudVideo($content->section->src))
+    @if (!$content->section->src && $content->section->cover)
+        <img src="{{ $content->section->cover }}" alt="{{ $content->section->title }}"
+            class="img-fluid w-100"
+            style="max-height: 450px; object-fit: contain;"
+        >
+    @elseif($videoService->isCloudVideo($content->section->src))
         <div id="section-player" data-plyr-provider="youtube"
             data-plyr-embed-id="{{ $videoService->getYoutubeEmbedId($content->section->src) }}"
             width="100%"
@@ -55,11 +60,12 @@ $videoService = $app->service(VideoService::class);
     @else
         <video class="rounded" id="section-player" width="100%" height="450"
             controls preload="metadata" crossorigin="anonymous"
+            @attr('poster', $content->section->cover)
             controlsList="nodownload">
             <source src="{{ $nav->to('section_file')->id($content->section->id) }}" type="video/mp4">
             @if($content->section->captionSrc)
                 <track label="中文" kind="subtitles" srclang="zh"
-                    src="{{ $nav->to('segment_file')->id($content->section->id)->var('field', 'caption') }}"
+                    src="{{ $nav->to('section_file')->id($content->section->id)->var('field', 'caption') }}"
                     default>
             @endif
         </video>

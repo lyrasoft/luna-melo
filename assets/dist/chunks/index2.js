@@ -1,149 +1,91 @@
-import { watch, customRef, effectScope, getCurrentScope, onScopeDispose, toValue } from "vue";
-function computedWithControl(source, fn, options = {}) {
-  let v = void 0;
-  let track;
-  let trigger;
-  let dirty = true;
-  const update = () => {
-    dirty = true;
-    trigger();
-  };
-  watch(source, update, {
-    flush: "sync",
-    ...options
-  });
-  const get$1 = typeof fn === "function" ? fn : fn.get;
-  const set$1 = typeof fn === "function" ? void 0 : fn.set;
-  const result = customRef((_track, _trigger) => {
-    track = _track;
-    trigger = _trigger;
-    return {
-      get() {
-        if (dirty) {
-          v = get$1(v);
-          dirty = false;
-        }
-        track();
-        return v;
-      },
-      set(v$1) {
-        set$1 === null || set$1 === void 0 || set$1(v$1);
-      }
-    };
-  });
-  result.trigger = update;
-  return result;
+import { a as computedWithControl, i as isClient, b as createEventHook, h as hasOwn } from "./index3.js";
+import { getCurrentInstance, onUpdated, onMounted, ref, computed, watchEffect, readonly, toValue } from "vue";
+const defaultDocument = isClient ? window.document : void 0;
+function unrefElement(elRef) {
+  var _$el;
+  const plain = toValue(elRef);
+  return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
 }
-function tryOnScopeDispose(fn, failSilently) {
-  if (getCurrentScope()) {
-    onScopeDispose(fn, failSilently);
-    return true;
-  }
-  return false;
+function useCurrentElement(rootComponent) {
+  const vm = getCurrentInstance();
+  const currentElement = computedWithControl(() => null, () => vm.proxy.$el);
+  onUpdated(currentElement.trigger);
+  onMounted(currentElement.trigger);
+  return currentElement;
 }
-// @__NO_SIDE_EFFECTS__
-function createEventHook() {
-  const fns = /* @__PURE__ */ new Set();
-  const off = (fn) => {
-    fns.delete(fn);
-  };
-  const clear = () => {
-    fns.clear();
-  };
-  const on = (fn) => {
-    fns.add(fn);
-    const offFn = () => off(fn);
-    tryOnScopeDispose(offFn);
-    return { off: offFn };
-  };
-  const trigger = (...args) => {
-    return Promise.all(Array.from(fns).map((fn) => fn(...args)));
-  };
-  return {
-    on,
-    off,
-    trigger,
-    clear
-  };
-}
-// @__NO_SIDE_EFFECTS__
-function createGlobalState(stateFactory) {
-  let initialized = false;
-  let state;
-  const scope = effectScope(true);
-  return ((...args) => {
-    if (!initialized) {
-      state = scope.run(() => stateFactory(...args));
-      initialized = true;
-    }
-    return state;
-  });
-}
-const isClient = typeof window !== "undefined" && typeof document !== "undefined";
-typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
-const noop = () => {
+const DEFAULT_OPTIONS = {
+  multiple: true,
+  accept: "*",
+  reset: false,
+  directory: false
 };
-const hasOwn = (val, key) => Object.prototype.hasOwnProperty.call(val, key);
-function createFilterWrapper(filter, fn) {
-  function wrapper(...args) {
-    return new Promise((resolve, reject) => {
-      Promise.resolve(filter(() => fn.apply(this, args), {
-        fn,
-        thisArg: this,
-        args
-      })).then(resolve).catch(reject);
-    });
-  }
-  return wrapper;
+function prepareInitialFiles(files) {
+  if (!files) return null;
+  if (files instanceof FileList) return files;
+  const dt = new DataTransfer();
+  for (const file of files) dt.items.add(file);
+  return dt.files;
 }
-function debounceFilter(ms, options = {}) {
-  let timer;
-  let maxTimer;
-  let lastRejector = noop;
-  const _clearTimeout = (timer$1) => {
-    clearTimeout(timer$1);
-    lastRejector();
-    lastRejector = noop;
-  };
-  let lastInvoker;
-  const filter = (invoke$1) => {
-    const duration = toValue(ms);
-    const maxDuration = toValue(options.maxWait);
-    if (timer) _clearTimeout(timer);
-    if (duration <= 0 || maxDuration !== void 0 && maxDuration <= 0) {
-      if (maxTimer) {
-        _clearTimeout(maxTimer);
-        maxTimer = void 0;
-      }
-      return Promise.resolve(invoke$1());
+function useFileDialog(options = {}) {
+  const { document: document$1 = defaultDocument } = options;
+  const files = ref(prepareInitialFiles(options.initialFiles));
+  const { on: onChange, trigger: changeTrigger } = createEventHook();
+  const { on: onCancel, trigger: cancelTrigger } = createEventHook();
+  const inputRef = computed(() => {
+    var _unrefElement;
+    const input = (_unrefElement = unrefElement(options.input)) !== null && _unrefElement !== void 0 ? _unrefElement : document$1 ? document$1.createElement("input") : void 0;
+    if (input) {
+      input.type = "file";
+      input.onchange = (event) => {
+        files.value = event.target.files;
+        changeTrigger(files.value);
+      };
+      input.oncancel = () => {
+        cancelTrigger();
+      };
     }
-    return new Promise((resolve, reject) => {
-      lastRejector = options.rejectOnCancel ? reject : resolve;
-      lastInvoker = invoke$1;
-      if (maxDuration && !maxTimer) maxTimer = setTimeout(() => {
-        if (timer) _clearTimeout(timer);
-        maxTimer = void 0;
-        resolve(lastInvoker());
-      }, maxDuration);
-      timer = setTimeout(() => {
-        if (maxTimer) _clearTimeout(maxTimer);
-        maxTimer = void 0;
-        resolve(invoke$1());
-      }, duration);
-    });
+    return input;
+  });
+  const reset = () => {
+    files.value = null;
+    if (inputRef.value && inputRef.value.value) {
+      inputRef.value.value = "";
+      changeTrigger(null);
+    }
   };
-  return filter;
-}
-// @__NO_SIDE_EFFECTS__
-function useDebounceFn(fn, ms = 200, options = {}) {
-  return createFilterWrapper(debounceFilter(ms, options), fn);
+  const applyOptions = (options$1) => {
+    const el = inputRef.value;
+    if (!el) return;
+    el.multiple = toValue(options$1.multiple);
+    el.accept = toValue(options$1.accept);
+    el.webkitdirectory = toValue(options$1.directory);
+    if (hasOwn(options$1, "capture")) el.capture = toValue(options$1.capture);
+  };
+  const open = (localOptions) => {
+    const el = inputRef.value;
+    if (!el) return;
+    const mergedOptions = {
+      ...DEFAULT_OPTIONS,
+      ...options,
+      ...localOptions
+    };
+    applyOptions(mergedOptions);
+    if (toValue(mergedOptions.reset)) reset();
+    el.click();
+  };
+  watchEffect(() => {
+    applyOptions(options);
+  });
+  return {
+    files: readonly(files),
+    open,
+    reset,
+    onCancel,
+    onChange
+  };
 }
 export {
-  computedWithControl as a,
-  createEventHook as b,
-  createGlobalState as c,
-  hasOwn as h,
-  isClient as i,
-  useDebounceFn as u
+  useFileDialog as a,
+  useCurrentElement as u
 };
 //# sourceMappingURL=index2.js.map

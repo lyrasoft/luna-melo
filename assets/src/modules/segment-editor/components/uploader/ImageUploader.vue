@@ -10,9 +10,13 @@ const props = withDefaults(
     uploadUrl?: string;
     dest?: string;
     accept?: string | string[];
+    maxWidth?: any;
+    aspectRatio?: any;
   }>(),
   {
     accept: 'image/*',
+    maxWidth: '500px',
+    aspectRatio: '16/9',
   }
 );
 
@@ -104,7 +108,8 @@ function onDrop(e: DragEvent) {
 
 <template>
   <div class="c-image-uploader-wrapper d-flex flex-column gap-2 mx-auto"
-    style="max-width: 500px; width: 100%;"
+    style="width: 100%;"
+    :style="{ maxWidth, '--melo-img-uploader-aspect': aspectRatio }"
     @dragover.prevent="onDragStart"
     @dragleave.prevent="onDragEnd"
     @drop.prevent="onDrop"
@@ -119,17 +124,17 @@ function onDrop(e: DragEvent) {
         <a :href="image" target="_blank">
           <div class="c-image-uploader__preview position-relative"
             :style="[ dragging ? 'opacity: .7' : '' ]"
-            style="aspect-ratio: 16/9; background-color: black; transition: all .3s"
+            style="aspect-ratio: var(--melo-img-uploader-aspect); background-color: black; transition: all .3s"
           >
             <img class="position-absolute rounded" :src="image || defaultImage" alt="Preview"
-              style="aspect-ratio: 16/9; top: 0;left: 0; width: 100%; height: 100%; object-fit: contain;">
+              style="aspect-ratio: var(--melo-img-uploader-aspect); top: 0;left: 0; width: 100%; height: 100%; object-fit: contain;">
           </div>
         </a>
       </template>
 
       <div v-else
         class="c-image-uploader__placeholder d-flex flex-column gap-3 justify-content-center align-items-center"
-        style="aspect-ratio: 16/9; background-color: white; transition: all .3s"
+        style="aspect-ratio: var(--melo-img-uploader-aspect); background-color: white; transition: all .3s"
         :style="[ dragging ? 'background-color: var(--bs-light)' : '' ]"
       >
         <div>

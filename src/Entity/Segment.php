@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Entity;
 
+use Lyrasoft\Luna\Attributes\Author;
+use Lyrasoft\Luna\Attributes\Modifier;
+use Unicorn\Enum\BasicState;
+use Windwalker\Core\DateTime\Chronos;
+use Windwalker\Core\DateTime\ServerTimeCast;
 use Windwalker\Data\Collection;
 use Windwalker\ORM\Attributes\AutoIncrement;
 use Windwalker\ORM\Attributes\Cast;
-use Unicorn\Enum\BasicState;
-use Windwalker\Core\DateTime\Chronos;
 use Windwalker\ORM\Attributes\CastNullable;
-use Windwalker\Core\DateTime\ServerTimeCast;
-use Windwalker\ORM\Attributes\CreatedTime;
-use Lyrasoft\Luna\Attributes\Author;
-use Windwalker\ORM\Attributes\CurrentTime;
-use Lyrasoft\Luna\Attributes\Modifier;
-use Windwalker\ORM\Cast\JsonCast;
 use Windwalker\ORM\Attributes\Column;
+use Windwalker\ORM\Attributes\CreatedTime;
+use Windwalker\ORM\Attributes\CurrentTime;
 use Windwalker\ORM\Attributes\EntitySetup;
 use Windwalker\ORM\Attributes\PK;
 use Windwalker\ORM\Attributes\Table;
+use Windwalker\ORM\Cast\JsonCast;
 use Windwalker\ORM\EntityInterface;
 use Windwalker\ORM\EntityTrait;
 use Windwalker\ORM\Event\AfterDeleteEvent;
@@ -31,7 +31,7 @@ use function Windwalker\collect;
 // todo: remove this when phpcs supports 8.4
 
 /**
- * @property-read  Segment[]  $children
+ * @property-read  Segment[] $children
  */
 #[Table('segments', 'segment')]
 #[\AllowDynamicProperties]
@@ -53,6 +53,9 @@ class Segment implements EntityInterface
 
     #[Column('title')]
     public string $title = '';
+
+    #[Column('cover')]
+    public string $cover = '';
 
     #[Column('content')]
     public string $content = '';

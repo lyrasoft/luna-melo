@@ -3,7 +3,7 @@ import { uid, sleep, useHttpClient, simpleAlert, data, route } from "@windwalker
 import { numberFormat } from "@lyrasoft/ts-toolkit/generic";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
 import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
-import { u as useCurrentElement } from "./index.js";
+import { u as useCurrentElement } from "./index2.js";
 function formatPrice(price, scale = 0, prefix = "NT $") {
   if (!price && price !== 0) {
     return "";

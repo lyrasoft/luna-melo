@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Front\Segment;
+namespace Lyrasoft\Melo\Module\Front\Lesson;
 
 use Brick\Math\BigDecimal;
 use Lyrasoft\Luna\User\UserService;
@@ -21,7 +21,6 @@ use Psr\Cache\InvalidArgumentException;
 use Unicorn\Attributes\Ajax;
 use Unicorn\Aws\S3Service;
 use Unicorn\Controller\AjaxControllerTrait;
-use Unicorn\Upload\FileUploadManager;
 use Unicorn\Upload\FileUploadService;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
@@ -65,7 +64,6 @@ class SectionController
     public function file(
         ORM $orm,
         LessonProgressManager $lessonProgressManager,
-        SegmentAttender $segmentAttender,
         UserService $userService,
         S3Service $s3Service,
         #[Input, Filter('int')] int $id,

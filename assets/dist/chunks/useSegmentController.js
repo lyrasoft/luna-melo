@@ -1,7 +1,7 @@
 import { useLoading, uniqueItem } from "@lyrasoft/ts-toolkit/vue";
 import { useHttpClient, route } from "@windwalker-io/unicorn-next";
 import { ref } from "vue";
-import { c as createGlobalState, u as useDebounceFn } from "./index2.js";
+import { c as createGlobalState, u as useDebounceFn } from "./index3.js";
 const useSegmentController = createGlobalState(() => {
   const { loading: saving, wrap, run } = useLoading();
   async function save(item, isNew = false) {

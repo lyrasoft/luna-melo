@@ -7,7 +7,7 @@ namespace App\Routes;
 use Lyrasoft\Melo\Module\Front\Lesson\LessonController;
 use Lyrasoft\Melo\Module\Front\Lesson\LessonItemView;
 use Lyrasoft\Melo\Module\Front\Lesson\LessonListView;
-use Lyrasoft\Melo\Module\Front\Segment\SectionController;
+use Lyrasoft\Melo\Module\Front\Lesson\SectionController;
 use Windwalker\Core\Router\RouteCreator;
 
 /** @var RouteCreator $router */

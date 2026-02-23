@@ -33,5 +33,5 @@ use Windwalker\Core\Router\SystemUri;
  */
 ?>
 <div class="l-lesson-item__img"
-    style="background-image: url({{ $content->lesson->image }});">
+    style="background-image: url({{ $content->section->cover ?: $content->lesson->image }});">
 </div>

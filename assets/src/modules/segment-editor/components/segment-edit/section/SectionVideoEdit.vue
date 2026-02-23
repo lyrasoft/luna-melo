@@ -7,6 +7,7 @@ import { round } from 'lodash-es';
 import { computed, inject, ref } from 'vue';
 import urlParser from 'js-video-url-parser';
 import FileUploader from '~melo/modules/segment-editor/components/uploader/FileUploader.vue';
+import ImageUploader from '~melo/modules/segment-editor/components/uploader/ImageUploader.vue';
 import { useSegmentController } from '~melo/modules/segment-editor/features/segment/useSegmentController';
 import { Segment, SegmentEditorConfig } from '~melo/types';
 
@@ -178,6 +179,10 @@ function calcVideoDimension(file: File): Promise<VideoDimension> {
     });
   });
 }
+
+function clearImage() {
+  item.value.image = '';
+}
 </script>
 
 <template>
@@ -189,6 +194,19 @@ function calcVideoDimension(file: File): Promise<VideoDimension> {
       class="mb-5"
     >
       <BFormInput id="input-section-title" v-model="item.title" trim />
+    </BFormGroup>
+
+    <BFormGroup
+      label="封面圖 (可選)"
+      label-class="mb-2"
+    >
+      <ImageUploader
+        v-model="item.cover"
+        @clear="clearImage"
+        :dest="`segments/${item.id}/cover.{ext}`"
+        max-width="100%"
+        aspect-ratio="3/1"
+      ></ImageUploader>
     </BFormGroup>
 
     <Transition name="fade" mode="out-in">
@@ -319,7 +337,6 @@ function calcVideoDimension(file: File): Promise<VideoDimension> {
         </div>
       </BFormGroup>
     </template>
-
   </div>
 </template>
 

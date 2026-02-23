@@ -2,11 +2,11 @@ import { defineComponent, provide, toRef, openBlock, createElementBlock, unref, 
 import { useLoading } from "@lyrasoft/ts-toolkit/vue";
 import { simpleAlert, route, deleteConfirm, simpleConfirm } from "@windwalker-io/unicorn-next";
 import { u as useDefaults, p as progressInjectionKey, c as useColorVariantClasses, e as useToNumber, f as sortSlotElementsByPosition, t as tabsInjectionKey, g as useId, h as createReusableTemplate } from "./index-BSgsF2PB.js";
-import { B as BvEvent, _ as _sfc_main$4, a as _sfc_main$5 } from "./classes-BW_GpXTu.js";
+import { B as BvEvent, _ as _sfc_main$4, a as _sfc_main$5 } from "./index.js";
 import { _ as _sfc_main$6, a as _sfc_main$7 } from "./BFormInput.vue_vue_type_script_setup_true_lang-DRDhfD8d.js";
 import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
-import { a as useFileDialog } from "./index.js";
-import { u as useFileUploader } from "./useFileUploader.js";
+import { a as useFileDialog } from "./index2.js";
+import { u as useFileUploader, I as ImageUploader } from "./ImageUploader.js";
 import { i as isObjectLike, b as baseGetTag, a as isArray, S as Symbol$1, c as isObject, r as root } from "./isObject.js";
 import { _ as _export_sfc } from "./_plugin-vue_export-helper.js";
 import { u as useSegmentController } from "./useSegmentController.js";
@@ -2353,11 +2353,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         });
       });
     }
+    function clearImage() {
+      item.value.image = "";
+    }
     const __returned__ = { deleteFile, loading, run, props, emit, item, videoName, isFile, isCloudVideo, cloudVideoUrl, videoUploading, get videoDimension() {
       return videoDimension;
     }, set videoDimension(v) {
       videoDimension = v;
-    }, config, maxBitrate, maxBitrateMbps, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, applyCloudVideo, onVideoBeforeUpload, videoUploaded, captionUploaded, calcVideoDimension, get route() {
+    }, config, maxBitrate, maxBitrateMbps, videoInfo, videoEmbedUrl, previewSrc, previewCaptionSrc, clear, applyCloudVideo, onVideoBeforeUpload, videoUploaded, captionUploaded, calcVideoDimension, clearImage, get route() {
       return route;
     }, get BButton() {
       return _sfc_main$5;
@@ -2369,7 +2372,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return _sfc_main$1$1;
     }, get BTabs() {
       return _sfc_main$2;
-    }, FileUploader };
+    }, FileUploader, ImageUploader };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
     return __returned__;
   }
@@ -2423,7 +2426,24 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     }),
-    _cache[25] || (_cache[25] = createTextVNode()),
+    _cache[26] || (_cache[26] = createTextVNode()),
+    createVNode($setup["BFormGroup"], {
+      label: "封面圖 (可選)",
+      "label-class": "mb-2"
+    }, {
+      default: withCtx(() => [
+        createVNode($setup["ImageUploader"], {
+          modelValue: $setup.item.cover,
+          "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.item.cover = $event),
+          onClear: $setup.clearImage,
+          dest: `segments/${$setup.item.id}/cover.{ext}`,
+          "max-width": "100%",
+          "aspect-ratio": "3/1"
+        }, null, 8, ["modelValue", "dest"])
+      ]),
+      _: 1
+    }),
+    _cache[27] || (_cache[27] = createTextVNode()),
     createVNode(Transition, {
       name: "fade",
       mode: "out-in"
@@ -2451,18 +2471,18 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                             target: "_blank",
                             href: $setup.config?.bitrateDocUrl || "#"
                           }, "壓縮教學", 8, _hoisted_4),
-                          _cache[7] || (_cache[7] = createTextVNode(")\n                ", -1))
+                          _cache[8] || (_cache[8] = createTextVNode(")\n                ", -1))
                         ])
                       ]),
-                      _cache[8] || (_cache[8] = createTextVNode()),
+                      _cache[9] || (_cache[9] = createTextVNode()),
                       createVNode($setup["FileUploader"], {
                         accept: "video/mp4",
                         "s3-multipart": "",
                         onUploaded: $setup.videoUploaded,
                         dest: () => `segments/${$setup.item.id}/video.{ext}`,
                         "on-before-upload": $setup.onVideoBeforeUpload,
-                        onStart: _cache[1] || (_cache[1] = ($event) => $setup.videoUploading = true),
-                        onCompleted: _cache[2] || (_cache[2] = ($event) => $setup.videoUploading = false)
+                        onStart: _cache[2] || (_cache[2] = ($event) => $setup.videoUploading = true),
+                        onCompleted: _cache[3] || (_cache[3] = ($event) => $setup.videoUploading = false)
                       }, null, 8, ["dest"])
                     ]),
                     _: 1
@@ -2470,7 +2490,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 ]),
                 _: 1
               }, 8, ["disabled"]),
-              _cache[11] || (_cache[11] = createTextVNode()),
+              _cache[12] || (_cache[12] = createTextVNode()),
               createVNode($setup["BTab"], {
                 title: "雲端影片",
                 disabled: $setup.videoUploading
@@ -2489,17 +2509,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         createVNode($setup["BFormInput"], {
                           id: "input-section-video",
                           modelValue: $setup.cloudVideoUrl,
-                          "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.cloudVideoUrl = $event),
+                          "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $setup.cloudVideoUrl = $event),
                           placeholder: "請輸入影片網址",
                           trim: ""
                         }, null, 8, ["modelValue"]),
-                        _cache[10] || (_cache[10] = createTextVNode()),
+                        _cache[11] || (_cache[11] = createTextVNode()),
                         createVNode($setup["BButton"], {
                           variant: "primary",
                           class: "text-nowrap c-video-submit px-3",
                           onClick: $setup.applyCloudVideo
                         }, {
-                          default: withCtx(() => [..._cache[9] || (_cache[9] = [
+                          default: withCtx(() => [..._cache[10] || (_cache[10] = [
                             createElementVNode("i", { class: "far fa-check" }, null, -1),
                             createTextVNode("\n                  送出\n                ", -1)
                           ])]),
@@ -2519,23 +2539,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createVNode($setup["BFormGroup"], { label: "影片" }, {
             default: withCtx(() => [
               createElementVNode("div", _hoisted_7, [
-                _cache[13] || (_cache[13] = createElementVNode("div", { class: "input-group-text" }, [
+                _cache[14] || (_cache[14] = createElementVNode("div", { class: "input-group-text" }, [
                   createElementVNode("span", { class: "fal fa-fw fa-video me-2" })
                 ], -1)),
-                _cache[14] || (_cache[14] = createTextVNode()),
+                _cache[15] || (_cache[15] = createTextVNode()),
                 createElementVNode("input", {
                   type: "text",
                   class: "form-control",
                   disabled: "",
                   value: $setup.videoName
                 }, null, 8, _hoisted_8),
-                _cache[15] || (_cache[15] = createTextVNode()),
+                _cache[16] || (_cache[16] = createTextVNode()),
                 createVNode($setup["BButton"], {
                   variant: "danger",
-                  onClick: _cache[4] || (_cache[4] = ($event) => $setup.clear("src")),
+                  onClick: _cache[5] || (_cache[5] = ($event) => $setup.clear("src")),
                   disabled: $setup.loading
                 }, {
-                  default: withCtx(() => [..._cache[12] || (_cache[12] = [
+                  default: withCtx(() => [..._cache[13] || (_cache[13] = [
                     createElementVNode("span", { class: "fal fa-trash" }, null, -1),
                     createTextVNode("\n              移除\n            ", -1)
                   ])]),
@@ -2545,7 +2565,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             _: 1
           }),
-          _cache[17] || (_cache[17] = createTextVNode()),
+          _cache[18] || (_cache[18] = createTextVNode()),
           $setup.item.src !== "" ? (openBlock(), createBlock($setup["BFormGroup"], {
             key: 0,
             class: "",
@@ -2564,7 +2584,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     src: $setup.previewSrc,
                     type: "video/mp4"
                   }, null, 8, _hoisted_13),
-                  _cache[16] || (_cache[16] = createTextVNode()),
+                  _cache[17] || (_cache[17] = createTextVNode()),
                   $setup.previewCaptionSrc ? (openBlock(), createElementBlock("track", {
                     key: 0,
                     default: "",
@@ -2578,7 +2598,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             _: 1
           })) : createCommentVNode("", true),
-          _cache[18] || (_cache[18] = createTextVNode()),
+          _cache[19] || (_cache[19] = createTextVNode()),
           $setup.isCloudVideo ? (openBlock(), createBlock($setup["BFormGroup"], {
             key: 1,
             label: "影片時數 (秒)",
@@ -2590,7 +2610,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createVNode($setup["BFormInput"], {
                 id: "input-section-duration",
                 modelValue: $setup.item.duration,
-                "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $setup.item.duration = $event),
+                "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => $setup.item.duration = $event),
                 trim: ""
               }, null, 8, ["modelValue"])
             ]),
@@ -2600,16 +2620,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       _: 1
     }),
-    _cache[26] || (_cache[26] = createTextVNode()),
+    _cache[28] || (_cache[28] = createTextVNode()),
     $setup.item.captionSrc === "" ? (openBlock(), createBlock($setup["BFormGroup"], {
       key: 0,
       label: "上傳字幕"
     }, {
       default: withCtx(() => [
-        _cache[19] || (_cache[19] = createElementVNode("div", { class: "text-muted mb-2" }, [
+        _cache[20] || (_cache[20] = createElementVNode("div", { class: "text-muted mb-2" }, [
           createElementVNode("small", null, "\n            僅支援格式為 .vtt .srt 的文件\n          ")
         ], -1)),
-        _cache[20] || (_cache[20] = createTextVNode()),
+        _cache[21] || (_cache[21] = createTextVNode()),
         createVNode($setup["FileUploader"], {
           accept: ".vtt,.srt",
           onUploaded: $setup.captionUploaded,
@@ -2624,23 +2644,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, {
       default: withCtx(() => [
         createElementVNode("div", _hoisted_15, [
-          _cache[22] || (_cache[22] = createElementVNode("div", { class: "input-group-text" }, [
+          _cache[23] || (_cache[23] = createElementVNode("div", { class: "input-group-text" }, [
             createElementVNode("span", { class: "fal fa-fw fa-closed-captioning me-2" })
           ], -1)),
-          _cache[23] || (_cache[23] = createTextVNode()),
+          _cache[24] || (_cache[24] = createTextVNode()),
           createElementVNode("input", {
             type: "text",
             class: "form-control",
             disabled: "",
             value: $setup.item.captionSrc
           }, null, 8, _hoisted_16),
-          _cache[24] || (_cache[24] = createTextVNode()),
+          _cache[25] || (_cache[25] = createTextVNode()),
           createVNode($setup["BButton"], {
             variant: "danger",
-            onClick: _cache[6] || (_cache[6] = ($event) => $setup.clear("captionSrc")),
+            onClick: _cache[7] || (_cache[7] = ($event) => $setup.clear("captionSrc")),
             disabled: $setup.loading
           }, {
-            default: withCtx(() => [..._cache[21] || (_cache[21] = [
+            default: withCtx(() => [..._cache[22] || (_cache[22] = [
               createElementVNode("span", { class: "fal fa-trash" }, null, -1),
               createTextVNode("\n            移除\n          ", -1)
             ])]),
@@ -2652,7 +2672,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }))
   ]);
 }
-const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-ee27f78d"], ["__file", "SectionVideoEdit.vue"]]);
+const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-260ef0ff"], ["__file", "SectionVideoEdit.vue"]]);
 export {
   SectionVideoEdit as default
 };
