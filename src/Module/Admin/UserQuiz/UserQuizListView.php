@@ -87,7 +87,7 @@ class UserQuizListView implements ViewModelInterface, FilterAwareViewModelInterf
         $pagination = $items->getPagination();
 
         // Prepare Form
-        $form = $this->formFactory->create(GridForm::class);
+        $form = $this->formFactory->create(GridForm::class, lessonId: $lesson);
         $form->fill(compact('search', 'filter'));
 
         $showFilters = $this->isFiltered($filter);

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Module\Admin\UserQuiz\Form;
 
+use Lyrasoft\Luna\Field\UserModalField;
+use Lyrasoft\Melo\Features\Section\Quiz\QuizSection;
+use Lyrasoft\Melo\Field\SectionListField;
 use Unicorn\Enum\BasicState;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Form\Attributes\FormDefine;
@@ -15,6 +18,10 @@ use Windwalker\Form\Form;
 class GridForm
 {
     use TranslatorTrait;
+
+    public function __construct(protected int $lessonId)
+    {
+    }
 
     #[FormDefine]
     #[NS('search')]
@@ -30,6 +37,16 @@ class GridForm
     #[NS('filter')]
     public function filter(Form $form): void
     {
+        $form->add('user_segment_map.user_id', UserModalField::class)
+            ->label('學生')
+            ->onchange('this.form.submit()');
+
+        $form->add('user_segment_map.segment_id', SectionListField::class)
+            ->label('章節')
+            ->option($this->trans('unicorn.select.placeholder'), '')
+            ->lessonId($this->lessonId)
+            ->sectionType(QuizSection::id())
+            ->onchange('this.form.submit()');
     }
 
     #[FormDefine]
