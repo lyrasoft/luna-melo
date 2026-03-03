@@ -112,7 +112,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       createElementVNode("div", _hoisted_2, [
         createElementVNode("div", _hoisted_3, [
           _cache[28] || (_cache[28] = createElementVNode("div", { class: "modal-header" }, [
-            createElementVNode("h4", { class: "modal-title" }, "\n            作業上傳\n          "),
+            createElementVNode("h4", { class: "modal-title" }, "\r\n            作業上傳\r\n          "),
             createTextVNode(),
             createElementVNode("button", {
               type: "button",
@@ -124,22 +124,22 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           _cache[29] || (_cache[29] = createTextVNode()),
           createElementVNode("div", _hoisted_4, [
             $setup.currentSegment ? (openBlock(), createElementBlock("form", _hoisted_5, [
-              _cache[13] || (_cache[13] = createElementVNode("h6", null, "\n              作業標題\n            ", -1)),
+              _cache[13] || (_cache[13] = createElementVNode("h6", null, "\r\n              作業標題\r\n            ", -1)),
               _cache[14] || (_cache[14] = createTextVNode()),
               createElementVNode("div", _hoisted_6, toDisplayString($setup.segmentTitle), 1),
               _cache[15] || (_cache[15] = createTextVNode()),
-              _cache[16] || (_cache[16] = createElementVNode("h6", null, "\n              章節\n            ", -1)),
+              _cache[16] || (_cache[16] = createElementVNode("h6", null, "\r\n              章節\r\n            ", -1)),
               _cache[17] || (_cache[17] = createTextVNode()),
-              createElementVNode("div", _hoisted_7, "\n              第 " + toDisplayString($setup.chapterIndex) + " 章 作業 " + toDisplayString($setup.typeIndex), 1),
+              createElementVNode("div", _hoisted_7, "\r\n              第 " + toDisplayString($setup.chapterIndex) + " 章 作業 " + toDisplayString($setup.typeIndex), 1),
               _cache[18] || (_cache[18] = createTextVNode()),
-              _cache[19] || (_cache[19] = createElementVNode("h6", null, "\n              敘述\n            ", -1)),
+              _cache[19] || (_cache[19] = createElementVNode("h6", null, "\r\n              敘述\r\n            ", -1)),
               _cache[20] || (_cache[20] = createTextVNode()),
               createElementVNode("div", {
                 class: "mb-4 text-muted j-homework-content",
                 innerHTML: $setup.currentSegment.content
               }, null, 8, _hoisted_8),
               _cache[21] || (_cache[21] = createTextVNode()),
-              _cache[22] || (_cache[22] = createElementVNode("h6", null, "\n              作業敘述\n            ", -1)),
+              _cache[22] || (_cache[22] = createElementVNode("h6", null, "\r\n              作業敘述\r\n            ", -1)),
               _cache[23] || (_cache[23] = createTextVNode()),
               createElementVNode("div", _hoisted_9, [
                 withDirectives(createElementVNode("textarea", {
@@ -187,7 +187,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   _cache[8] || (_cache[8] = createElementVNode("label", {
                     class: "form-check-label",
                     for: "front-show-true"
-                  }, "\n                  公開在前台\n                ", -1))
+                  }, "\r\n                  公開在前台\r\n                ", -1))
                 ]),
                 _cache[11] || (_cache[11] = createTextVNode()),
                 createElementVNode("div", _hoisted_14, [
@@ -205,7 +205,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   _cache[10] || (_cache[10] = createElementVNode("label", {
                     class: "form-check-label",
                     for: "front-show-false"
-                  }, "\n                  不公開在前台\n                ", -1))
+                  }, "\r\n                  不公開在前台\r\n                ", -1))
                 ])
               ]),
               _cache[26] || (_cache[26] = createTextVNode()),
@@ -222,14 +222,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   class: "btn btn-primary j-homework-submit",
                   disabled: $setup.loading,
                   onClick: _cache[4] || (_cache[4] = (...args) => $setup.submit && $setup.submit(...args))
-                }, "\n                確認送出\n              ", 8, _hoisted_17),
+                }, "\r\n                確認送出\r\n              ", 8, _hoisted_17),
                 _cache[12] || (_cache[12] = createTextVNode()),
                 createElementVNode("button", {
                   type: "button",
                   class: "btn btn-outline-primary",
                   "data-bs-dismiss": "modal",
                   disabled: $setup.loading
-                }, "\n                先跳過此節\n              ", 8, _hoisted_18)
+                }, "\r\n                先跳過此節\r\n              ", 8, _hoisted_18)
               ])
             ], 512)) : createCommentVNode("", true)
           ])

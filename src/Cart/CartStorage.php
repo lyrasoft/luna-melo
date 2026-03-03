@@ -12,15 +12,19 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Cart;
 
 use Windwalker\Core\State\AppState;
+use Windwalker\DI\Attributes\Service;
+
+use function Windwalker\ds;
 
 /**
  * The CartStorage class.
  *
  * @psalm-type CartStorageItem = array{ lessonId: int, attachments: ?array<int, int>, quantity: int, options: array }
  */
+#[Service]
 class CartStorage
 {
-    protected const CART_ITEMS_KEY = 'cart.items';
+    protected const string CART_ITEMS_KEY = 'cart.items';
 
     public function __construct(
         protected AppState $state

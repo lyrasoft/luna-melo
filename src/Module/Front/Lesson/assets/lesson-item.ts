@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import tz from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 
-useLessonCartButtons();
+useLessonCartButtons('[data-melo-task=buy]');
 
 dayjs.extend(utc);
 dayjs.extend(tz);

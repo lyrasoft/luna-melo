@@ -104,7 +104,7 @@ const _hoisted_16 = ["for"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createElementVNode("div", _hoisted_2, [
-      createTextVNode("\n      第 " + toDisplayString($props.index) + " 題（" + toDisplayString($setup.typeToTitle($props.question.type)) + "）:", 1),
+      createTextVNode("\r\n      第 " + toDisplayString($props.index) + " 題（" + toDisplayString($setup.typeToTitle($props.question.type)) + "）:", 1),
       _cache[3] || (_cache[3] = createElementVNode("br", null, null, -1)),
       createTextVNode(" " + toDisplayString($props.question.title), 1)
     ]),
@@ -176,7 +176,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createElementVNode("label", {
             class: "form-check-label",
             for: "question-" + $props.question.id + "-option-yes"
-          }, "\n              是\n            ", 8, _hoisted_13)
+          }, "\r\n              是\r\n            ", 8, _hoisted_13)
         ]),
         _cache[8] || (_cache[8] = createTextVNode()),
         createElementVNode("div", _hoisted_14, [
@@ -194,7 +194,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createElementVNode("label", {
             class: "form-check-label",
             for: "question-" + $props.question.id + "-option-no"
-          }, "\n              否\n            ", 8, _hoisted_16)
+          }, "\r\n              否\r\n            ", 8, _hoisted_16)
         ])
       ])) : createCommentVNode("", true)
     ])

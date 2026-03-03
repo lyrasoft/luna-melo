@@ -1,24 +1,38 @@
 import { ApiReturn, delegate, route, simpleAlert, useHttpClient, useUnicorn } from '@windwalker-io/unicorn-next';
 import { CartItem } from '~melo/types';
 
-export function useLessonCartButtons(selector = '[data-melo-task=buy]', quantitySelector = '') {
+export function useLessonCartButtons(selector?: string) {
   listen(selector);
 
   return {
     off,
     buy,
     toCartPage,
-    sendAddAction,
+    add,
+    updateCartButtons,
   };
 }
 
 let isListening = false;
 
-function buttonClicked(e: Event)  {
-  buy(e.currentTarget as HTMLElement);
+async function buttonClicked(e: Event)  {
+  const { isAxiosError } = await useHttpClient();
+
+  try {
+    buy((e.target as HTMLElement).dataset.id);
+  } catch (e) {
+    if (isAxiosError(e)) {
+      simpleAlert(e.message, '', 'warning');
+    }
+    return;
+  }
 }
 
-function listen(selector = '[data-melo-task=buy]') {
+function listen(selector?: string) {
+  if (!selector) {
+    return;
+  }
+
   if (isListening) {
     return;
   }
@@ -34,10 +48,18 @@ function off() {
   isListening = false;
 }
 
-async function sendAddAction(el: HTMLElement) {
-  const lessonId = el.dataset.id;
+async function add(id: any, data?: Record<string, any>) {
+  return sendAddAction(id, data);
+}
 
-  if (!lessonId) {
+async function buy(id: any, data?: Record<string, any>) {
+  await sendAddAction(id, data);
+
+  toCartPage();
+}
+
+async function sendAddAction(id: any, data?: Record<string, any>): Promise<CartItem[]> {
+  if (!id) {
     throw new Error('No lesson ID');
   }
 
@@ -47,11 +69,12 @@ async function sendAddAction(el: HTMLElement) {
     const res = await post<ApiReturn<CartItem[]>>(
       '@melo_cart_ajax/addToCart',
       {
-        id: lessonId,
+        id,
+        data,
       }
     );
 
-    updateCartButton(res.data.data);
+    updateCartButtons(res.data.data);
 
     return res.data.data;
   } catch (e) {
@@ -60,26 +83,22 @@ async function sendAddAction(el: HTMLElement) {
   }
 }
 
-async function buy(el: HTMLElement) {
-  const { isAxiosError } = await useHttpClient();
+function toCartPage(open = false) {
+  const url = route('melo_cart');
 
-  try {
-    await sendAddAction(el);
-  } catch (e) {
-    if (isAxiosError(e)) {
-      simpleAlert(e.message, '', 'warning');
-    }
-    return;
+  if (open) {
+    window.open(url);
+  } else {
+    window.location.href = url;
   }
-
-  toCartPage();
 }
 
-function toCartPage() {
-  location.href = route('melo_cart');
+export interface UpdateCartButtonsOptions {
+  buttonSelector?: string;
+  badgeSelector?: string;
 }
 
-function updateCartButton(items: CartItem[]) {
+function updateCartButtons(items: CartItem[], options: UpdateCartButtonsOptions = {}) {
   const count = items.length;
 
   const u = useUnicorn();
@@ -95,10 +114,14 @@ function updateCartButton(items: CartItem[]) {
     })
   );
 
-  const $cartButtons = document.querySelectorAll<HTMLButtonElement>('[data-melo-role=cart-button]');
+  const $cartButtons = document.querySelectorAll<HTMLButtonElement>(
+    options.buttonSelector || '[data-melo-role=cart-button]'
+  );
 
   for (const $cartButton of $cartButtons) {
-    const $cartQuantity = $cartButton.querySelector<HTMLDivElement>('[data-melo-role=cart-quantity]');
+    const $cartQuantity = $cartButton.querySelector<HTMLDivElement>(
+      options.badgeSelector || '[data-melo-role=cart-quantity]'
+    );
 
     $cartButton.classList.toggle('h-has-items', count > 0);
 

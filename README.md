@@ -246,11 +246,18 @@ yarn add sweetalert ts-luxon
 
 ### Add Cart Button
 
-Currently melo Beta has no cart button widget. You must add it to HTML manually.
+Please call `useLessonCartButtons()` at the page where you want to use "Add to Cart" button, 
+or just call it at `main.ts`.
 
-You must includes these 2 attributes to make JS works:
+```ts
+import { useLessonCartButtons } from '@lyrasoft/melo';
 
-- `[data-task=buy]`
+useLessonCartButtons();
+```
+
+Then you must includes these 2 attributes to make `aff-to-cart` buttons work:
+
+- `[data-melo-task=buy]`
 - `[data-id=lesson-id]`
 
 ```php
@@ -259,11 +266,92 @@ You must includes these 2 attributes to make JS works:
 ?>
 <button type="button"
     class="btn btn-primary position-relative z-3 rounded-pill"
-    data-task="buy"
-    data-id="{{ $item->getId() }}"
+    data-melo-task="buy"
+    data-id="{{ $item->id }}"
 >
     立即購買
 </button>
+```
+
+You can customize the selector to select different buttons to buy lesson, by default, when button clicked,
+you will be redirected to `lesson_cart` page for instantly purchasing.
+
+```ts
+const { off } = useLessonCartButtons('.add-to-cart');
+```
+
+You can also customize your add-to-cart flow, to disable the default behavior, just cancel the first argument.
+
+```ts
+const {
+    buy, // Add to cart and instantly redirect to cart page
+    add, // Just add to cart, without redirecting
+    toCartPage // Redirect to cart page
+    updateCartButtons,
+} = useLessonCartButtons();
+
+// Add to cart and notice user
+
+try {
+    const items = await add(lessonId);
+
+    // Optional, to update cart buttons state.
+    updateCartButtons(items);
+    
+    const v = await simpleConfirm('已加入購物車', '', 'success', {
+        buttons: [
+            '繼續購物',
+            '前往購物車'
+        ]
+    });
+    
+    if (v) {
+        toCartPage();
+    }
+} catch (e) {
+    // Handle error
+}
+```
+
+#### Update Cart Count
+
+Add attributes like below to your cart button badge, and the count will be updated automatically 
+when you add lesson to cart.
+
+When cart items is not `0`, melo will add `h-has-items` to button class, you can display or hide badge with this class.
+
+```diff
+<a href="{{ $nav->to('lesson_cart') }}" 
++    data-melo-role="cart-button"
+    class="btn btn-primary" >
+    <i class="fal fa-shopping-cart"></i>
+    <span class="badge bg-danger rounded-pill"
++        data-melo-role="cart-quantity"
+    >
+        0
+    </span>
+</a>
+```
+
+Otherwise you can listen to events
+
+```ts
+import { CartItem } from '@lyrasoft/melo';
+
+document.addEventListener('melo.cart.update', (e) => {
+    const { items, count } = e.detail as { items: CartItem[], count: number };
+
+    // Update your cart quantity badge
+});
+
+u.on('melo.cart.update', (items: CartItem[], count: number) => {
+    // Update your cart quantity badge
+});
+
+// Or just get items and update it manually
+const items = await add(id);
+
+items.length; // Get cart items count
 ```
 
 ## Register Admin Menu
@@ -302,4 +390,5 @@ $menu->link($lang('unicorn.title.grid', title: '訂單'))
 - `my_lecture_list`
 - `order_list`
 - `order_item`
+- `lesson_cart`
 

@@ -2187,14 +2187,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 type: "button",
                 class: "btn btn-outline-secondary btn-sm",
                 onClick: _cache[0] || (_cache[0] = withModifiers((...args) => $setup.cancel && $setup.cancel(...args), ["stop"]))
-              }, "\n                取消上傳\n              ")
+              }, "\r\n                取消上傳\r\n              ")
             ])
           ])) : (openBlock(), createElementBlock("div", _hoisted_4$1, [
             _cache[9] || (_cache[9] = createElementVNode("div", { class: "text-center mb-3" }, [
               createElementVNode("i", { class: "far fa-upload fa-fw fa-2x" })
             ], -1)),
             _cache[10] || (_cache[10] = createTextVNode()),
-            _cache[11] || (_cache[11] = createElementVNode("div", { class: "text-center mb-3" }, "\n              上傳: 拖拉檔案或按此瀏覽\n            ", -1)),
+            _cache[11] || (_cache[11] = createElementVNode("div", { class: "text-center mb-3" }, "\r\n              上傳: 拖拉檔案或按此瀏覽\r\n            ", -1)),
             _cache[12] || (_cache[12] = createTextVNode()),
             createElementVNode("div", _hoisted_5$1, [
               createVNode($setup["BButton"], {
@@ -2205,7 +2205,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               }, {
                 default: withCtx(() => [..._cache[8] || (_cache[8] = [
                   createElementVNode("i", { class: "far fa-plus-circle" }, null, -1),
-                  createTextVNode("\n                瀏覽檔案\n              ", -1)
+                  createTextVNode("\r\n                瀏覽檔案\r\n              ", -1)
                 ])]),
                 _: 1
               })
@@ -2216,7 +2216,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32);
 }
-const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-008555b2"], ["__file", "FileUploader.vue"]]);
+const FileUploader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-1bc1eb38"], ["__file", "FileUploader.vue"]]);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "SectionVideoEdit",
   props: {
@@ -2466,12 +2466,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     default: withCtx(() => [
                       createElementVNode("div", _hoisted_3, [
                         createElementVNode("small", null, [
-                          createTextVNode("\n                  請上傳1280x720(720p)或1920x1080(1080p) 的 mp4 檔案。\n                  並且 Bitrate 在 " + toDisplayString($setup.maxBitrateMbps) + "Mbps 以下，以確保順暢的播放體驗。\n                  (", 1),
+                          createTextVNode("\r\n                  請上傳1280x720(720p)或1920x1080(1080p) 的 mp4 檔案。\r\n                  並且 Bitrate 在 " + toDisplayString($setup.maxBitrateMbps) + "Mbps 以下，以確保順暢的播放體驗。\r\n                  (", 1),
                           createElementVNode("a", {
                             target: "_blank",
                             href: $setup.config?.bitrateDocUrl || "#"
                           }, "壓縮教學", 8, _hoisted_4),
-                          _cache[8] || (_cache[8] = createTextVNode(")\n                ", -1))
+                          _cache[8] || (_cache[8] = createTextVNode(")\r\n                ", -1))
                         ])
                       ]),
                       _cache[9] || (_cache[9] = createTextVNode()),
@@ -2521,7 +2521,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         }, {
                           default: withCtx(() => [..._cache[10] || (_cache[10] = [
                             createElementVNode("i", { class: "far fa-check" }, null, -1),
-                            createTextVNode("\n                  送出\n                ", -1)
+                            createTextVNode("\r\n                  送出\r\n                ", -1)
                           ])]),
                           _: 1
                         })
@@ -2557,7 +2557,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 }, {
                   default: withCtx(() => [..._cache[13] || (_cache[13] = [
                     createElementVNode("span", { class: "fal fa-trash" }, null, -1),
-                    createTextVNode("\n              移除\n            ", -1)
+                    createTextVNode("\r\n              移除\r\n            ", -1)
                   ])]),
                   _: 1
                 }, 8, ["disabled"])
@@ -2627,7 +2627,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, {
       default: withCtx(() => [
         _cache[20] || (_cache[20] = createElementVNode("div", { class: "text-muted mb-2" }, [
-          createElementVNode("small", null, "\n            僅支援格式為 .vtt .srt 的文件\n          ")
+          createElementVNode("small", null, "\r\n            僅支援格式為 .vtt .srt 的文件\r\n          ")
         ], -1)),
         _cache[21] || (_cache[21] = createTextVNode()),
         createVNode($setup["FileUploader"], {
@@ -2662,7 +2662,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           }, {
             default: withCtx(() => [..._cache[22] || (_cache[22] = [
               createElementVNode("span", { class: "fal fa-trash" }, null, -1),
-              createTextVNode("\n            移除\n          ", -1)
+              createTextVNode("\r\n            移除\r\n          ", -1)
             ])]),
             _: 1
           }, 8, ["disabled"])
@@ -2672,7 +2672,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }))
   ]);
 }
-const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-260ef0ff"], ["__file", "SectionVideoEdit.vue"]]);
+const SectionVideoEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e26fcac5"], ["__file", "SectionVideoEdit.vue"]]);
 export {
   SectionVideoEdit as default
 };

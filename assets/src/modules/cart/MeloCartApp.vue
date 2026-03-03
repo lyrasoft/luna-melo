@@ -59,7 +59,7 @@ async function loadItems() {
       items.value = data.items;
       totals.value = data.totals;
     }).catch((e) => {
-      swal(e.statusText || '', e.message || '', 'warning');
+      simpleAlert(e.statusText || '', e.message || '', 'warning');
     });
 }
 
@@ -121,20 +121,20 @@ function submit(e: PointerEvent) {
             <h4 class="text-secondary mb-0">
               購物車
             </h4>
-            <div v-if="!count" class="position-relative c-cart-card__invalid">
-              <div class="c-cart-card__invalid-text text-center">
-                <div class="mb-4">
-                  您的購物車是空的，來去逛逛！
-                </div>
-
-                <a :href="lessonLink" class="btn btn-lg btn-primary h-btn px-4">
-                  探索課程
-                </a>
-              </div>
-            </div>
           </div>
 
-          <div v-if="count" class="table-responsive bg-light">
+          <div v-if="count === 0" class="position-relative c-cart-card__invalid card-body border-top py-5">
+            <div class="c-cart-card__invalid-text text-center">
+              <div class="mb-4">
+                您的購物車是空的，來去逛逛！
+              </div>
+
+              <a :href="lessonLink" class="btn btn-lg btn-primary h-btn px-4">
+                探索課程
+              </a>
+            </div>
+          </div>
+          <div v-else class="table-responsive bg-light">
             <CartItems :items @delete-item="deleteItem" />
           </div>
         </div>

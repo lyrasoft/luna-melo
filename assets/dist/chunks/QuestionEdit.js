@@ -739,7 +739,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
               class: "m-0"
             }, {
               default: withCtx(() => [..._cache[2] || (_cache[2] = [
-                createTextVNode("\n              正確答案\n            ", -1)
+                createTextVNode("\r\n              正確答案\r\n            ", -1)
               ])]),
               _: 1
             }, 8, ["modelValue"])
@@ -877,7 +877,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
       }, {
         default: withCtx(() => [..._cache[1] || (_cache[1] = [
           createElementVNode("i", { class: "fas fa-plus" }, null, -1),
-          createTextVNode("\n      新增選項\n    ", -1)
+          createTextVNode("\r\n      新增選項\r\n    ", -1)
         ])]),
         _: 1
       })
@@ -1047,7 +1047,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createVNode($setup["BFormRadio"], { value: "1" }, {
               default: withCtx(() => [..._cache[7] || (_cache[7] = [
                 createElementVNode("i", { class: "fas fa-check" }, null, -1),
-                createTextVNode("\n          是\n        ", -1)
+                createTextVNode("\r\n          是\r\n        ", -1)
               ])]),
               _: 1
             }),
@@ -1055,7 +1055,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createVNode($setup["BFormRadio"], { value: "0" }, {
               default: withCtx(() => [..._cache[8] || (_cache[8] = [
                 createElementVNode("i", { class: "fas fa-xmark" }, null, -1),
-                createTextVNode("\n          否\n        ", -1)
+                createTextVNode("\r\n          否\r\n        ", -1)
               ])]),
               _: 1
             })

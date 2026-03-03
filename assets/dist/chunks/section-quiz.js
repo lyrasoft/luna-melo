@@ -162,7 +162,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       createElementVNode("div", _hoisted_2, [
         createElementVNode("div", _hoisted_3, [
           _cache[9] || (_cache[9] = createElementVNode("div", { class: "modal-header" }, [
-            createElementVNode("h4", { class: "modal-title" }, "\n              測驗\n            "),
+            createElementVNode("h4", { class: "modal-title" }, "\r\n              測驗\r\n            "),
             createTextVNode(),
             createElementVNode("button", {
               type: "button",
@@ -176,7 +176,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createElementVNode("form", _hoisted_5, [
               _cache[1] || (_cache[1] = createElementVNode("div", { class: "my-4 text-muted text-center j-quiz-title" }, null, -1)),
               _cache[2] || (_cache[2] = createTextVNode()),
-              _cache[3] || (_cache[3] = createElementVNode("div", { class: "text-danger mb-5 text-center" }, "\n                ＊提醒您未完成此測驗無法前往下個章節唷！\n              ", -1)),
+              _cache[3] || (_cache[3] = createElementVNode("div", { class: "text-danger mb-5 text-center" }, "\r\n                ＊提醒您未完成此測驗無法前往下個章節唷！\r\n              ", -1)),
               _cache[4] || (_cache[4] = createTextVNode()),
               $setup.loaded ? (openBlock(), createElementBlock("div", _hoisted_6, [
                 (openBlock(true), createElementBlock(Fragment, null, renderList($setup.questions, (question, index) => {
@@ -195,7 +195,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 }), 128))
               ])) : createCommentVNode("", true),
               _cache[5] || (_cache[5] = createTextVNode()),
-              _cache[6] || (_cache[6] = createElementVNode("div", { class: "text-danger text-center mb-5" }, "\n                ＊提交後無法變更答案唷！\n              ", -1)),
+              _cache[6] || (_cache[6] = createElementVNode("div", { class: "text-danger text-center mb-5" }, "\r\n                ＊提交後無法變更答案唷！\r\n              ", -1)),
               _cache[7] || (_cache[7] = createTextVNode()),
               createElementVNode("input", {
                 type: "hidden",
@@ -210,7 +210,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   class: "btn btn-primary btn-lg j-quiz-submit w-100",
                   disabled: $setup.loading,
                   onClick: _cache[0] || (_cache[0] = (...args) => $setup.submit && $setup.submit(...args))
-                }, "\n                  提交\n                ", 8, _hoisted_9)
+                }, "\r\n                  提交\r\n                ", 8, _hoisted_9)
               ])
             ], 512)
           ])

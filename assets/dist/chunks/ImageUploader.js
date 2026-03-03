@@ -222,7 +222,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createElementVNode("i", { class: "fas fa-upload fa-2x" })
         ], -1)),
         _cache[6] || (_cache[6] = createTextVNode()),
-        _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted" }, "\n          拖拉至此上傳圖片\n        ", -1)),
+        _cache[7] || (_cache[7] = createElementVNode("div", { class: "text-muted" }, "\r\n          拖拉至此上傳圖片\r\n        ", -1)),
         _cache[8] || (_cache[8] = createTextVNode()),
         createElementVNode("div", null, [
           createElementVNode("button", {
@@ -231,7 +231,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             onClick: _cache[0] || (_cache[0] = ($event) => $setup.open())
           }, [..._cache[2] || (_cache[2] = [
             createElementVNode("i", { class: "fas fa-image" }, null, -1),
-            createTextVNode("\n            點擊此處選擇檔案\n          ", -1)
+            createTextVNode("\r\n            點擊此處選擇檔案\r\n          ", -1)
           ])]),
           _cache[4] || (_cache[4] = createTextVNode()),
           withDirectives((openBlock(), createElementBlock("button", {
@@ -255,7 +255,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: _cache[1] || (_cache[1] = ($event) => $setup.open())
         }, [..._cache[10] || (_cache[10] = [
           createElementVNode("i", { class: "fas fa-image" }, null, -1),
-          createTextVNode("\n          更換檔案\n        ", -1)
+          createTextVNode("\r\n          更換檔案\r\n        ", -1)
         ])]),
         _cache[12] || (_cache[12] = createTextVNode()),
         createElementVNode("div", null, [
@@ -279,7 +279,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         onClick: $setup.clear
       }, [..._cache[15] || (_cache[15] = [
         createElementVNode("i", { class: "fal fa-trash" }, null, -1),
-        createTextVNode("\n        移除圖片\n      ", -1)
+        createTextVNode("\r\n        移除圖片\r\n      ", -1)
       ])])
     ])) : createCommentVNode("", true)
   ], 36);

@@ -1,9 +1,11 @@
 import { App } from 'vue';
 
+declare function add(id: any, data?: Record<string, any>): Promise<CartItem[]>;
+
 export declare interface BaseQnParams extends QnParams {
 }
 
-declare function buy(el: HTMLElement): Promise<void>;
+declare function buy(id: any, data?: Record<string, any>): Promise<void>;
 
 export declare interface CartItem {
     uid: string;
@@ -190,15 +192,21 @@ export declare interface SelectQnParams extends BaseQnParams {
     options: QnOption[];
 }
 
-declare function sendAddAction(el: HTMLElement): Promise<CartItem[]>;
+declare function toCartPage(open?: boolean): void;
 
-declare function toCartPage(): void;
+declare function updateCartButtons(items: CartItem[], options?: UpdateCartButtonsOptions): void;
 
-export declare function useLessonCartButtons(selector?: string, quantitySelector?: string): {
+export declare interface UpdateCartButtonsOptions {
+    buttonSelector?: string;
+    badgeSelector?: string;
+}
+
+export declare function useLessonCartButtons(selector?: string): {
     off: typeof off;
     buy: typeof buy;
     toCartPage: typeof toCartPage;
-    sendAddAction: typeof sendAddAction;
+    add: typeof add;
+    updateCartButtons: typeof updateCartButtons;
 };
 
 export declare function useMeloFrontLessons(): {

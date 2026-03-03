@@ -82,7 +82,7 @@ const _hoisted_14 = {
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     $props.totalAssignment > 0 ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-      _cache[6] || (_cache[6] = createElementVNode("h4", { class: "card-title c-lesson-detail-card__title" }, "\n        作業\n      ", -1)),
+      _cache[6] || (_cache[6] = createElementVNode("h4", { class: "card-title c-lesson-detail-card__title" }, "\r\n        作業\r\n      ", -1)),
       _cache[7] || (_cache[7] = createTextVNode()),
       createElementVNode("div", _hoisted_2, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($setup.assignments, (assignment, index) => {
@@ -128,10 +128,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         onClick: _cache[0] || (_cache[0] = withModifiers((...args) => $setup.loadAssignments && $setup.loadAssignments(...args), ["prevent"])),
         class: normalizeClass(["d-block link-secondary border-top py-4 text-center j-get-student-assignments", { disabled: $setup.loading }])
       }, [..._cache[5] || (_cache[5] = [
-        createTextVNode("\n        查看更多 ", -1),
+        createTextVNode("\r\n        查看更多 ", -1),
         createElementVNode("i", { class: "fa-solid fa-chevron-down" }, null, -1)
       ])], 2)) : createCommentVNode("", true)
-    ], 64)) : (openBlock(), createElementBlock("div", _hoisted_14, "\n        本課程無作業要上傳唷！\n      "))
+    ], 64)) : (openBlock(), createElementBlock("div", _hoisted_14, "\r\n        本課程無作業要上傳唷！\r\n      "))
   ]);
 }
 const LessonHoemworksApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "LessonHoemworksApp.vue"]]);
