@@ -45,7 +45,7 @@ class CurrencyFormatter
         );
     }
 
-    protected function getPriceFormatter(): array
+    protected function getPriceFormatter(): mixed
     {
         return $this->melo->config('price_formatter') ?? [];
     }

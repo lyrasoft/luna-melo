@@ -6,7 +6,7 @@ namespace Lyrasoft\Melo\Features\Payment;
 
 use Lyrasoft\Melo\Data\CheckoutParams;
 use Lyrasoft\Melo\Entity\MeloOrder;
-use Lyrasoft\ShopGo\Entity\OrderItem;
+use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
@@ -24,7 +24,7 @@ interface MeloPaymentInterface
 
     /**
      * @param  MeloOrder  $order
-     * @param  iterable<OrderItem>   $items
+     * @param  iterable<MeloOrderItem>   $items
      *
      * @return  string
      */
@@ -33,6 +33,8 @@ interface MeloPaymentInterface
     public function runTask(AppContext $app, MeloOrder $order, string $task): mixed;
 
     public function isTest(): bool;
+
+    public function getParams(): array;
 
     public function toArray(LanguageInterface $lang): array;
 }

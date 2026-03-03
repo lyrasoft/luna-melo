@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Payment;
 
-use Lyrasoft\EventBooking\Data\EventAttendingStore;
-use Lyrasoft\EventBooking\Entity\EventOrder;
 use Lyrasoft\Melo\Data\CheckoutParams;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Windwalker\Core\Application\AppContext;
@@ -20,9 +18,11 @@ class TransferPayment implements MeloPaymentInterface
         protected ApplicationInterface $app,
         protected ?\Closure $renderHandler,
         string $title = '',
+        array $params = [],
         public bool $test = false,
     ) {
         $this->title = $title;
+        $this->params = $params;
     }
 
     public static function getId(): string
@@ -78,14 +78,14 @@ class TransferPayment implements MeloPaymentInterface
         return $this->app->call(
             $handler,
             [
-                EventOrder::class => $order,
+                MeloOrder::class => $order,
                 'order' => $order,
                 'attends' => $items,
             ]
         );
     }
 
-    public function createTransactionNo(EventOrder $order): string
+    public function createTransactionNo(MeloOrder $order): string
     {
         return '';
     }

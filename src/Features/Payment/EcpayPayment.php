@@ -41,9 +41,12 @@ class EcpayPayment implements MeloPaymentInterface
         protected ApplicationInterface $app,
         public EcpayPaymentType $type,
         string $title = '',
+        array $params = [],
+        public \Closure|null $inputHandler = null,
         public bool $testMode = false,
     ) {
         $this->title = $title;
+        $this->params = $params;
     }
 
     public function getTitle(LanguageInterface $lang): string
@@ -105,6 +108,18 @@ class EcpayPayment implements MeloPaymentInterface
             $order->expiredOn = chronos('+10minutes');
         } else {
             $order->expiredOn = chronos('+7days');
+        }
+
+        if ($this->inputHandler) {
+            $input = $this->app->call(
+                $this->inputHandler,
+                [
+                    'input' => $input,
+                    'payment' => $this,
+                    'order' => $order,
+                    'params' => $params,
+                ]
+            );
         }
 
         $order->paymentData->input = $input;
@@ -288,9 +303,9 @@ class EcpayPayment implements MeloPaymentInterface
     protected function getEnvCredentials(): array
     {
         return [
-            env("MELO_ECPAY_MERCHANT_ID", '2000132'),
-            env("MELO_ECPAY_HASH_KEY", '5294y06JbISpM5x9'),
-            env("MELO_ECPAY_HASH_IV", 'v77hoKGq4kWxNNIS'),
+            env("MELO_ECPAY_MERCHANT_ID") ?: '2000132',
+            env("MELO_ECPAY_HASH_KEY") ?:  '5294y06JbISpM5x9',
+            env("MELO_ECPAY_HASH_IV") ?: 'v77hoKGq4kWxNNIS',
         ];
     }
 }

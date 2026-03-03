@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Features\Payment;
 
-use Lyrasoft\EventBooking\Entity\EventOrder;
+use Lyrasoft\Melo\Entity\MeloOrder;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
 use Windwalker\DI\Attributes\Inject;
@@ -17,7 +17,9 @@ trait PaymentTrait
     #[Inject]
     protected Navigator $nav;
 
-    public function getTaskEndpoint(EventOrder $order): RouteUri
+    public protected(set) array $params = [];
+
+    public function getTaskEndpoint(MeloOrder $order): RouteUri
     {
         return $this->nav->to('melo_payment_task')->id($order->id)->full();
     }
@@ -27,6 +29,11 @@ trait PaymentTrait
         return $this->title;
     }
 
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
     public function toArray(LanguageInterface $lang): array
     {
         return [
@@ -34,6 +41,7 @@ trait PaymentTrait
             'typeTitle' => static::getTypeTitle($lang),
             'title' => $this->getTitle($lang),
             'description' => static::getDescription($lang),
+            'params' => $this->getParams()
         ];
     }
 }
