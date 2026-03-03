@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Enum;
 
 use Windwalker\Utilities\Attributes\Enum\Title;
+use Windwalker\Utilities\Enum\EnumRichInterface;
+use Windwalker\Utilities\Enum\EnumRichTrait;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
-enum InvoiceType: string implements EnumTranslatableInterface
+enum InvoiceType: string implements EnumRichInterface
 {
-    use EnumTranslatableTrait;
+    use EnumRichTrait;
 
     #[Title('個人')]
     case IDV = 'idv';

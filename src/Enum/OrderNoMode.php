@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Enum;
 
+use Windwalker\Utilities\Enum\EnumRichInterface;
+use Windwalker\Utilities\Enum\EnumRichTrait;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
-enum OrderNoMode: string implements EnumTranslatableInterface
+enum OrderNoMode: string implements EnumRichInterface
 {
-    use EnumTranslatableTrait;
+    use EnumRichTrait;
 
     case INCREMENT_ID = 'increment_id';
     case DAILY_SEQUENCE = 'daily_sequence';

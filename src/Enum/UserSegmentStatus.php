@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Lyrasoft\Melo\Enum;
 
 use Windwalker\Utilities\Attributes\Enum\Title;
+use Windwalker\Utilities\Enum\EnumRichInterface;
+use Windwalker\Utilities\Enum\EnumRichTrait;
 use Windwalker\Utilities\Enum\EnumSingleton;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 use Windwalker\Utilities\Contract\LanguageInterface;
 
-enum UserSegmentStatus: string implements EnumTranslatableInterface
+enum UserSegmentStatus: string implements EnumRichInterface
 {
-    use EnumTranslatableTrait;
+    use EnumRichTrait;
 
     #[Title('通過')]
     case PASSED = 'passed';
