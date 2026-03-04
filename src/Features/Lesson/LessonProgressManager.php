@@ -136,4 +136,15 @@ class LessonProgressManager
             }
         );
     }
+
+    public function getUserLessonProgress(Lesson|int $lesson, User $user, ?Collection $chapters = null): LessonProgress
+    {
+        $lessonId = $lesson instanceof Lesson ? $lesson->id : $lesson;
+
+        $chapters ??= $this->getChaptersSections($lessonId);
+
+        $sectionStudents = $this->segmentAttender->getSectionStudents($lessonId, $chapters, $user);
+
+        return $this->computeProgress($sectionStudents, $user);
+    }
 }
