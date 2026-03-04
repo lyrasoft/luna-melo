@@ -6,6 +6,7 @@ namespace Lyrasoft\Melo\Features\Segment;
 
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Luna\Tree\NodeInterface;
+use Lyrasoft\Melo\Data\LessonProgress;
 use Lyrasoft\Melo\Data\SectionStudent;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\Segment;
@@ -23,10 +24,6 @@ use function Windwalker\collect;
 class SegmentAttender
 {
     use ORMAwareTrait;
-
-    public function __construct(protected LessonService $lessonService)
-    {
-    }
 
     public function attendToSegment(User $user, Segment $segment, ?\Closure $initData = null, ?\Closure $modify = null): UserSegmentMap
     {
@@ -89,13 +86,13 @@ class SegmentAttender
     /**
      * @param  int        $lessonId
      * @param  iterable   $chapters
-     * @param  User       $user
+     * @param  User|null  $user
      *
      * @return  Collection<SectionStudent>
      */
-    public function getSectionStudents(int $lessonId, iterable $chapters, User $user): Collection
+    public function getSectionStudents(int $lessonId, iterable $chapters, ?User $user = null): Collection
     {
-        if ($user->isLogin()) {
+        if ($user && $user->isLogin()) {
             $maps = $this->getUserSegmentMaps($lessonId, $user->id)
                 ->keyBy('segmentId');
         } else {
@@ -115,5 +112,41 @@ class SegmentAttender
         }
 
         return $students;
+    }
+
+    /**
+     * @param  Collection<SectionStudent>  $sectionStudents
+     *
+     * @return  LessonProgress
+     */
+    public function computeProgress(Collection $sectionStudents): LessonProgress
+    {
+        $total = $sectionStudents->count();
+
+        return new LessonProgress(
+            done: function () use ($sectionStudents) {
+                $passed = $sectionStudents->filter(
+                    function (SectionStudent $student) {
+                        if ($student->map === null) {
+                            return false;
+                        }
+
+                        return $student->map->status->isDone();
+                    }
+                );
+
+                return $passed->count();
+            },
+            total: $total,
+        );
+    }
+
+    public function getUserLessonProgress(Lesson|int $lesson, ?User $user = null, ?Collection $chapters = null): LessonProgress
+    {
+        $lessonId = $lesson instanceof Lesson ? $lesson->id : $lesson;
+
+        $sectionStudents = $this->getSectionStudents($lessonId, $chapters, $user);
+
+        return $this->computeProgress($sectionStudents);
     }
 }

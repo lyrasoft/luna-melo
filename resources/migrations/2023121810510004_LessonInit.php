@@ -68,6 +68,7 @@ return new /** 2023121810510004_LessonInit */ class extends AbstractMigration {
                 $schema->primary('id');
                 $schema->integer('user_id');
                 $schema->integer('lesson_id');
+                $schema->decimal('progress')->length('5,2');
                 $schema->char('status')->length(7)->comment('UserLessonStatus: pass, fail, process');
                 $schema->datetime('created')->nullable(true);
 

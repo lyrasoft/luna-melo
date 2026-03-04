@@ -100,6 +100,7 @@ class SectionController
         UserService $userService,
         QuestionComposer $questionComposer,
         SegmentAttender $segmentAttender,
+        LessonProgressManager $lessonProgressManager,
         LessonService $lessonService,
         #[Input('segment_id'), Filter('int')] int $segmentId,
         #[Input('quiz')] array $userQuizzes,
@@ -169,7 +170,7 @@ class SectionController
             ]
         );
 
-        $map = $segmentAttender->attendToSegment(
+        $lessonProgressManager->attendToSegmentAndUpdateProgress(
             $user,
             $segment,
             modify: function (UserSegmentMap $map) use ($segmentScore) {
@@ -231,6 +232,7 @@ class SectionController
         UserService $userService,
         #[Inject(tag: 'image')]
         FileUploadService $fileUploadService,
+        LessonProgressManager $lessonProgressManager,
         #[Service]
         ChronosService $chronosService,
     ): object {
@@ -268,17 +270,13 @@ class SectionController
             'segment/' . $item['segment_id'] . '/homework/' . md5((string) $user->id) . '.{ext}'
         )?->getUri(true);
 
-        $userSegmentMap = $orm->findOneOrCreate(
-            UserSegmentMap::class,
-            [
-                'user_id' => $user->id,
-                'segment_id' => $segment->id,
-                'lesson_id' => $segment->lessonId,
-                'segment_type' => $segment->type,
-            ],
-            [
-                'status' => UserSegmentStatus::PENDING,
-            ]
+        $lessonProgressManager->attendToSegmentAndUpdateProgress(
+            $user,
+            $segment,
+            modify: function (UserSegmentMap $map) {
+                // Wait admin approved
+                $map->status = UserSegmentStatus::PENDING;
+            }
         );
 
         $userSegmentMap->description = $item['description'];

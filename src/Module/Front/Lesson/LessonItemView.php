@@ -154,7 +154,7 @@ class LessonItemView implements ViewModelInterface
 
         if ($currentSegment) {
             if ($user->isLogin() && $context->hasAttended) {
-                $map = $this->segmentAttender->attendToSegment(
+                [$map] = $this->lessonProgressManager->attendToSegmentAndUpdateProgress(
                     $user,
                     $currentSegment,
                     initData: function (array $map) {
@@ -169,6 +169,8 @@ class LessonItemView implements ViewModelInterface
 
                 $context->currentSectionStudent->map = $map;
                 $context->reset();
+
+                $context->lessonStudent->map->progress = $context->progress->percentage;
             }
 
             if (!$context->canAccess()) {

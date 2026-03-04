@@ -11,6 +11,8 @@ use Lyrasoft\Melo\Data\SectionMenuItem;
 use Lyrasoft\Melo\Data\SectionStudent;
 use Lyrasoft\Melo\Entity\Lesson;
 use Lyrasoft\Melo\Entity\Segment;
+use Lyrasoft\Melo\Entity\UserLessonMap;
+use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Features\LessonService;
 use Lyrasoft\Melo\Features\Segment\SegmentAttender;
 use Lyrasoft\Melo\Features\Segment\SegmentFinder;
@@ -49,43 +51,6 @@ class LessonProgressManager
         $lesson ??= $this->orm->mustFindOne(Lesson::class, $segment->lessonId);
 
         return $this->getLessonProgressContext($lesson, $user, $segment, $chapters)->canAccess();
-    }
-
-    /**
-     * @param  Collection<SectionStudent>  $sectionStudents
-     * @param  User                        $user
-     *
-     * @return  LessonProgress
-     */
-    public function computeProgress(
-        Collection $sectionStudents,
-        User $user
-    ): LessonProgress {
-        if (!$user->isLogin()) {
-            return new LessonProgress(
-                done: 0,
-                total: 0,
-            );
-        }
-
-        $total = $sectionStudents->count();
-
-        return new LessonProgress(
-            done: function () use ($sectionStudents) {
-                $passed = $sectionStudents->filter(
-                    function (SectionStudent $student) {
-                        if ($student->map === null) {
-                            return false;
-                        }
-
-                        return $student->map->status->isDone();
-                    }
-                );
-
-                return $passed->count();
-            },
-            total: $total,
-        );
     }
 
     public function getLessonProgressContext(
@@ -137,14 +102,64 @@ class LessonProgressManager
         );
     }
 
-    public function getUserLessonProgress(Lesson|int $lesson, User $user, ?Collection $chapters = null): LessonProgress
+    /**
+     * @param  Collection<SectionStudent>  $sectionStudents
+     * @param  User                        $user
+     *
+     * @return  LessonProgress
+     */
+    public function computeProgress(
+        Collection $sectionStudents,
+        User $user
+    ): LessonProgress {
+        if (!$user->isLogin()) {
+            return new LessonProgress(
+                done: 0,
+                total: 0,
+            );
+        }
+
+        return $this->segmentAttender->computeProgress($sectionStudents);
+    }
+
+    /**
+     * @param  User             $user
+     * @param  Segment          $segment
+     * @param  \Closure|null    $initData
+     * @param  \Closure|null    $modify
+     * @param  Collection|null  $chapters
+     *
+     * @return  array{ UserSegmentMap, LessonProgress }
+     */
+    public function attendToSegmentAndUpdateProgress(
+        User $user,
+        Segment $segment,
+        ?\Closure $initData = null,
+        ?\Closure $modify = null,
+        ?Collection $chapters = null,
+    ): array {
+        $map = $this->segmentAttender->attendToSegment($user, $segment, $initData, $modify);
+
+        $progress = $this->syncLessonProgress($map->lessonId, $user, $chapters);
+
+        return [$map, $progress];
+    }
+
+    public function syncLessonProgress(Lesson|int $lesson, User $user, ?Collection $chapters = null): LessonProgress
     {
         $lessonId = $lesson instanceof Lesson ? $lesson->id : $lesson;
 
-        $chapters ??= $this->getChaptersSections($lessonId);
+        $chapters ??= $this->segmentFinder->getChaptersSections($lessonId);
 
-        $sectionStudents = $this->segmentAttender->getSectionStudents($lessonId, $chapters, $user);
+        $progress = $this->segmentAttender->getUserLessonProgress($lessonId, $user, $chapters);
 
-        return $this->computeProgress($sectionStudents, $user);
+        /** @var UserLessonMap $map */
+        $map = $this->lessonService->getUserLessonMap($lesson, $user);
+
+        $map->progress = $progress->percentage;
+
+        $this->orm->updateOne($map);
+
+        return $progress;
     }
 }

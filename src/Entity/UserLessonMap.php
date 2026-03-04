@@ -36,6 +36,9 @@ class UserLessonMap implements EntityInterface
     #[Column('lesson_id')]
     public int $lessonId = 0;
 
+    #[Column('progress')]
+    public float $progress = 0.0;
+
     #[Column('status')]
     #[Cast(UserLessonStatus::class)]
     public UserLessonStatus $status {
