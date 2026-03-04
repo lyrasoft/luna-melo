@@ -21,6 +21,6 @@ enum OrderNoMode: string implements EnumRichInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('melo.order.no.mode.' . $this->getKey());
+        return $lang->trans('melo.order.no.mode.' . $this->name);
     }
 }

@@ -28,6 +28,6 @@ enum InvoiceType: string implements EnumRichInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('melo.invoice.type.' . $this->getKey());
+        return $lang->trans('melo.invoice.type.' . $this->name);
     }
 }

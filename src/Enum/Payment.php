@@ -29,6 +29,6 @@ enum Payment: string implements EnumRichInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('melo.payment.' . $this->getKey());
+        return $lang->trans('melo.payment.' . $this->name);
     }
 }

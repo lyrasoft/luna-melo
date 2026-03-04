@@ -7,7 +7,6 @@ import { formatPrice } from '~melo/shared/currency';
 import { CartItem, CartTotals, PaymentGateway, PriceObject } from '~melo/types';
 
 const props = defineProps<{
-  user: any,
   rememberedData: Record<string, any>;
   payments: Record<string, PaymentGateway>;
 }>()

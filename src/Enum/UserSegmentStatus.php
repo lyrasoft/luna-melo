@@ -38,7 +38,7 @@ enum UserSegmentStatus: string implements EnumRichInterface
 
     public function trans(LanguageInterface $lang, ...$args): string
     {
-        return $lang->trans('melo.user.segment.status.' . $this->getKey());
+        return $lang->trans('melo.user.segment.status.' . $this->name);
     }
 
     public function isDone(): bool

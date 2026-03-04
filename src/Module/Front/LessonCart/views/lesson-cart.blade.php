@@ -34,7 +34,6 @@ $vueScript->animate();
 
 $uniScript = $app->service(UnicornScript::class);
 $uniScript->data('cart.props', [
-    'user' => $userService->isLogin() ? $userService->getUser() : null,
     'rememberedData' => $checkoutData,
     'payments' => $payments,
 ]);
