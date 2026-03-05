@@ -216,7 +216,7 @@ class LessonController
 
         foreach ($userIds as $userId) {
             foreach ($lessonIds as $lessonId) {
-                $lessonDispatcher->assignLessonToUser((int) $lessonId, (int) $userId);
+                $lessonDispatcher->assignUserToLesson((int) $userId, (int) $lessonId);
             }
         }
 

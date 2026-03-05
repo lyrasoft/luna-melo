@@ -189,7 +189,7 @@ class OrderService
 
         /** @var MeloOrderItem $orderItem */
         foreach ($orderItems as $orderItem) {
-            $this->lessonDispatcher->assignLessonToUser($orderItem->lessonId, $order->userId);
+            $this->lessonDispatcher->assignUserToLesson($order->userId, $orderItem->lessonId);
         }
     }
 

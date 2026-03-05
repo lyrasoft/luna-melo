@@ -16,7 +16,7 @@ class LessonDispatcher
 {
     use ORMAwareTrait;
 
-    public function assignLessonToUser(User|int $user, Lesson|int $lesson, \Closure|array|null $initData = null, ?\Closure $modify = null): UserLessonMap
+    public function assignUserToLesson(User|int $user, Lesson|int $lesson, \Closure|array|null $initData = null, ?\Closure $modify = null): UserLessonMap
     {
         $userId = $user instanceof User ? $user->id : $user;
         $lessonId = $lesson instanceof Lesson ? $lesson->id : $lesson;
