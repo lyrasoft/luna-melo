@@ -43,14 +43,15 @@ return new /** Order Seeder */ class extends AbstractSeeder {
         $itemMapper = $this->orm->mapper(MeloOrderItem::class);
         $lessons = $this->orm->findList(Lesson::class)->all();
         $users = $this->orm->findList(User::class)->all()->dump();
-        /** @var MeloPaymentInterface[] $payments */
-        $payments = $paymentComposer->getGateways()->dump();
+        /** @var string[] $payments */
+        $payments = $paymentComposer->getGateways()->keys();
 
         foreach (range(1, 150) as $i) {
             $item = $mapper->createEntity();
 
-            /** @var MeloPaymentInterface $payment */
-            $payment = $faker->randomElement($payments);
+            /** @var string $paymentAlias */
+            $paymentAlias = $faker->randomElement($payments);
+            $gateway = $paymentComposer->getGateway($paymentAlias);
 
             /** @var User $user */
             $user = $faker->randomElement($users);
@@ -76,8 +77,8 @@ return new /** Order Seeder */ class extends AbstractSeeder {
                 ),
             };
             $item->state = $faker->randomElement(OrderState::cases());
-            $item->payment = $payment::getId();
-            $item->paymentData->paymentTitle = $payment->getTitle($lang);
+            $item->payment = $paymentAlias;
+            $item->paymentData->paymentTitle = $gateway?->getTitle($lang);
             $item->note = $faker->paragraph();
             $item->snapshots['user'] = $user;
 
