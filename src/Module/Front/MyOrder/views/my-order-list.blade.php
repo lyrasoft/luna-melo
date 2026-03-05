@@ -18,7 +18,7 @@ namespace App\View;
 
 use Unicorn\Html\Breadcrumb;
 use Lyrasoft\Melo\Entity\MeloOrder;
-use Lyrasoft\Melo\Module\Front\MyOrder\OrderListView;
+use Lyrasoft\Melo\Module\Front\MyOrder\MyOrderListView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;

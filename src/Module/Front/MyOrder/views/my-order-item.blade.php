@@ -24,7 +24,7 @@ use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\OrderState;
-use Lyrasoft\Melo\Module\Front\MyOrder\OrderItemView;
+use Lyrasoft\Melo\Module\Front\MyOrder\MyOrderItemView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
