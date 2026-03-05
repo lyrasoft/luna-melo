@@ -99,10 +99,10 @@ class SectionMenuItem
         $previousStudent = $this->getPreviousStudent();
 
         if ($previousStudent === null) {
-            return SectionCapacity::PROGRESS_LOCKED;
+            return SectionCapacity::AVAILABLE;
         }
 
-        if (!$previousStudent->status->isDone()) {
+        if (!$previousStudent->status?->isDone()) {
             return SectionCapacity::PROGRESS_LOCKED;
         }
 
