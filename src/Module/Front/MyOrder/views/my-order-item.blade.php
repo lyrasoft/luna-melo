@@ -8,7 +8,7 @@ namespace App\View;
  * Global variables
  * --------------------------------------------------------------
  * @var  $app       AppContext      Application context.
- * @var  $vm        OrderItemView  The view model object.
+ * @var  $vm        MyOrderItemView  The view model object.
  * @var  $uri       SystemUri       System Uri information.
  * @var  $chronos   ChronosService  The chronos datetime service.
  * @var  $nav       Navigator       Navigator object to build route.
@@ -24,7 +24,7 @@ use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Enum\InvoiceType;
 use Lyrasoft\Melo\Enum\OrderState;
-use Lyrasoft\Melo\Module\Front\Order\OrderItemView;
+use Lyrasoft\Melo\Module\Front\MyOrder\OrderItemView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -108,8 +108,8 @@ $breadcrumb->push($lang->trans('melo.order.item.page.title'));
                                         </td>
                                         <td class="text-nowrap">
                                             @if ($history->state)
-                                            <span
-                                                class="order-state {{ $history->state->getColor() }} text-nowrap">
+                                                <span
+                                                    class="order-state {{ $history->state->getColor() }} text-nowrap">
                                                 {{ $history->state->getTitle($lang) }}
                                             </span>
                                             @endif

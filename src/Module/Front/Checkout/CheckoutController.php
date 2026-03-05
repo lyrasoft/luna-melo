@@ -92,7 +92,7 @@ class CheckoutController
 
         $checkoutService->notifyForCheckout($order, $cartData, $user);
 
-        $orderUri = $app->getNav()->to('melo_order_item')->var('no', $order->no);
+        $orderUri = $app->getNav()->to('melo_my_order_item')->var('no', $order->no);
 
         $checkoutParams = new CheckoutParams(
             order: $order,

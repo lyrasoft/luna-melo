@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Front\Order;
+namespace Lyrasoft\Melo\Module\Front\MyOrder;
 
 use Lyrasoft\Luna\Repository\UserRepository;
 use Lyrasoft\Luna\User\Exception\AccessDeniedException;
@@ -21,10 +21,10 @@ use Windwalker\DI\Attributes\Autowire;
 use Windwalker\DI\Attributes\Service;
 
 #[ViewModel(
-    layout: 'order-list',
-    js: 'order-list.js'
+    layout: 'my-order-list',
+    js: 'my-order-list.js'
 )]
-class OrderListView implements ViewModelInterface
+class MyOrderListView implements ViewModelInterface
 {
     use ORMAwareViewModelTrait;
 

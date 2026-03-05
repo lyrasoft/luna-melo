@@ -388,7 +388,7 @@ $menu->link($lang('unicorn.title.grid', title: '訂單'))
 - `lesson_item`
 - `my_lesson_list`
 - `my_lecture_list`
-- `order_list`
-- `order_item`
-- `lesson_cart`
+- `melo_my_order_list`
+- `melo__my_order_item`
+- `melo_cart`
 

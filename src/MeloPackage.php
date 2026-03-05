@@ -65,7 +65,8 @@ class MeloPackage  extends AbstractPackage implements ServiceProviderInterface
 
         // Modules
         $installer->installMVCModules(Lesson::class);
-        $installer->installMVCModules(MeloOrder::class);
+        $installer->installMVCModules('MyOrder', ['Front'], false);
+        $installer->installMVCModules(MeloOrder::class, ['Admin'], true);
         $installer->installModules(
             [
                 static::path("src/Entity/MeloOrderItem.php") => '@source/Entity',

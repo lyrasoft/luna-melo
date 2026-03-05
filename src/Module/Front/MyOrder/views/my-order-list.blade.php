@@ -8,7 +8,7 @@ namespace App\View;
  * Global variables
  * --------------------------------------------------------------
  * @var  $app       AppContext      Application context.
- * @var  $vm        OrderListView  The view model object.
+ * @var  $vm        MyOrderListView  The view model object.
  * @var  $uri       SystemUri       System Uri information.
  * @var  $chronos   ChronosService  The chronos datetime service.
  * @var  $nav       Navigator       Navigator object to build route.
@@ -18,7 +18,7 @@ namespace App\View;
 
 use Unicorn\Html\Breadcrumb;
 use Lyrasoft\Melo\Entity\MeloOrder;
-use Lyrasoft\Melo\Module\Front\Order\OrderListView;
+use Lyrasoft\Melo\Module\Front\MyOrder\OrderListView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -90,7 +90,7 @@ $breadcrumb->push($lang->trans('melo.order.list.page.title'));
                                         @foreach($items as $item)
                                             <tr>
                                                 <td class="align-middle text-center">
-                                                    <a href="{{ $nav->to('melo_order_item', ['no' => $item->no]) }}">
+                                                    <a href="{{ $nav->to('melo_my_order_item', ['no' => $item->no]) }}">
                                                         <i class="fal fa-file-alt fa-2x"></i>
                                                     </a>
                                                 </td>

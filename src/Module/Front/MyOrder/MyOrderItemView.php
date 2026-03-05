@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Front\Order;
+namespace Lyrasoft\Melo\Module\Front\MyOrder;
 
 use Lyrasoft\Luna\Access\AccessService;
 use Lyrasoft\Luna\Repository\UserRepository;
@@ -29,10 +29,10 @@ use Windwalker\DI\Attributes\Service;
 use Windwalker\ORM\ORM;
 
 #[ViewModel(
-    layout: 'order-item',
-    js: 'order-item.js'
+    layout: 'my-order-item',
+    js: 'my-order-item.js'
 )]
-class OrderItemView implements ViewModelInterface
+class MyOrderItemView implements ViewModelInterface
 {
     use TranslatorTrait;
     use OrderItemViewTrait;
