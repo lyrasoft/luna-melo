@@ -10,7 +10,6 @@ use Lyrasoft\Melo\Cart\Price\PriceSet;
 use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\MeloOrderTotal;
-use Lyrasoft\ShopGo\Entity\OrderItem;
 use Windwalker\Data\Collection;
 
 trait OrderItemViewTrait

@@ -55,7 +55,7 @@ class MyOrderListView implements ViewModelInterface
         }
 
         $page = $app->input('page');
-        $limit = $app->input('limit') ?? 30;
+        $limit = $app->input('limit') ?? 6;
         $ordering = $this->getDefaultOrdering();
 
         $userId = $this->userService->getUser()->id;
@@ -66,7 +66,7 @@ class MyOrderListView implements ViewModelInterface
 
         $items = $this->repository->getListSelector()
             ->addFilters([])
-            ->where('user_id', $userId)
+            ->where('melo_order.user_id', $userId)
             ->ordering($ordering)
             ->page($page)
             ->limit($limit)
@@ -74,7 +74,7 @@ class MyOrderListView implements ViewModelInterface
 
         $pagination = $items->getPagination();
 
-        return compact('items', 'pagination', 'userInfo');
+        return compact('items', 'pagination', 'userInfo', 'gateways');
     }
 
     /**
@@ -84,12 +84,12 @@ class MyOrderListView implements ViewModelInterface
      */
     public function getDefaultOrdering(): string
     {
-        return 'order.id DESC';
+        return 'melo_order.id DESC';
     }
 
     #[ViewMetadata]
     protected function prepareMetadata(HtmlFrame $htmlFrame): void
     {
-        $htmlFrame->setTitle('Order List');
+        $htmlFrame->setTitle('我的訂單');
     }
 }

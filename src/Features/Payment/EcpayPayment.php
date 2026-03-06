@@ -230,7 +230,7 @@ class EcpayPayment implements MeloPaymentInterface
 
         // $app->state->forget('checkout.data');
 
-        return $nav->to('melo_order_item')
+        return $nav->to('melo_my_order_item')
             ->var('no', $order->no);
     }
 
