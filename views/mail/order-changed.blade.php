@@ -77,7 +77,7 @@ $melo = $app->service(MeloPackage::class);
         @if ($isAdmin)
             <h3>親愛的管理員您好</h3>
         @else
-            <h3>親愛的{{ $melo->config('shop.sitename') }}會員您好</h3>
+            <h3>親愛的會員您好</h3>
         @endif
     </div>
 

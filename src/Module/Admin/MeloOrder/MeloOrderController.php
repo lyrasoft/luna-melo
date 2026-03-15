@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Admin\Order;
+namespace Lyrasoft\Melo\Module\Admin\MeloOrder;
 
 use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Features\OrderService;
-use Lyrasoft\Melo\Module\Admin\Order\Form\EditForm;
+use Lyrasoft\Melo\Module\Admin\MeloOrder\Form\EditForm;
 use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
@@ -19,7 +19,7 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\DI\Attributes\Autowire;
 
 #[Controller()]
-class OrderController
+class MeloOrderController
 {
     public function save(
         AppContext $app,

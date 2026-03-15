@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Admin\Order;
+namespace Lyrasoft\Melo\Module\Admin\MeloOrder;
 
 use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\Melo\Cart\Price\PriceObject;
@@ -12,12 +12,12 @@ use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Windwalker\Data\Collection;
 
-trait OrderItemViewTrait
+trait MeloOrderItemViewTrait
 {
     /**
      * @param  int  $orderId
      *
-     * @return  Collection<OrderItem>
+     * @return  Collection<MeloOrderItem>
      *
      * @throws \ReflectionException
      */

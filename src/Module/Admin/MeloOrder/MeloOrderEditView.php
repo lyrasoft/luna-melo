@@ -2,18 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Admin\Order;
+namespace Lyrasoft\Melo\Module\Admin\MeloOrder;
 
-use Lyrasoft\Melo\Cart\Price\PriceObject;
-use Lyrasoft\Melo\Cart\Price\PriceSet;
-use Lyrasoft\Melo\Entity\MeloOrder;
-use Lyrasoft\Melo\Entity\MeloOrderHistory;
-use Lyrasoft\Melo\Entity\MeloOrderItem;
-use Lyrasoft\Melo\Entity\MeloOrderTotal;
-use Lyrasoft\Melo\Module\Admin\Order\Form\EditForm;
-use Lyrasoft\Melo\Repository\MeloOrderRepository;
-use Lyrasoft\Contact\Entity\Contact;
 use Lyrasoft\Luna\Entity\User;
+use Lyrasoft\Melo\Entity\MeloOrder;
+use Lyrasoft\Melo\Module\Admin\MeloOrder\Form\EditForm;
+use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
@@ -30,13 +24,13 @@ use Windwalker\ORM\ORM;
  * The OrderEditView class.
  */
 #[ViewModel(
-    layout: 'order-edit',
-    js: 'order-edit.js'
+    layout: 'melo-order-edit',
+    js: 'melo-order-edit.js'
 )]
-class OrderEditView implements ViewModelInterface
+class MeloOrderEditView implements ViewModelInterface
 {
     use TranslatorTrait;
-    use OrderItemViewTrait;
+    use MeloOrderItemViewTrait;
 
     public function __construct(
         protected ORM $orm,
@@ -67,7 +61,7 @@ class OrderEditView implements ViewModelInterface
         $user = $this->orm->findOne(
             User::class,
             [
-                'id' => $item?->userId
+                'id' => $item?->userId,
             ]
         )
             ?->dump(true);

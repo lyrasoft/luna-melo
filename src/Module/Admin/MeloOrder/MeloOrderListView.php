@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Admin\Order;
+namespace Lyrasoft\Melo\Module\Admin\MeloOrder;
 
 use Lyrasoft\Melo\Entity\MeloOrder;
-use Lyrasoft\Melo\Module\Admin\Order\Form\GridForm;
+use Lyrasoft\Melo\Module\Admin\MeloOrder\Form\GridForm;
 use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
@@ -18,7 +18,6 @@ use Windwalker\Core\View\Contract\FilterAwareViewModelInterface;
 use Windwalker\Core\View\Traits\FilterAwareViewModelTrait;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
-use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\ORM\ORM;
 
@@ -27,12 +26,12 @@ use Windwalker\ORM\ORM;
  */
 #[ViewModel(
     layout: [
-        'default' => 'order-list',
-        'modal' => 'order-modal',
+        'default' => 'melo-order-list',
+        'modal' => 'melo-order-modal',
     ],
-    js: 'order-list.js'
+    js: 'melo-order-list.js'
 )]
-class OrderListView implements ViewModelInterface, FilterAwareViewModelInterface
+class MeloOrderListView implements ViewModelInterface, FilterAwareViewModelInterface
 {
     use TranslatorTrait;
     use FilterAwareViewModelTrait;

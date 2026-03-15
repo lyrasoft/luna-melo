@@ -15,7 +15,7 @@ use Lyrasoft\Melo\Entity\MeloOrderHistory;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Entity\MeloOrderTotal;
 use Lyrasoft\Melo\Features\Payment\PaymentComposer;
-use Lyrasoft\Melo\Module\Admin\Order\OrderItemViewTrait;
+use Lyrasoft\Melo\Module\Admin\Order\MeloOrderItemViewTrait;
 use Lyrasoft\Melo\Repository\MeloOrderRepository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
@@ -35,7 +35,7 @@ use Windwalker\ORM\ORM;
 class MyOrderItemView implements ViewModelInterface
 {
     use TranslatorTrait;
-    use OrderItemViewTrait;
+    use MeloOrderItemViewTrait;
 
     public function __construct(
         protected ORM $orm,

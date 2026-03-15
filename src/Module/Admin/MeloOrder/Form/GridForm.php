@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lyrasoft\Melo\Module\Admin\Order\Form;
+namespace Lyrasoft\Melo\Module\Admin\MeloOrder\Form;
 
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Contact\Enum\ContactState;
