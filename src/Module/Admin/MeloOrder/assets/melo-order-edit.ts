@@ -14,7 +14,10 @@ useBs5Tooltip();
 
 useFormComponent(formSelector);
 
-useFormValidation().then(() => useDisableOnSubmit(formSelector));
+useFormValidation().then(() => {
+  useDisableOnSubmit(formSelector);
+  useDisableOnSubmit('#state-form');
+});
 
 useDisableIfStackNotEmpty();
 

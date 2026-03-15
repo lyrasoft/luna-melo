@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Melo\Field;
 
-use App\Entity\Lesson;
+use Lyrasoft\Melo\Entity\Lesson;
 use Unicorn\Field\ModalField;
 
 class LessonModalField extends ModalField
