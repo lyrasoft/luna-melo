@@ -84,13 +84,8 @@ static fn() => [
     'payment' => [
         'no_handler' => function (MeloOrder $order) {
             // Max length: 20
-            $no = $order->no;
-
-            if (WINDWALKER_DEBUG) {
-                $no .= 'T' . BaseConvert::encode(time(), BaseConvert::BASE62);
-            }
-
-            return $no;
+            // Leave payment gateway to decide whether to append test suffix or not.
+            return $order->no;
         },
 
         'gateways' => [

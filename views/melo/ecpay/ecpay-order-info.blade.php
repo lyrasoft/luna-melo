@@ -42,8 +42,38 @@ $info = EcpayPaymentInfo::wrap($info);
 ?>
 @if ($payment->type === EcpayPaymentType::ATM)
     <div>
-        <p>ATM 匯款帳戶: ({{ $info->BankCode }}) {{ $info->vAccount }}</p>
+        <p>銀行代碼: <span class="fs-5 fw-bold">{{ $info->BankCode }}</span></p>
+        <p>ATM 匯款帳戶: <span class="fs-5 fw-bold">{{ $info->vAccount }}</span></p>
         <p>到期時間: {{ $info->ExpireDate }}</p>
+    </div>
+@endif
+@if ($payment->type === EcpayPaymentType::CVS)
+    <div>
+        <p>
+            請至超商多媒體機台輸入代碼，產生繳費單後前往櫃台繳費。
+            (<a href="https://support.ecpay.com.tw/4920/" target="_blank">
+                繳費流程說明
+            </a>)
+        </p>
+        <p class="text-muted">(適用 7-11/全家/萊爾富/OKmart 超商)</p>
+        <p class="fs-4 fw-bold">{{ $info->PaymentNo }}</p>
+        <p>到期時間: {{ $info->ExpireDate }}</p>
+
+        <p>
+            <a href="{{ $payment->getEndpoint('PaymentRule/CVSBarCode') }}?PaymentNo={{ $info->PaymentNo }}"
+                class="btn btn-primary btn-sm"
+                target="_blank"
+            >
+                顯示繳費條碼
+            </a>
+            <button type="button"
+                data-link={{ $payment->getEndpoint('PaymentRule/CVSBarCode') }}?PaymentNo={{ $info->PaymentNo }}"
+                class="btn btn-outline-primary btn-sm"
+                onclick="navigator.clipboard.writeText(this.dataset.link).then(() => { alert('繳費連結已複製'); })"
+            >
+                複製繳費連結
+            </button>
+        </p>
     </div>
 @endif
 {{-- 其他類型尚未完成 --}}
