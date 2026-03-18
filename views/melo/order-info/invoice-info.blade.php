@@ -32,9 +32,15 @@ use Windwalker\Core\Router\SystemUri;
 $full ??= false;
 ?>
 <div class="card std-card">
-    <h4 class="card-header">
-        發票資訊
-    </h4>
+    <div class="card-header d-flex align-items-center justify-content-between gap-2">
+        <h4 class="m-0">
+            發票資訊
+        </h4>
+
+        <div>
+            {!! $toolbar ?? '' !!}
+        </div>
+    </div>
 
     <div class="card-body">
         <div class="row">
@@ -52,6 +58,12 @@ $full ??= false;
                     <dd class="col-8">
                         {{ $item->invoiceNo ?? '' }}
                     </dd>
+                    <dt class="col-4">
+                        開立日期
+                    </dt>
+                    <dd class="col-8">
+                        {{ $chronos->toLocalFormat($item->invoiceData->issuedAt, 'Y-m-d H:i') }}
+                    </dd>
                     @if($item->invoiceType === InvoiceType::COMPANY)
                         <dt class="col-4">
                             統一編號
@@ -66,18 +78,18 @@ $full ??= false;
                             {{ $item->invoiceData->title }}
                         </dd>
                     @endif
-                    <dt class="col-4">
-                        收件人
-                    </dt>
-                    <dd class="col-8">
-                        {{ $item->invoiceData->name }}
-                    </dd>
-                    <dt class="col-4">
-                        寄送地址
-                    </dt>
-                    <dd class="col-8">
-                        {{ $item->invoiceData->address }}
-                    </dd>
+                    {{--<dt class="col-4">--}}
+                    {{--    收件人--}}
+                    {{--</dt>--}}
+                    {{--<dd class="col-8">--}}
+                    {{--    {{ $item->invoiceData->name }}--}}
+                    {{--</dd>--}}
+                    {{--<dt class="col-4">--}}
+                    {{--    寄送地址--}}
+                    {{--</dt>--}}
+                    {{--<dd class="col-8">--}}
+                    {{--    {{ $item->invoiceData->address }}--}}
+                    {{--</dd>--}}
                 </dl>
             </div>
         </div>
