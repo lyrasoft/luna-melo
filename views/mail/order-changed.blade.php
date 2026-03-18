@@ -119,7 +119,7 @@ $melo = $app->service(MeloPackage::class);
                 觀看訂單內容
             </a>
         @else
-            <a href="{{ $nav->to('front::order_item')->id($item->id)->full() }}"
+            <a href="{{ $nav->to('front::melo_my_order_item')->var('no', $item->no)->full() }}"
                 class="btn btn-primary"
                 target="_blank"
                 style="width: 100%"
