@@ -67,7 +67,7 @@ class EditForm
             ->label('地址')
             ->asGroup(true)
             ->addFilter('trim')
-            ->widths(4, 4, 4, 'calc(100% + .75rem)')
+            ->widths(4, 4, 4, 12)
             ->configureForm(
                 function (Form $form) {
                     $form->add('city', ListField::class)
