@@ -16,6 +16,7 @@ use Lyrasoft\Melo\Enum\EcpayPaymentType;
 use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
 use Lyrasoft\Melo\Features\OrderService;
+use Lyrasoft\Toolkit\Encode\BaseConvert;
 use Psr\Http\Message\UriInterface;
 use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
@@ -86,6 +87,10 @@ class EcpayPayment implements MeloPaymentInterface
             },
             $params->cartData->items
         );
+
+        if ($this->isTest()) {
+            $order->paymentNo .= 'T' . BaseConvert::encode(time(), BaseConvert::BASE62);
+        }
 
         $input = [
             'MerchantID' => $this->getMerchantID(),

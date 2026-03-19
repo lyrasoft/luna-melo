@@ -16,6 +16,7 @@ namespace App\view;
  * @var $lang      LangService     The language translation service.
  */
 
+use Lyrasoft\Luna\User\UserService;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Features\Payment\PaymentComposer;
 use Windwalker\Core\Application\AppContext;
@@ -29,14 +30,23 @@ use Windwalker\Core\Router\SystemUri;
  * @var $item MeloOrder
  */
 
+$userService = $app->retrieve(UserService::class);
 $paymentComposer = $app->retrieve(PaymentComposer::class);
 $payment = $paymentComposer->getGateway($item->payment);
 $paymentTitle = $item->paymentData->paymentTitle ?: $payment?->getTitle($this->lang);
+
+$purchaseUser = $userService->load($item->userId);
 ?>
 <div class="card">
-    <h4 class="card-header">
-        訂單資訊
-    </h4>
+    <div class="card-header d-flex align-items-center justify-content-between gap-2">
+        <h4 class="m-0">
+            訂單資訊
+        </h4>
+
+        <div>
+            {!! $toolbar ?? '' !!}
+        </div>
+    </div>
 
     <div class="card-body">
         <div class="row">
@@ -55,16 +65,36 @@ $paymentTitle = $item->paymentData->paymentTitle ?: $payment?->getTitle($this->l
                         {{ $item->state->getTitle($lang) }}
                     </dd>
                     <dt class="col-4">
-                        付款方式
+                        購買人
                     </dt>
                     <dd class="col-8">
-                        {{ $paymentTitle }}
+                        {{ $item->invoiceData->name }}
                     </dd>
+
+                    @if ($purchaseUser)
+                        <dt class="col-4">
+                            會員
+                        </dt>
+                        <dd class="col-8">
+                            <a href="{{ $nav->to('user_edit')->id($purchaseUser->id) }}" target="_blank">
+                                {{ $purchaseUser->name }}
+
+                                <i class="far fa-external-link"></i>
+                            </a>
+                        </dd>
+                    @endif
+
                 </dl>
             </div>
 
             <div class="col-md-6">
                 <dl class="row">
+                    <dt class="col-4">
+                        付款方式
+                    </dt>
+                    <dd class="col-8">
+                        {{ $paymentTitle }}
+                    </dd>
                     <dt class="col-4">
                         購買時間
                     </dt>
@@ -72,10 +102,16 @@ $paymentTitle = $item->paymentData->paymentTitle ?: $payment?->getTitle($this->l
                         {{ $chronos->toLocalFormat($item->created, 'Y-m-d H:i:s') }}
                     </dd>
                     <dt class="col-4">
+                        付款編號
+                    </dt>
+                    <dd class="col-8">
+                        {{ $item->paymentNo }}
+                    </dd>
+                    <dt class="col-4">
                         付款時間
                     </dt>
                     <dd class="col-8">
-                        {{ $chronos->toLocalFormat($item->paidAt, 'Y-m-d H:i:s') }}
+                        {{ $chronos->toLocalFormat($item->paidAt, 'Y-m-d H:i:s') ?: '-' }}
                     </dd>
                 </dl>
             </div>

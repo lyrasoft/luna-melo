@@ -37,6 +37,8 @@ class EcpayPaymentInfo implements RecordInterface
 
     public string $PaymentType = '';
 
+    public string $PaymentNo = '';
+
     public string $CustomField1 = '';
 
     public string $CustomField2 = '';

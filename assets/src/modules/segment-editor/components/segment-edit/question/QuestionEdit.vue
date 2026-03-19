@@ -33,6 +33,8 @@ if (hasOptions.value) {
 
 watch(options, () => {
   question.value.params.options = options.value;
+
+  saveIfAvailable();
 }, { deep: true });
 
 const el = useCurrentElement<HTMLDivElement>();
@@ -61,10 +63,14 @@ const saving = ref(false);
 let autoSave = true;
 
 watch(question, () => {
-  if (autoSave) {
-    saveDebounced();
-  }
+  saveIfAvailable();
 }, { deep: true });
+
+async function saveIfAvailable() {
+  if (autoSave) {
+    return saveDebounced();
+  }
+}
 
 const saveDebounced = useDebounceFn(async () => {
   saving.value = true;
