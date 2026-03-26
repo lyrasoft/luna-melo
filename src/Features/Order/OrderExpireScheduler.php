@@ -12,6 +12,7 @@ use Windwalker\Core\Database\ORMAwareTrait;
 use Windwalker\Core\Events\Console\MessageOutputTrait;
 use Windwalker\Core\Manager\Logger;
 use Windwalker\DI\Attributes\Service;
+use Windwalker\ORM\ORMOptions;
 
 use function Windwalker\chronos;
 
@@ -33,7 +34,7 @@ class OrderExpireScheduler
             ->where('paid_at', null)
             ->where('cancelled_at', null)
             ->where('expired_on', '<', $now)
-            ->where('created', '<', $now->modify('-1month'))
+            ->where('created', '>', $now->modify('-1month'))
             ->getIterator(MeloOrder::class);
 
         /** @var MeloOrder $order */
@@ -48,13 +49,40 @@ class OrderExpireScheduler
             $this->emitMessage($message);
             Logger::info('melo/order-expired', $message);
 
-            $this->orderService->changeState(
-                $order,
-                OrderState::CANCELLED,
-                OrderHistoryType::SYSTEM,
-                '訂單已過期，由系統自動取消',
-                true
+            try {
+                $this->orm->transaction(
+                    function () use ($order) {
+                        $order = $this->orm->findOne(
+                            MeloOrder::class,
+                            $order->id,
+                            options: new ORMOptions(
+                                forUpdate: true
+                            )
+                        );
+
+                        $this->orderService->changeState(
+                            $order,
+                            OrderState::CANCELLED,
+                            OrderHistoryType::SYSTEM,
+                            '訂單已過期，由系統自動取消',
+                            // Do not notify is expire on same day
+                            $order->expiredOn->modify('-1day')->isFuture()
+                        );
+                    }
+                );
+            } catch (\Throwable $e) {
+                Logger::info('melo/order-expired', $e);
+
+                continue;
+            }
+
+            $message = sprintf(
+                '[Done] Order (%s) #%s expire done.',
+                $order->id,
+                $order->no,
             );
+            $this->emitMessage($message);
+            Logger::info('melo/order-expired', $message);
         }
     }
 }

@@ -190,10 +190,6 @@ class EcpayPayment implements MeloPaymentInterface
 
         try {
             if ((string) $res['RtnCode'] === '1') {
-                if (!$order->paidAt) {
-                    $order->paidAt = 'now';
-                }
-
                 $orderService->changeState(
                     $order,
                     OrderState::PAID,

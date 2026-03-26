@@ -14,11 +14,13 @@ use Lyrasoft\Melo\Entity\UserLessonMap;
 use Lyrasoft\Melo\Entity\UserSegmentMap;
 use Lyrasoft\Melo\Enum\OrderHistoryType;
 use Lyrasoft\Melo\Enum\OrderState;
+use Lyrasoft\Melo\Event\AfterOrderStateChangeEvent;
 use Lyrasoft\Melo\Features\Lesson\LessonDispatcher;
 use Lyrasoft\Melo\MeloPackage;
 use Lyrasoft\Toolkit\Encode\BaseConvert;
 use Random\RandomException;
 use Windwalker\Core\Application\ApplicationInterface;
+use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Mailer\MailerInterface;
 use Windwalker\DI\Attributes\Service;
@@ -28,6 +30,8 @@ use Windwalker\Utilities\Str;
 #[Service]
 class OrderService
 {
+    use CoreEventAwareTrait;
+
     public function __construct(
         protected ApplicationInterface $app,
         protected ORM $orm,
@@ -87,10 +91,20 @@ class OrderService
             throw new ValidateFailException('Order not found.');
         }
 
+        $from = $order->state;
+
         /** @var MeloOrderHistory $history */
         $history = $this->orm->transaction(function () use ($order, $historyType, $to, $notify, $message) {
             if ($to && $order->state !== $to) {
                 $order->state = $to;
+
+                if ($order->state === OrderState::PAID) {
+                    $order->paidAt = 'now';
+                }
+
+                if ($order->state === OrderState::CANCELLED) {
+                    $order->cancelledAt = 'now';
+                }
 
                 $this->orm->updateOne($order);
 
@@ -108,7 +122,17 @@ class OrderService
             return $this->createHistory($order, $to, $historyType, $message, $notify);
         });
 
-        if ($notify) {
+        $event = $this->emit(
+            new AfterOrderStateChangeEvent(
+                order: $order,
+                from: $from,
+                to: $to,
+                history: $history,
+                notify: $notify,
+            )
+        );
+
+        if ($event->notify) {
             $user = $this->orm->findOne(User::class, ['id' => $order->userId]);
 
             if ($to) {
