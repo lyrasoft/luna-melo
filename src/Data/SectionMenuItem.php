@@ -40,6 +40,10 @@ class SectionMenuItem
         get => $this->lessonStudent->canManage;
     }
 
+    public bool $isAttended {
+        get => $this->lessonStudent->map !== null;
+    }
+
     public function __construct(
         public LessonStudent $lessonStudent,
         public Segment $chapter,
