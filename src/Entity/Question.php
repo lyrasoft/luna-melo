@@ -15,6 +15,7 @@ use Windwalker\ORM\Attributes\CreatedTime;
 use Windwalker\ORM\Attributes\CurrentTime;
 use Lyrasoft\Luna\Attributes\Author;
 use Lyrasoft\Luna\Attributes\Modifier;
+use Windwalker\ORM\Attributes\JsonObject;
 use Windwalker\ORM\Cast\JsonCast;
 use Windwalker\ORM\Attributes\Column;
 use Windwalker\ORM\Attributes\EntitySetup;
@@ -92,7 +93,7 @@ class Question implements EntityInterface
     public int $modifiedBy = 0;
 
     #[Column('params')]
-    #[Cast(JsonCast::class)]
+    #[JsonObject]
     public array $params = [];
 
     #[EntitySetup]
