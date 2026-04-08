@@ -433,7 +433,7 @@ class PriceObject implements \JsonSerializable, \Stringable
     {
         $data = $this->toArray();
 
-        $data['price'] = $data['price']->toScale(static::DEFAULT_SCALE, RoundingMode::HALF_CEILING);
+        $data['price'] = $data['price']->toScale(static::DEFAULT_SCALE, RoundingMode::HalfCeiling);
 
         return $data;
     }
