@@ -907,6 +907,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     }
     watch(options, () => {
       question.value.params.options = options.value;
+      saveIfAvailable();
     }, { deep: true });
     const el = useCurrentElement();
     onMounted(async () => {
@@ -925,10 +926,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const saving = ref(false);
     let autoSave = true;
     watch(question, () => {
-      if (autoSave) {
-        saveDebounced();
-      }
+      saveIfAvailable();
     }, { deep: true });
+    async function saveIfAvailable() {
+      if (autoSave) {
+        return saveDebounced();
+      }
+    }
     const saveDebounced = useDebounceFn(async () => {
       saving.value = true;
       const now = Date.now();
@@ -970,7 +974,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return autoSave;
     }, set autoSave(v) {
       autoSave = v;
-    }, saveDebounced, answersCount, get BFormGroup() {
+    }, saveIfAvailable, saveDebounced, answersCount, get BFormGroup() {
       return _sfc_main$8;
     }, get BFormInput() {
       return _sfc_main$7;

@@ -627,7 +627,6 @@ const formSelector = "#checkout-form";
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "MeloCartApp",
   props: {
-    user: {},
     rememberedData: {},
     payments: {}
   },
