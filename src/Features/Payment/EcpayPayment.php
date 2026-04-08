@@ -8,6 +8,7 @@ use Ecpay\Sdk\Factories\Factory;
 use Ecpay\Sdk\Response\VerifiedArrayResponse;
 use Ecpay\Sdk\Services\CheckMacValueService;
 use Ecpay\Sdk\Services\UrlService;
+use Lyrasoft\Melo\Cart\CartStorage;
 use Lyrasoft\Melo\Data\CartItem;
 use Lyrasoft\Melo\Data\CheckoutParams;
 use Lyrasoft\Melo\Entity\MeloOrder;
@@ -41,6 +42,7 @@ class EcpayPayment implements MeloPaymentInterface
     public function __construct(
         protected ApplicationInterface $app,
         public EcpayPaymentType $type,
+        protected CartStorage $cartStorage,
         string $title = '',
         array $params = [],
         public \Closure|null $inputHandler = null,
@@ -229,7 +231,10 @@ class EcpayPayment implements MeloPaymentInterface
         $id = (string) $app->input('id');
         $order = $this->orm->mustFindOne(MeloOrder::class, $id);
 
-        // $app->state->forget('checkout.data');
+        if (!$this->isTest()) {
+            $app->state->forget('checkout.data');
+            $this->cartStorage->clear();
+        }
 
         return $nav->to('melo_my_order_item')
             ->var('no', $order->no);
