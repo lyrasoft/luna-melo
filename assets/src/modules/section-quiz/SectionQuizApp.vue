@@ -71,6 +71,7 @@ async function startQuiz(button: HTMLAnchorElement) {
   );
 
   questions.value = res.data.data.questions;
+  answers.value = {};
 
   for (const question of questions.value) {
     answers.value[question.id as number] = null;
