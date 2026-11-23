@@ -11,6 +11,7 @@ use Ecpay\Sdk\Services\UrlService;
 use Lyrasoft\Melo\Cart\CartStorage;
 use Lyrasoft\Melo\Data\CartItem;
 use Lyrasoft\Melo\Data\CheckoutParams;
+use Lyrasoft\Melo\Data\EcpayPaymentInfo;
 use Lyrasoft\Melo\Entity\MeloOrder;
 use Lyrasoft\Melo\Entity\MeloOrderItem;
 use Lyrasoft\Melo\Enum\EcpayPaymentType;
@@ -246,9 +247,31 @@ class EcpayPayment implements MeloPaymentInterface
 
         $id = (string) $app->input('id');
 
+        $factory = $this->getEcpayFactory();
+        /** @var VerifiedArrayResponse $infoResponse */
+        $infoResponse = $factory->create(VerifiedArrayResponse::class);
+
+        try {
+            $res = $infoResponse->get($_POST);
+        } catch (\Exception $e) {
+            Logger::error('melo/ecpay-payment-error', 'ID: ' . $id);
+            Logger::error('melo/ecpay-payment-error', $e->getMessage());
+
+            return '0|' . $e->getMessage();
+        }
+
         $order = $orm->mustFindOne(MeloOrder::class, $id);
 
-        $order->paymentData->info = $app->input()->dump();
+        if ((string) ($res['MerchantTradeNo'] ?? '') !== $order->paymentNo) {
+            Logger::error('melo/ecpay-payment-error', 'ID: ' . $id);
+            Logger::error('melo/ecpay-payment-error', 'MerchantTradeNo mismatch');
+
+            return '0|MerchantTradeNo mismatch';
+        }
+
+        $fields = array_keys(get_class_vars(EcpayPaymentInfo::class));
+
+        $order->paymentData->info = array_intersect_key($res, array_flip($fields));
 
         $orm->updateOne($order);
 
