@@ -4,6 +4,7 @@
 * [Installation](#installation)
     * [Seeders](#seeders)
     * [Global Settings](#global-settings)
+    * [ECPay Environment](#ecpay-environment)
     * [Session](#session)
     * [Favorites Type](#favorites-type)
     * [Language Files](#language-files)
@@ -94,6 +95,18 @@ return [
         ],
     ]
 ];
+```
+
+### ECPay Environment
+
+Set the ECPay credentials in your `.env` file. Payment will refuse to work if any of them is missing.
+
+For development, you can copy the ECPay sandbox values below:
+
+```dotenv
+MELO_ECPAY_MERCHANT_ID=2000132
+MELO_ECPAY_HASH_KEY=5294y06JbISpM5x9
+MELO_ECPAY_HASH_IV=v77hoKGq4kWxNNIS
 ```
 
 ### File Upload

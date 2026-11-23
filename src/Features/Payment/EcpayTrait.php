@@ -48,9 +48,9 @@ trait EcpayTrait
     protected function getEnvCredentials(): array
     {
         return [
-            env("MELO_ECPAY_MERCHANT_ID") ?: '2000132',
-            env("MELO_ECPAY_HASH_KEY") ?:  '5294y06JbISpM5x9',
-            env("MELO_ECPAY_HASH_IV") ?: 'v77hoKGq4kWxNNIS',
+            env("MELO_ECPAY_MERCHANT_ID") ?: throw new \RuntimeException('Missing env MELO_ECPAY_MERCHANT_ID'),
+            env("MELO_ECPAY_HASH_KEY") ?: throw new \RuntimeException('Missing env MELO_ECPAY_HASH_KEY'),
+            env("MELO_ECPAY_HASH_IV") ?: throw new \RuntimeException('Missing env MELO_ECPAY_HASH_IV'),
         ];
     }
 }

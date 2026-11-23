@@ -168,24 +168,35 @@ class EcpayPayment implements MeloPaymentInterface
         /** @var VerifiedArrayResponse $checkoutResponse */
         $checkoutResponse = $factory->create(VerifiedArrayResponse::class);
 
-        $id = (string) $app->input('id');
-
         try {
             $res = $checkoutResponse->get($_POST);
         } catch (\Exception $e) {
-            Logger::error('melo/ecpay-payment-error', 'ID: ' . $id);
             Logger::error('melo/ecpay-payment-error', $e->getMessage());
 
             return '0|' . $e->getMessage();
         }
 
-        $order = $orm->findOne(MeloOrder::class, $id);
+        $merchantTradeNo = (string) ($res['MerchantTradeNo'] ?? '');
+
+        $order = $merchantTradeNo !== ''
+            ? $orm->findOne(MeloOrder::class, ['paymentNo' => $merchantTradeNo])
+            : null;
 
         if (!$order) {
-            Logger::error('melo/ecpay-payment-error', 'ID: ' . $id);
+            Logger::error('melo/ecpay-payment-error', 'MerchantTradeNo: ' . $merchantTradeNo);
             Logger::error('melo/ecpay-payment-error', 'Order not found');
 
             return '0|No order';
+        }
+
+        if (
+            (string) ($res['MerchantID'] ?? '') !== $this->getMerchantID()
+            || (int) ($res['TradeAmt'] ?? 0) !== (int) $order->total
+        ) {
+            Logger::error('melo/ecpay-payment-error', 'MerchantTradeNo: ' . $merchantTradeNo);
+            Logger::error('melo/ecpay-payment-error', 'Payment info mismatch with order');
+
+            return '0|Payment info mismatch';
         }
 
         $order->params['payment_notify_error'] = null;
@@ -217,7 +228,7 @@ class EcpayPayment implements MeloPaymentInterface
                 ['id' => $order->id]
             );
 
-            Logger::error('melo/ecpay-payment-error', "ID: $id");
+            Logger::error('melo/ecpay-payment-error', "Order ID: {$order->id}");
             Logger::error('melo/ecpay-payment-error', $e->getMessage());
 
             return '0|' . $e->getMessage();
@@ -309,9 +320,9 @@ class EcpayPayment implements MeloPaymentInterface
     protected function getEnvCredentials(): array
     {
         return [
-            env("MELO_ECPAY_MERCHANT_ID") ?: '2000132',
-            env("MELO_ECPAY_HASH_KEY") ?:  '5294y06JbISpM5x9',
-            env("MELO_ECPAY_HASH_IV") ?: 'v77hoKGq4kWxNNIS',
+            env("MELO_ECPAY_MERCHANT_ID") ?: throw new \RuntimeException('Missing env MELO_ECPAY_MERCHANT_ID'),
+            env("MELO_ECPAY_HASH_KEY") ?: throw new \RuntimeException('Missing env MELO_ECPAY_HASH_KEY'),
+            env("MELO_ECPAY_HASH_IV") ?: throw new \RuntimeException('Missing env MELO_ECPAY_HASH_IV'),
         ];
     }
 }
