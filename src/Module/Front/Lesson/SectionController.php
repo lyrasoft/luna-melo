@@ -235,6 +235,7 @@ class SectionController
         LessonProgressManager $lessonProgressManager,
         #[Service]
         ChronosService $chronosService,
+        LessonService $lessonService,
     ): object {
         $item = $app->input('item');
         $file = $app->file('item')['homework_file'] ?? null;
@@ -248,6 +249,10 @@ class SectionController
 
         if (!$segment) {
             throw new RouteNotFoundException('找不到這個章節');
+        }
+
+        if (!$lessonService->checkUserHasLesson($segment->lessonId, $user)) {
+            throw new UnauthorizedException('無法繳交作業', 400);
         }
 
         $userSegmentMap = $orm->findOne(
@@ -270,7 +275,7 @@ class SectionController
             'segment/' . $item['segment_id'] . '/homework/' . md5((string) $user->id) . '.{ext}'
         )?->getUri(true);
 
-        $lessonProgressManager->attendToSegmentAndUpdateProgress(
+        [$userSegmentMap] = $lessonProgressManager->attendToSegmentAndUpdateProgress(
             $user,
             $segment,
             modify: function (UserSegmentMap $map) {
