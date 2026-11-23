@@ -67,7 +67,7 @@ $info = EcpayPaymentInfo::wrap($info);
                 顯示繳費條碼
             </a>
             <button type="button"
-                data-link={{ $payment->getEndpoint('PaymentRule/CVSBarCode') }}?PaymentNo={{ $info->PaymentNo }}"
+                data-link="{{ $payment->getEndpoint('PaymentRule/CVSBarCode') }}?PaymentNo={{ urlencode($info->PaymentNo) }}"
                 class="btn btn-outline-primary btn-sm"
                 onclick="navigator.clipboard.writeText(this.dataset.link).then(() => { alert('繳費連結已複製'); })"
             >
