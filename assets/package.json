@@ -17,6 +17,7 @@
         "@tinymce/tinymce-vue": "^6.3.0",
         "@types/sortablejs": "^1",
         "@vitejs/plugin-vue": "^6.0.3",
+        "@vue/language-core": "^3.3.14",
         "@vue/tsconfig": "^0.7.0",
         "@vueuse/core": "^14.1.0",
         "@windwalker-io/unicorn-next": "^0.1.11",

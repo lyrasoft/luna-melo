@@ -27,17 +27,18 @@ function prepareInitialFiles(files) {
   return dt.files;
 }
 function useFileDialog(options = {}) {
-  const { document: document$1 = defaultDocument } = options;
+  const { document = defaultDocument } = options;
   const files = ref(prepareInitialFiles(options.initialFiles));
   const { on: onChange, trigger: changeTrigger } = createEventHook();
   const { on: onCancel, trigger: cancelTrigger } = createEventHook();
   const inputRef = computed(() => {
     var _unrefElement;
-    const input = (_unrefElement = unrefElement(options.input)) !== null && _unrefElement !== void 0 ? _unrefElement : document$1 ? document$1.createElement("input") : void 0;
+    const input = (_unrefElement = unrefElement(options.input)) !== null && _unrefElement !== void 0 ? _unrefElement : document ? document.createElement("input") : void 0;
     if (input) {
       input.type = "file";
       input.onchange = (event) => {
-        files.value = event.target.files;
+        const result = event.target;
+        files.value = result.files;
         changeTrigger(files.value);
       };
       input.oncancel = () => {
@@ -53,13 +54,13 @@ function useFileDialog(options = {}) {
       changeTrigger(null);
     }
   };
-  const applyOptions = (options$1) => {
+  const applyOptions = (options2) => {
     const el = inputRef.value;
     if (!el) return;
-    el.multiple = toValue(options$1.multiple);
-    el.accept = toValue(options$1.accept);
-    el.webkitdirectory = toValue(options$1.directory);
-    if (hasOwn(options$1, "capture")) el.capture = toValue(options$1.capture);
+    el.multiple = toValue(options2.multiple);
+    el.accept = toValue(options2.accept);
+    el.webkitdirectory = toValue(options2.directory);
+    if (hasOwn(options2, "capture")) el.capture = toValue(options2.capture);
   };
   const open = (localOptions) => {
     const el = inputRef.value;

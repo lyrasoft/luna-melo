@@ -50,15 +50,15 @@ export declare interface CartItem {
 
 export declare type CartTotals = Record<string, PriceObject>;
 
-export declare function createLessonHomeworksApp(props: Record<string, any>): Promise<App<Element>>;
+export declare function createLessonHomeworksApp(props: Record<string, any>): Promise< App<Element>>;
 
-export declare function createMeloCartApp(props: Record<string, any>): Promise<App<Element>>;
+export declare function createMeloCartApp(props: Record<string, any>): Promise< App<Element>>;
 
-export declare function createSectionHomeworkApp(props?: Record<string, any>): Promise<App<Element>>;
+export declare function createSectionHomeworkApp(props?: Record<string, any>): Promise< App<Element>>;
 
-export declare function createSectionQuizApp(props?: Record<string, any>): Promise<App<Element>>;
+export declare function createSectionQuizApp(props?: Record<string, any>): Promise< App<Element>>;
 
-export declare function createSegmentEditorApp(props: Record<string, any>): Promise<App<Element>>;
+export declare function createSegmentEditorApp(props: Record<string, any>): Promise< App<Element>>;
 
 export declare interface Lesson {
     id: number;
@@ -253,3 +253,46 @@ export declare function useSectionEditComponents(id: string, component: ModuleIm
 export declare function useSectionEditComponents(id: Record<string, ModuleImportCallback>): Record<string, ModuleImportCallback>;
 
 export { }
+
+
+
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    //
+  }
+}
+declare module 'tw-city-selector' {
+  export interface TwCitySelectorOptions {
+    el: string | null;
+    elCounty: string | null;
+    elDistrict: string | null;
+    elZipcode?: string | null;
+
+    only?: string | string[] | null;
+    except?: string | string[] | null;
+    disabled?: boolean;
+    hasZipcode?: boolean;
+    hiddenZipcode?: boolean;
+
+    countyValue?: string | null;
+    districtValue?: string | null;
+
+    countyClassName?: string;
+    countyFieldName?: string;
+    districtClassName?: string;
+    districtFieldName?: string;
+    zipcodeClassName?: string;
+    zipcodeFieldName?: string;
+
+    lang?: string;
+
+    standardWords?: boolean;
+    bootstrapStyle?: boolean;
+  }
+
+  export default class TwCitySelector {
+    constructor(options: TwCitySelectorOptions) {
+
+    }
+  }
+}

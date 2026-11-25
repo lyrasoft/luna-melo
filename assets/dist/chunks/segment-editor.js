@@ -906,7 +906,7 @@ var hasRequiredSweetalert_min;
 function requireSweetalert_min() {
   if (hasRequiredSweetalert_min) return sweetalert_min$1.exports;
   hasRequiredSweetalert_min = 1;
-  (function(module, exports$1) {
+  (function(module, exports) {
     !(function(t, e) {
       module.exports = e();
     })(sweetalert_min, function() {

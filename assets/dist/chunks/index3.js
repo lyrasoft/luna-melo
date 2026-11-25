@@ -1,4 +1,4 @@
-import { watch, customRef, effectScope, getCurrentScope, onScopeDispose, toValue } from "vue";
+import { watch, customRef, shallowRef, shallowReadonly, effectScope, toValue, getCurrentScope, onScopeDispose } from "vue";
 function computedWithControl(source, fn, options = {}) {
   let v = void 0;
   let track;
@@ -12,22 +12,22 @@ function computedWithControl(source, fn, options = {}) {
     flush: "sync",
     ...options
   });
-  const get$1 = typeof fn === "function" ? fn : fn.get;
-  const set$1 = typeof fn === "function" ? void 0 : fn.set;
+  const get = typeof fn === "function" ? fn : fn.get;
+  const set = typeof fn === "function" ? void 0 : fn.set;
   const result = customRef((_track, _trigger) => {
     track = _track;
     trigger = _trigger;
     return {
       get() {
         if (dirty) {
-          v = get$1(v);
+          v = get(v);
           dirty = false;
         }
         track();
         return v;
       },
-      set(v$1) {
-        set$1 === null || set$1 === void 0 || set$1(v$1);
+      set(v2) {
+        set === null || set === void 0 || set(v2);
       }
     };
   });
@@ -83,7 +83,7 @@ const isClient = typeof window !== "undefined" && typeof document !== "undefined
 typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
 const noop = () => {
 };
-const hasOwn = (val, key) => Object.prototype.hasOwnProperty.call(val, key);
+const hasOwn = (val, key) => Object.hasOwn(val, key);
 function createFilterWrapper(filter, fn) {
   function wrapper(...args) {
     return new Promise((resolve, reject) => {
@@ -94,19 +94,26 @@ function createFilterWrapper(filter, fn) {
       })).then(resolve).catch(reject);
     });
   }
+  if ("cancel" in filter) Object.assign(wrapper, {
+    cancel: filter.cancel,
+    flush: filter.flush,
+    isPending: filter.isPending
+  });
   return wrapper;
 }
 function debounceFilter(ms, options = {}) {
   let timer;
   let maxTimer;
   let lastRejector = noop;
-  const _clearTimeout = (timer$1) => {
-    clearTimeout(timer$1);
+  let lastResolve = noop;
+  const _pending = shallowRef(false);
+  const _clearTimeout = (timer2) => {
+    clearTimeout(timer2);
     lastRejector();
     lastRejector = noop;
   };
   let lastInvoker;
-  const filter = (invoke$1) => {
+  const handler = (invoke) => {
     const duration = toValue(ms);
     const maxDuration = toValue(options.maxWait);
     if (timer) _clearTimeout(timer);
@@ -115,26 +122,61 @@ function debounceFilter(ms, options = {}) {
         _clearTimeout(maxTimer);
         maxTimer = void 0;
       }
-      return Promise.resolve(invoke$1());
+      _pending.value = false;
+      return Promise.resolve(invoke());
     }
+    _pending.value = true;
     return new Promise((resolve, reject) => {
       lastRejector = options.rejectOnCancel ? reject : resolve;
-      lastInvoker = invoke$1;
+      lastResolve = resolve;
+      lastInvoker = invoke;
       if (maxDuration && !maxTimer) maxTimer = setTimeout(() => {
         if (timer) _clearTimeout(timer);
         maxTimer = void 0;
+        _pending.value = false;
         resolve(lastInvoker());
       }, maxDuration);
       timer = setTimeout(() => {
         if (maxTimer) _clearTimeout(maxTimer);
         maxTimer = void 0;
-        resolve(invoke$1());
+        _pending.value = false;
+        resolve(invoke());
       }, duration);
     });
   };
-  return filter;
+  return Object.assign(handler, {
+    cancel: () => {
+      if (timer) {
+        _clearTimeout(timer);
+        timer = void 0;
+      }
+      if (maxTimer) {
+        _clearTimeout(maxTimer);
+        maxTimer = void 0;
+      }
+      _pending.value = false;
+      lastResolve = noop;
+    },
+    flush: () => {
+      if (_pending.value) {
+        if (timer) {
+          clearTimeout(timer);
+          timer = void 0;
+        }
+        if (maxTimer) {
+          clearTimeout(maxTimer);
+          maxTimer = void 0;
+        }
+        _pending.value = false;
+        const resolve = lastResolve;
+        lastRejector = noop;
+        lastResolve = noop;
+        resolve(lastInvoker());
+      }
+    },
+    isPending: shallowReadonly(_pending)
+  });
 }
-// @__NO_SIDE_EFFECTS__
 function useDebounceFn(fn, ms = 200, options = {}) {
   return createFilterWrapper(debounceFilter(ms, options), fn);
 }

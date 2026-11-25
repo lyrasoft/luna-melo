@@ -102,7 +102,7 @@ var hasRequiredTwCitySelector;
 function requireTwCitySelector() {
   if (hasRequiredTwCitySelector) return twCitySelector.exports;
   hasRequiredTwCitySelector = 1;
-  (function(module, exports$1) {
+  (function(module, exports) {
     !(function(i, t) {
       module.exports = t();
     })(window, (function() {
@@ -163,7 +163,7 @@ function requireTwCitySelector() {
               if ("object" != e(s2)) return s2;
               throw new TypeError("@@toPrimitive must return a primitive value.");
             }
-            return String(i3);
+            return ("string" === t3 ? String : Number)(i3);
           })(i2, "string");
           return "symbol" == e(t2) ? t2 : t2 + "";
         }

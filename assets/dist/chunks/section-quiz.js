@@ -60,6 +60,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         `@section_ajax/getQuizQuestions?id=${segmentId.value}`
       );
       questions.value = res.data.data.questions;
+      answers.value = {};
       for (const question of questions.value) {
         answers.value[question.id] = null;
       }

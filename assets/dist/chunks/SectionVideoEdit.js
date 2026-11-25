@@ -792,7 +792,7 @@ var hasRequiredJsVideoUrlParser;
 function requireJsVideoUrlParser() {
   if (hasRequiredJsVideoUrlParser) return jsVideoUrlParser$1.exports;
   hasRequiredJsVideoUrlParser = 1;
-  (function(module, exports$1) {
+  (function(module, exports) {
     (function(global, factory) {
       module.exports = factory();
     })(jsVideoUrlParser, (function() {
